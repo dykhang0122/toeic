@@ -323,11 +323,36 @@ function playWordTTS(word, event) {
 }
 
 // Single Word Add
+// Clean suffix from word and extract correct type (e.g., "Strenuous (adj)" -> word: "Strenuous", type: "adjective")
+function extractWordAndType(rawWord) {
+  let word = rawWord.trim();
+  let type = 'noun'; // default
+
+  // Look for suffixes like (adj), (v), (n), (adv), adj, v, n, adv at the end
+  const typeRegex = /(?:\s+|^|\()((?:adj|adjective|v|verb|n|noun|adv|adverb))\)?\s*$/i;
+  const match = word.match(typeRegex);
+  if (match) {
+    const rawType = match[1].toLowerCase();
+    if (rawType.startsWith('adj')) {
+      type = 'adjective';
+    } else if (rawType.startsWith('v')) {
+      type = 'verb';
+    } else if (rawType.startsWith('adv')) {
+      type = 'adverb';
+    } else if (rawType.startsWith('n')) {
+      type = 'noun';
+    }
+    word = word.replace(typeRegex, '').trim();
+  }
+  return { word, type };
+}
+
 // Auto Lookup helper for single and batch operations
-async function getWordDetailsAuto(word) {
+async function getWordDetailsAuto(rawWord) {
+  const { word, type } = extractWordAndType(rawWord);
   let result = {
     word: word,
-    type: 'noun',
+    type: type,
     pronunciation: '',
     meaning: '',
     example: '',
@@ -339,7 +364,7 @@ async function getWordDetailsAuto(word) {
     for (const catKey of Object.keys(toeicVocabulary)) {
       const matchWord = toeicVocabulary[catKey].words.find(w => w.word.toLowerCase() === word.toLowerCase());
       if (matchWord) {
-        result.type = matchWord.type || 'noun';
+        result.type = matchWord.type || type;
         result.pronunciation = matchWord.pronunciation || '';
         result.meaning = matchWord.meaning || '';
         result.example = matchWord.example || '';
@@ -359,7 +384,7 @@ async function getWordDetailsAuto(word) {
       
       if (entry.meanings && entry.meanings.length > 0) {
         const meaning = entry.meanings[0];
-        result.type = meaning.partOfSpeech || 'noun';
+        result.type = meaning.partOfSpeech || type;
         if (meaning.definitions && meaning.definitions.length > 0) {
           result.example = meaning.definitions.find(d => d.example)?.example || '';
         }
@@ -384,7 +409,9 @@ async function getWordDetailsAuto(word) {
 // Single Word Add with automatic fallback lookups
 async function saveSingleWord(event) {
   event.preventDefault();
-  const wordInput = document.getElementById('add-vocab-word').value.trim();
+  const rawWordInput = document.getElementById('add-vocab-word').value.trim();
+  const { word: wordInput, type: autoType } = extractWordAndType(rawWordInput);
+  
   let meaningInput = document.getElementById('add-vocab-meaning').value.trim();
   let typeInput = document.getElementById('add-vocab-type').value;
   let pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
@@ -394,6 +421,11 @@ async function saveSingleWord(event) {
   if (!wordInput) {
     alert("Vui lòng nhập Từ vựng!");
     return;
+  }
+
+  // If user left type as default 'noun' but we auto-detected another type, use auto-detected
+  if (typeInput === 'noun' && autoType !== 'noun') {
+    typeInput = autoType;
   }
 
   const saveBtn = event.target.querySelector('button[type="submit"]');
@@ -460,8 +492,10 @@ async function importBatchWords() {
   const promises = lines.map(async (line) => {
     const parts = line.split(/[-:]/);
     if (parts.length >= 1) {
-      const word = parts[0].trim();
+      const rawWord = parts[0].trim();
       let meaning = parts.slice(1).join('-').trim();
+      
+      const { word, type } = extractWordAndType(rawWord);
       
       if (word && !state.vocab.some(w => w.word.toLowerCase() === word.toLowerCase())) {
         const info = await getWordDetailsAuto(word);
@@ -469,7 +503,7 @@ async function importBatchWords() {
         
         state.vocab.unshift({
           word: word,
-          type: info.type || 'noun',
+          type: type !== 'noun' ? type : (info.type || 'noun'),
           pronunciation: info.pronunciation || '',
           meaning: finalMeaning,
           definition: '',
