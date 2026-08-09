@@ -403,14 +403,36 @@ function extractWordAndType(rawWord) {
 // Generate template natural English example sentence if dictionary API has none
 function generateTemplateExample(wordOrPhrase, type) {
   const clean = wordOrPhrase.trim();
+  const lower = clean.toLowerCase();
+  
   if (type === 'verb') {
-    return `Researchers want to ${clean.toLowerCase()} the details soon.`;
+    const templates = [
+      `The board of directors decided to ${lower} the new operational guidelines to improve corporate efficiency.`,
+      `We had to ${lower} the scheduled seminar due to unexpected conflicts in the manager's itinerary.`,
+      `The department supervisor requested all team members to ${lower} the requirements before submitting the proposal.`
+    ];
+    return templates[clean.length % templates.length];
   } else if (type === 'adjective') {
-    return `This is a very ${clean.toLowerCase()} process for the team.`;
+    const templates = [
+      `The marketing campaign proved highly ${lower}, leading to a substantial increase in our quarterly revenue.`,
+      `All employees are eligible for ${lower} training sessions organized by the human resources department.`,
+      `The executive auditor provided a ${lower} report regarding the company's current financial status.`
+    ];
+    return templates[clean.length % templates.length];
   } else if (type === 'adverb') {
-    return `They completed their tasks extremely ${clean.toLowerCase()}.`;
-  } else { // noun or other
-    return `We should pay attention to the ${clean.toLowerCase()} immediately.`;
+    const templates = [
+      `The administrative staff handled the client's complicated inquiries ${lower} and professionally.`,
+      `The corporate guidelines will be updated ${lower} to comply with the new international trade regulations.`,
+      `Our technical support team resolved the system network issues ${lower} during the scheduled maintenance.`
+    ];
+    return templates[clean.length % templates.length];
+  } else { // noun or default
+    const templates = [
+      `The company will issue a full refund if there is any discrepancy in the final ${lower}.`,
+      `All qualified candidates must submit their application documents to be considered for the ${lower}.`,
+      `The facility manager announced a new safety policy regarding the usage of the office ${lower}.`
+    ];
+    return templates[clean.length % templates.length];
   }
 }
 
