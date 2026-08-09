@@ -113,8 +113,11 @@
       <div id="vocab-list" class="tab-content active">
         <div class="library-header">
           <input type="text" id="vbank-search" class="search-box" placeholder="Tìm kiếm từ hoặc nghĩa..." oninput="renderVocabBank()">
+          <select id="vbank-topic-filter" class="search-box" onchange="renderVocabBank()" style="max-width: 220px;">
+            <option value="all">Tất cả chủ đề / Part</option>
+          </select>
           <select id="vbank-filter" class="search-box" onchange="renderVocabBank()" style="max-width: 180px;">
-            <option value="all">Tất cả từ</option>
+            <option value="all">Tất cả trạng thái</option>
             <option value="new">Từ mới</option>
             <option value="reviewing">Hay quên (Review)</option>
             <option value="learning">Đang nhớ</option>
@@ -718,6 +721,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="words.js?v=4"></script>
-  <script src="app.js?v=18"></script>
+  <script src="app.js?v=19"></script>
 </body>
 </html>

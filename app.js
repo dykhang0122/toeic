@@ -313,6 +313,19 @@ function renderVocabBank() {
   const searchVal = document.getElementById('vbank-search').value.toLowerCase();
   const filterStatus = document.getElementById('vbank-filter').value;
   
+  // Get and populate unique topics
+  const topicFilterDropdown = document.getElementById('vbank-topic-filter');
+  const filterTopic = topicFilterDropdown ? topicFilterDropdown.value : 'all';
+  
+  if (topicFilterDropdown) {
+    const uniqueTopics = Array.from(new Set(state.vocab.map(w => w.topic || 'Cá nhân'))).filter(Boolean);
+    let topicOptionsHtml = `<option value="all">Tất cả chủ đề / Part</option>`;
+    uniqueTopics.forEach(topic => {
+      topicOptionsHtml += `<option value="${topic}" ${topic === filterTopic ? 'selected' : ''}>${topic}</option>`;
+    });
+    topicFilterDropdown.innerHTML = topicOptionsHtml;
+  }
+
   state.vocab.forEach((wordData, index) => {
     if (searchVal && 
         !wordData.word.toLowerCase().includes(searchVal) && 
@@ -321,6 +334,10 @@ function renderVocabBank() {
     }
     
     if (filterStatus !== 'all' && wordData.status !== filterStatus) {
+      return;
+    }
+
+    if (filterTopic !== 'all' && (wordData.topic || 'Cá nhân') !== filterTopic) {
       return;
     }
     
