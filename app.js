@@ -1449,7 +1449,7 @@ function startSpeechRecognition(event) {
       const visualizer = document.getElementById('oq-waveform-visualizer');
 
       audioDataInterval = setInterval(() => {
-        if (!speechIsListening) return;
+        if (!audioStream) return;
         audioAnalyser.getByteFrequencyData(dataArray);
         
         let sum = 0;
