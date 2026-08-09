@@ -1548,9 +1548,36 @@ function analyzeAudioSpeechFeatures(speechResult, targetWord, phonetic, volumes,
   const cleanTarget = targetWord.trim().toLowerCase();
   const cleanSpeech = speechResult.trim().toLowerCase();
   
+  // 0. Silence Check (Check if user didn't speak)
+  const maxVolume = volumes.length > 0 ? Math.max(...volumes) : 0;
+  if (maxVolume < 4.0) {
+    return {
+      overall: 0,
+      pronunciation: 0,
+      fluency: 0,
+      stress: 0,
+      ending: 0,
+      feedback: [{ type: 'error', text: 'Không phát hiện giọng nói rõ ràng. Vui lòng đọc to và rõ ràng hơn!' }]
+    };
+  }
+
   // Base Text/Pronunciation score using edit distance
   let pronScore = calculateWordSimilarity(cleanSpeech, cleanTarget);
   
+  // 0.5 Strict Mismatch Check (If they read a completely different word)
+  if (!cleanSpeech.includes(cleanTarget) && !cleanTarget.includes(cleanSpeech) && pronScore < 60) {
+    return {
+      overall: 0,
+      pronunciation: 0,
+      fluency: 0,
+      stress: 0,
+      ending: 0,
+      feedback: [
+        { type: 'error', text: `Từ bạn vừa đọc ("${speechResult}") không trùng khớp với từ mục tiêu ("${targetWord}"). Vui lòng thử lại!` }
+      ]
+    };
+  }
+
   // Default values
   let fluency = 90;
   let stress = 85;
