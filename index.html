@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sổ Học TOEIC Cá Nhân - Học Tập Thông Minh & Tự Động</title>
+  <meta name="description" content="Sổ học TOEIC cá nhân giúp quản lý từ vựng, tự động ôn tập, nộp bài tập về nhà Reading/Listening, ghi nhật ký Mock Test và thống kê tiến độ học tập chi tiết.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="#" class="logo" onclick="showView('dashboard')">
+      <span>🚀</span> TOEIC Notebook
+    </a>
+    <nav class="nav-links">
+      <button class="nav-btn active" data-view="dashboard">Trang Chủ</button>
+      <button class="nav-btn" data-view="vocab-view">Từ Vựng</button>
+      <button class="nav-btn" data-view="homework-view">Bài Tập Về Nhà</button>
+      <button class="nav-btn" data-view="mock-view">Thi Thử</button>
+      <button class="nav-btn" data-view="stats-view">Thống Kê</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 🏠 1. DASHBOARD VIEW -->
+    <section id="dashboard" class="view-section active">
+      <div class="glass-card" style="margin-bottom: 2rem; position: relative;">
+        <h1 style="font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 800;">Sổ học TOEIC cá nhân</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; max-width: 600px;">
+          Gom toàn bộ từ vựng từ trung tâm, bài đọc, bài nghe và bài tập về nhà vào một chỗ để tự động hóa ôn luyện hàng ngày.
+        </p>
+        
+        <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;">
+          <span>Độ phủ từ vựng đã thuộc</span>
+          <span id="overall-progress-text">0% Hoàn thành</span>
+        </div>
+        <div class="progress-bar-container" style="height: 12px; margin-bottom: 1.5rem;">
+          <div id="overall-progress-bar" class="progress-bar"></div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <label style="font-weight: 600; font-size: 0.95rem;">🎯 Điểm mục tiêu TOEIC:</label>
+          <input type="range" id="goal-range" min="200" max="990" step="10" value="800" oninput="updateGoalSetting(this.value)" style="flex: 1; max-width: 300px; accent-color: var(--accent-primary);">
+          <span id="goal-range-val" style="font-weight: 700; font-family: var(--font-display); font-size: 1.3rem; color: var(--accent-primary);">800</span>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="glass-card">
+            <h2 style="font-family: var(--font-display); margin-bottom: 1rem; font-size: 1.3rem;">🔥 Trọng tâm học hôm nay</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem;">
+              <div class="stat-item" style="cursor: pointer;" onclick="showView('vocab-view')">
+                <div id="db-today-reviews" class="stat-val" style="color: var(--accent-warning); text-shadow: 0 0 10px var(--accent-warning-glow);">0</div>
+                <div class="stat-label">Từ cần ôn hôm nay</div>
+              </div>
+              <div class="stat-item" style="cursor: pointer;" onclick="showView('homework-view')">
+                <div id="db-pending-hw" class="stat-val">0</div>
+                <div class="stat-label">Bài tập chưa làm</div>
+              </div>
+              <div class="stat-item">
+                <div id="db-weak-words" class="stat-val" style="color: var(--accent-danger); text-shadow: 0 0 10px var(--accent-danger-glow);">0</div>
+                <div class="stat-label">Từ hay quên</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h2 style="font-family: var(--font-display); margin-bottom: 1rem; font-size: 1.3rem;">⚡ Thao tác nhanh</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <button class="btn-primary" onclick="showView('vocab-view')">➕ Thêm từ vựng</button>
+              <button class="btn-primary" style="background: var(--bg-tertiary); border: 1px solid var(--border-color);" onclick="showView('homework-view')">📖 Nhập đáp án bài tập</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 style="font-family: var(--font-display); margin-bottom: 1rem; font-size: 1.3rem;">📊 Cảnh báo điểm yếu</h2>
+          <div id="db-weak-alerts" class="glass-card" style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+          <div class="glass-card" style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center; padding: 1.2rem;">
+            <div>
+              <div id="stat-streak" class="stat-val" style="color: var(--accent-success); text-shadow: 0 0 10px var(--accent-success-glow); font-size: 1.8rem;">0</div>
+              <div class="stat-label" style="font-weight: 600; font-size: 0.8rem;">Chuỗi 🔥</div>
+            </div>
+            <div>
+              <div id="stat-learned" class="stat-val" style="font-size: 1.8rem;">0/0</div>
+              <div class="stat-label" style="font-weight: 600; font-size: 0.8rem;">Từ đã thuộc 📚</div>
+            </div>
+            <div>
+              <div id="stat-quizzes" class="stat-val" style="color: var(--accent-primary); text-shadow: 0 0 10px var(--accent-primary-glow); font-size: 1.8rem;">0</div>
+              <div class="stat-label" style="font-weight: 600; font-size: 0.8rem;">Bài Test 📝</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📚 2. VOCABULARY VIEW -->
+    <section id="vocab-view" class="view-section">
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="switchVocabTab('vocab-list')">Kho từ cá nhân</button>
+        <button class="tab-btn" onclick="switchVocabTab('vocab-add')">Thêm từ đơn</button>
+        <button class="tab-btn" onclick="switchVocabTab('vocab-import')">📥 Import hàng loạt</button>
+        <button class="tab-btn" onclick="switchVocabTab('vocab-review')">🧠 Ôn tập Spaced Repetition</button>
+        <button class="tab-btn" onclick="switchVocabTab('vocab-match')">🧩 Ghép thẻ</button>
+        <button class="tab-btn" onclick="switchVocabTab('vocab-spell')">✍️ Luyện gõ</button>
+      </div>
+
+      <!-- Tab: Vocab List -->
+      <div id="vocab-list" class="tab-content active">
+        <div class="library-header">
+          <input type="text" id="vbank-search" class="search-box" placeholder="Tìm kiếm từ hoặc nghĩa..." oninput="renderVocabBank()">
+          <select id="vbank-filter" class="search-box" onchange="renderVocabBank()" style="max-width: 180px;">
+            <option value="all">Tất cả từ</option>
+            <option value="new">Từ mới</option>
+            <option value="reviewing">Hay quên (Review)</option>
+            <option value="learning">Đang nhớ</option>
+            <option value="mastered">Đã thuộc</option>
+          </select>
+        </div>
+        <div id="vbank-grid" class="library-grid">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- Tab: Add single word -->
+      <div id="vocab-add" class="tab-content glass-card" style="max-width: 600px; margin: 0 auto;">
+        <h2 style="font-family: var(--font-display); margin-bottom: 1.5rem; font-size: 1.5rem;">Thêm từ vựng mới</h2>
+        <form id="add-word-form" onsubmit="saveSingleWord(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Từ vựng *</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="add-vocab-word" class="form-control" placeholder="e.g. Applicant" required>
+                <button type="button" class="btn-primary" style="padding: 0 1rem; white-space: nowrap; font-size: 0.85rem;" onclick="lookupWordDetails()">🔍 Tự động tra</button>
+              </div>
+              <span id="lookup-status" style="font-size: 0.8rem; display: none; margin-top: 0.2rem; color: var(--accent-warning);"></span>
+            </div>
+            <div class="form-group">
+              <label>Từ loại</label>
+              <select id="add-vocab-type" class="form-control">
+                <option value="noun">Danh từ (noun)</option>
+                <option value="verb">Động từ (verb)</option>
+                <option value="adjective">Tính từ (adjective)</option>
+                <option value="adverb">Trạng từ (adverb)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phát âm (Phonetic)</label>
+              <input type="text" id="add-vocab-pronunciation" class="form-control" placeholder="e.g. /ˈæp.lɪ.kənt/">
+            </div>
+            <div class="form-group">
+              <label>Ý nghĩa / Dịch thuật *</label>
+              <input type="text" id="add-vocab-meaning" class="form-control" placeholder="e.g. ứng viên, người ứng tuyển" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Câu ví dụ (English)</label>
+            <input type="text" id="add-vocab-example" class="form-control" placeholder="e.g. There were over 50 applicants for the job.">
+          </div>
+          <div class="form-group">
+            <label>Chủ đề / Nguồn gom</label>
+            <input type="text" id="add-vocab-topic" class="form-control" placeholder="e.g. Office, Reading HW, Trung tâm">
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Lưu vào kho từ</button>
+        </form>
+      </div>
+
+      <!-- Tab: Import batch words -->
+      <div id="vocab-import" class="tab-content glass-card" style="max-width: 600px; margin: 0 auto;">
+        <h2 style="font-family: var(--font-display); margin-bottom: 1rem; font-size: 1.5rem;">Import nhanh danh sách từ vựng</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.4;">
+          Bạn có thể dán danh sách từ vựng copy từ tài liệu, bài tập hay ghi chú. Hệ thống tự động phân tách từ vựng và nghĩa.
+          <br><strong>Định dạng hỗ trợ:</strong> <code>từ - nghĩa dịch</code> hoặc <code>từ: nghĩa dịch</code> (Mỗi từ 1 dòng).
+        </p>
+        <!-- OCR Handout Scanner widget -->
+        <div style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); transition: var(--transition-smooth);" id="ocr-drop-zone">
+          <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📸</span>
+          <label style="cursor: pointer; color: var(--accent-primary); font-weight: 600;">
+            Tải ảnh chụp tài liệu lên để quét chữ (OCR)
+            <input type="file" id="ocr-file-input" accept="image/*" style="display: none;" onchange="handleOCRImageUpload(this)">
+          </label>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.3rem;">Hỗ trợ ảnh chụp JPG, PNG rõ chữ tiếng Anh/Việt</p>
+          <div id="ocr-status" style="margin-top: 0.8rem; font-size: 0.85rem; font-weight: 500; display: none; color: var(--accent-warning);">
+            🔄 Đang quét ảnh... <span id="ocr-progress">0%</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nhập danh sách từ vựng</label>
+          <textarea id="import-batch-area" class="form-control" rows="8" placeholder="applicant - ứng viên&#10;recruit - tuyển dụng&#10;salary - tiền lương"></textarea>
+        </div>
+        <button class="btn-primary" style="width: 100%;" onclick="importBatchWords()">Phân tích & Thêm vào hệ thống</button>
+      </div>
+
+      <!-- Tab: Spaced Repetition -->
+      <div id="vocab-review" class="tab-content">
+        <!-- Active Review Frame -->
+        <div id="vocab-review-active" class="flashcard-container" style="display: none;">
+          <div class="flashcard-header">
+            <div style="font-weight: 600; color: var(--accent-primary);">Bộ từ ôn tập ngắt quãng</div>
+            <div id="review-progress" style="color: var(--text-secondary); font-size: 0.9rem;">0/0</div>
+          </div>
+          <div class="card-scene" onclick="flipReviewCard()">
+            <div id="review-flashcard" class="card">
+              <!-- Front -->
+              <div class="card-face card-front">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                  <span style="font-size: 0.85rem; color: var(--accent-primary); font-weight: 600; letter-spacing: 1px;">Từ vựng</span>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button id="btn-mic" class="btn-tts" onclick="startSpeechRecognition(event)" style="background: var(--bg-tertiary); border-color: var(--border-color);">🎤</button>
+                    <button class="btn-tts" onclick="playWordTTS(document.getElementById('rv-front-word').textContent, event)">🔊</button>
+                  </div>
+                </div>
+                <div class="card-word-info" style="align-items: center; justify-content: center; flex: 1;">
+                  <span id="rv-front-word" class="card-word">Word</span>
+                  <span id="rv-front-type" class="card-type">noun</span>
+                  <span id="rv-front-phonetic" class="card-phonetic">/phonetic/</span>
+                  <div id="speech-grading-result" style="margin-top: 1rem; font-size: 0.9rem; font-weight: 700; min-height: 1.5rem; text-align: center; color: var(--accent-warning);"></div>
+                </div>
+                <div class="hint-flip">Chạm để lật xem nghĩa dịch</div>
+              </div>
+              <!-- Back -->
+              <div class="card-face card-back">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                  <span style="font-size: 0.85rem; color: var(--accent-success); font-weight: 600; letter-spacing: 1px;">Nghĩa dịch</span>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                  <span id="rv-back-meaning" class="card-meaning">Ý nghĩa</span>
+                  <div class="card-example-box" style="margin-top: 1.5rem;">
+                    <div id="rv-back-example" class="card-example">Example sentence</div>
+                  </div>
+                </div>
+                <div class="hint-flip">Chạm để lật lại mặt trước</div>
+              </div>
+            </div>
+          </div>
+          <!-- Selection buttons -->
+          <div class="card-controls">
+            <button class="btn-choice btn-review" onclick="reviewChoice('reviewing')">🔴 Hay quên</button>
+            <button class="btn-choice btn-master" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); border-color: rgba(245, 158, 11, 0.4);" onclick="reviewChoice('learning')">🟡 Đang nhớ</button>
+            <button class="btn-choice btn-master" onclick="reviewChoice('mastered')">🟢 Đã thuộc</button>
+          </div>
+        </div>
+
+        <!-- Empty Frame -->
+        <div id="vocab-review-empty" class="glass-card" style="max-width: 500px; margin: 0 auto; text-align: center; padding: 3rem 1.5rem; display: none;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">✨</div>
+          <h2 style="font-family: var(--font-display); margin-bottom: 0.5rem;">Tuyệt vời!</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Hôm nay bạn không có từ vựng nào cần phải ôn lại. Hãy học thêm từ mới hoặc làm bài tập!</p>
+          <button class="btn-primary" onclick="switchVocabTab('vocab-add')">Thêm từ mới</button>
+        </div>
+      </div>
+
+      <!-- Tab: Match Game -->
+      <div id="vocab-match" class="tab-content">
+        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-family: var(--font-display); font-size: 1.5rem;">🧩 Trò chơi ghép thẻ TOEIC</h2>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-primary);" id="match-timer">Thời gian: 0.0s</div>
+          </div>
+          
+          <div id="match-start-screen" style="text-align: center; padding: 2rem;">
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+              Ghép các thẻ từ tiếng Anh với nghĩa tiếng Việt tương ứng càng nhanh càng tốt. Lưới 8-12 thẻ.
+            </p>
+            <button class="btn-primary" onclick="initMatchGame()">Bắt đầu ghép thẻ</button>
+          </div>
+
+          <div id="match-playground" style="display: none;">
+            <div id="match-cards-grid" class="match-grid">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+          <div id="match-success-screen" style="display: none; text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🏆</div>
+            <h3>Hoàn thành xuất sắc!</h3>
+            <p style="margin: 1rem 0; font-size: 1.2rem;">Thời gian hoàn thành của bạn: <strong id="match-final-time" style="color: var(--accent-success);">0s</strong></p>
+            <button class="btn-primary" onclick="initMatchGame()">Chơi lại</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Spell / Write Mode -->
+      <div id="vocab-spell" class="tab-content">
+        <div class="spell-container glass-card">
+          <div class="flashcard-header">
+            <div style="font-weight: 600; color: var(--accent-primary);">✍️ Luyện gõ từ vựng TOEIC</div>
+            <div id="spell-progress" style="color: var(--text-secondary); font-size: 0.9rem;">0/0</div>
+          </div>
+          
+          <div id="spell-playground">
+            <div class="spell-hint-card">
+              <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-primary); font-weight: 600; letter-spacing: 1px; margin-bottom: 1rem;">Nghĩa dịch</div>
+              <h2 id="spell-hint-meaning" style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent-success);">Meaning</h2>
+              <div id="spell-hint-type" style="color: var(--text-secondary); font-size: 0.9rem; font-style: italic;">noun</div>
+            </div>
+            
+            <div class="form-group">
+              <input type="text" id="spell-user-input" class="form-control" placeholder="Gõ từ tiếng Anh tại đây..." style="text-align: center; font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px;" autofocus autocomplete="off" onkeydown="handleSpellKeyPress(event)">
+            </div>
+            
+            <div id="spell-feedback-msg" style="font-weight: 600; margin: 1rem 0; font-size: 1rem; min-height: 1.5rem;"></div>
+            
+            <button class="btn-primary" style="width: 100%;" onclick="checkSpellAnswer()">Kiểm tra</button>
+          </div>
+          
+          <div id="spell-success-screen" style="display: none; padding: 2rem 0;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+            <h3>Hoàn thành lượt gõ từ!</h3>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 1.5rem;">Bạn đã ôn tập viết chính xác các từ vựng này.</p>
+            <button class="btn-primary" onclick="initSpellMode()">Luyện lượt mới</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📖 3. HOMEWORK VIEW -->
+    <section id="homework-view" class="view-section">
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="switchHwTab('hw-reading')">📖 Reading Homework</button>
+        <button class="tab-btn" onclick="switchHwTab('hw-listening')">🎧 Listening Homework</button>
+      </div>
+
+      <div class="hw-layout">
+        <!-- Left: homework list -->
+        <div>
+          <button class="btn-primary" style="width: 100%; margin-bottom: 1.5rem;" onclick="openAddHwModal()">➕ Thêm bài tập mới</button>
+          <div id="hw-list-container">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+        </div>
+
+        <!-- Right: active homework details -->
+        <div id="hw-details-pane" class="glass-card">
+          <div style="text-align: center; color: var(--text-secondary); padding: 4rem 1rem;">
+            <h3>Chọn bài tập từ danh sách bên trái để bắt đầu làm bài</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📝 4. MOCK TESTS VIEW -->
+    <section id="mock-view" class="view-section">
+      <div class="dashboard-grid">
+        <!-- Log Form -->
+        <div class="glass-card">
+          <h2 style="font-family: var(--font-display); margin-bottom: 1.5rem; font-size: 1.5rem;">Nhật ký điểm thi thử / Luyện đề</h2>
+          <form id="mock-test-form" onsubmit="saveTestLog(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phân loại</label>
+                <select id="log-type" class="form-control">
+                  <option value="mock">Full Mock Test (Đầy đủ 200 câu)</option>
+                  <option value="part">Luyện đề Part nhỏ</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Điểm Listening (Nghe)</label>
+                <input type="number" id="log-listening" class="form-control" placeholder="e.g. 350" min="0" max="495">
+              </div>
+              <div class="form-group">
+                <label>Điểm Reading (Đọc)</label>
+                <input type="number" id="log-reading" class="form-control" placeholder="e.g. 380" min="0" max="495">
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+              <h4 style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-secondary);">Chi tiết số câu đúng theo Parts (Không bắt buộc)</h4>
+              <div class="form-row" style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));">
+                <div class="form-group">
+                  <label>Part 1 (6 câu)</label>
+                  <input type="number" id="part-1-score" class="form-control" min="0" max="6">
+                </div>
+                <div class="form-group">
+                  <label>Part 2 (25 câu)</label>
+                  <input type="number" id="part-2-score" class="form-control" min="0" max="25">
+                </div>
+                <div class="form-group">
+                  <label>Part 3 (39 câu)</label>
+                  <input type="number" id="part-3-score" class="form-control" min="0" max="39">
+                </div>
+                <div class="form-group">
+                  <label>Part 4 (30 câu)</label>
+                  <input type="number" id="part-4-score" class="form-control" min="0" max="30">
+                </div>
+              </div>
+              <div class="form-row" style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); margin-top: 0.5rem;">
+                <div class="form-group">
+                  <label>Part 5 (30 câu)</label>
+                  <input type="number" id="part-5-score" class="form-control" min="0" max="30">
+                </div>
+                <div class="form-group">
+                  <label>Part 6 (16 câu)</label>
+                  <input type="number" id="part-6-score" class="form-control" min="0" max="16">
+                </div>
+                <div class="form-group">
+                  <label>Part 7 (54 câu)</label>
+                  <input type="number" id="part-7-score" class="form-control" min="0" max="54">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Ghi lại kết quả thi</button>
+          </form>
+        </div>
+
+        <!-- Log List -->
+        <div class="glass-card" style="overflow-x: auto;">
+          <h2 style="font-family: var(--font-display); margin-bottom: 1rem; font-size: 1.5rem;">Lịch sử làm đề</h2>
+          <table class="table-glass">
+            <thead>
+              <tr>
+                <th>Ngày thi</th>
+                <th>Phân loại</th>
+                <th>Nghe</th>
+                <th>Đọc</th>
+                <th>Tổng điểm</th>
+              </tr>
+            </thead>
+            <tbody id="mock-logs-table">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📊 5. STATISTICS VIEW -->
+    <section id="stats-view" class="view-section">
+      <div class="dashboard-grid">
+        <div class="glass-card">
+          <h2 style="font-family: var(--font-display); margin-bottom: 1.5rem; font-size: 1.5rem;">Thống kê tiến độ từ vựng</h2>
+          
+          <div class="stat-bar-row">
+            <div class="stat-bar-header">
+              <span>Đã thuộc (Mastered)</span>
+              <span id="stats-mastered-pct">0 từ (0%)</span>
+            </div>
+            <div class="progress-bar-container"><div id="stats-mastered-bar" class="progress-bar" style="background: var(--accent-success);"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-header">
+              <span>Đang học (Learning)</span>
+              <span id="stats-learning-pct">0 từ (0%)</span>
+            </div>
+            <div class="progress-bar-container"><div id="stats-learning-bar" class="progress-bar" style="background: var(--accent-warning);"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-header">
+              <span>Cần ôn lại (Reviewing)</span>
+              <span id="stats-reviewing-pct">0 từ (0%)</span>
+            </div>
+            <div class="progress-bar-container"><div id="stats-reviewing-bar" class="progress-bar" style="background: var(--accent-danger);"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-header">
+              <span>Chưa học (New)</span>
+              <span id="stats-new-pct">0 từ (0%)</span>
+            </div>
+            <div class="progress-bar-container"><div id="stats-new-bar" class="progress-bar" style="background: var(--text-secondary);"></div></div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Goal Tracking Card -->
+          <div class="glass-card" style="text-align: center;">
+            <h3 style="font-family: var(--font-display); color: var(--text-secondary); font-size: 1rem; text-transform: uppercase;">Điểm thi thử cao nhất</h3>
+            <div id="stats-current-score" style="font-size: 4rem; font-weight: 800; font-family: var(--font-display); color: var(--accent-primary); margin: 0.5rem 0;">820</div>
+            <p id="stats-goal-diff" style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 600;">Cần thêm 80 điểm để đạt mục tiêu</p>
+          </div>
+
+          <!-- Homework Accuracy -->
+          <div class="glass-card">
+            <h3 style="font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 1rem;">Độ chính xác bài tập trung bình</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+              <div>
+                <div id="stats-reading-avg" style="font-size: 2.2rem; font-weight: 700; color: var(--accent-primary);">0%</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">Đọc (Reading)</div>
+              </div>
+              <div>
+                <div id="stats-listening-avg" style="font-size: 2.2rem; font-weight: 700; color: var(--accent-success);">0%</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">Nghe (Listening)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add Homework Modal -->
+  <div id="add-hw-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="glass-card" style="width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 id="hw-modal-title" style="font-family: var(--font-display); font-size: 1.4rem;">Thêm bài tập mới</h2>
+        <button onclick="closeHwModal()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;">&times;</button>
+      </div>
+      
+      <form id="add-hw-form" onsubmit="saveHomeworkLog(event)">
+        <div class="form-group">
+          <label>Tên bài tập *</label>
+          <input type="text" id="hw-title" class="form-control" placeholder="e.g. Reading Part 5 - Mini Test 1" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Số câu hỏi</label>
+            <select id="hw-qcount" class="form-control" onchange="onHwCountChange(this.value)">
+              <option value="10">10 câu</option>
+              <option value="20">20 câu</option>
+              <option value="30">30 câu</option>
+              <option value="40">40 câu</option>
+              <option value="50">50 câu</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Phân loại Part *</label>
+            <select id="hw-part" class="form-control" required>
+              <!-- Populated dynamically by app.js -->
+            </select>
+          </div>
+        </div>
+
+        <div id="hw-audio-source-group" class="form-group" style="display: none;">
+          <label>Đường dẫn tệp âm thanh (Audio URL)</label>
+          <input type="text" id="hw-audio-source" class="form-control" placeholder="e.g. https://example.com/audio.mp3">
+        </div>
+
+        <!-- Handout OCR Scanner zone -->
+        <div style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 1rem; text-align: center; margin-top: 1rem; background: rgba(255,255,255,0.01);" id="hw-ocr-drop-zone">
+          <span style="font-size: 1.5rem; display: block; margin-bottom: 0.3rem;">📸</span>
+          <label style="cursor: pointer; color: var(--accent-primary); font-weight: 600; font-size: 0.9rem;">
+            Quét ảnh tờ đề bài A4 (OCR)
+            <input type="file" id="hw-ocr-file-input" accept="image/*" style="display: none;" onchange="handleHwOCRUpload(this)">
+          </label>
+          <div id="hw-ocr-status" style="margin-top: 0.5rem; font-size: 0.8rem; font-weight: 500; display: none; color: var(--accent-warning);">
+            🔄 Đang quét ảnh... <span id="hw-ocr-progress">0%</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label>Nội dung đề bài / Passage / Audio Script</label>
+          <textarea id="hw-content" class="form-control" rows="5" placeholder="Nội dung chữ của tờ đề bài quét được sẽ xuất hiện ở đây..."></textarea>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+          <label style="font-size: 0.95rem; font-weight: 600; display: block; margin-bottom: 1rem; color: var(--accent-primary);">Nhập đáp án đúng (Key):</label>
+          <div id="hw-modal-answers-input" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 0.8rem;">
+            <!-- Dynamically populated answer selectors -->
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 2rem;">Tạo bài tập</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="words.js?v=3"></script>
+  <script src="app.js?v=3"></script>
+</body>
+</html>

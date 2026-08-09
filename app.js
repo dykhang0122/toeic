@@ -1,0 +1,1517 @@
+// Unified Application State
+let state = {
+  toeicGoal: 800,
+  streak: 0,
+  lastActiveDate: null,
+  completedQuizzes: 0,
+  vocab: [], // Array of word objects
+  homework: [], // Array of homework objects
+  tests: [] // Array of test log objects
+};
+
+// Seed Vocab from words.js if local database is empty
+function seedInitialData() {
+  if (state.vocab.length === 0 && typeof toeicVocabulary !== 'undefined') {
+    Object.keys(toeicVocabulary).forEach(topicKey => {
+      const topicData = toeicVocabulary[topicKey];
+      topicData.words.forEach(w => {
+        state.vocab.push({
+          word: w.word,
+          type: w.type || 'noun',
+          pronunciation: w.pronunciation || '',
+          meaning: w.meaning,
+          definition: w.definition || '',
+          example: w.example || '',
+          exampleMeaning: w.exampleMeaning || '',
+          topic: topicData.title,
+          status: 'new', // new, reviewing, learning, mastered
+          lastReviewed: null,
+          reviewCount: 0
+        });
+      });
+    });
+    saveState();
+  }
+}
+
+// Load state from LocalStorage
+function loadState() {
+  const savedState = localStorage.getItem('toeic_personal_notebook_state');
+  if (savedState) {
+    state = JSON.parse(savedState);
+  }
+  
+  // Ensure array structures exist
+  if (!state.vocab) state.vocab = [];
+  if (!state.homework) state.homework = [];
+  if (!state.tests) state.tests = [];
+  if (!state.toeicGoal) state.toeicGoal = 800;
+  if (!state.streak) state.streak = 0;
+  
+  seedInitialData();
+  checkStreak();
+  updateDashboardStats();
+}
+
+// Save state to LocalStorage
+function saveState() {
+  localStorage.setItem('toeic_personal_notebook_state', JSON.stringify(state));
+  updateDashboardStats();
+}
+
+// Streak Tracking
+function checkStreak() {
+  const today = new Date().toDateString();
+  if (state.lastActiveDate) {
+    const lastDate = new Date(state.lastActiveDate);
+    const diffTime = Math.abs(new Date(today) - lastDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays > 1) {
+      state.streak = 0;
+    }
+  } else {
+    state.streak = 0;
+  }
+}
+
+function updateStreakForToday() {
+  const today = new Date().toDateString();
+  if (state.lastActiveDate !== today) {
+    state.streak += 1;
+    state.lastActiveDate = today;
+    saveState();
+  }
+}
+
+// Dashboard statistics mapping
+function updateDashboardStats() {
+  const totalWords = state.vocab.length;
+  const masteredCount = state.vocab.filter(w => w.status === 'mastered').length;
+  const reviewCount = state.vocab.filter(w => w.status === 'reviewing').length;
+  
+  // Update texts
+  const statStreak = document.getElementById('stat-streak');
+  if (statStreak) statStreak.textContent = state.streak;
+  
+  const statLearned = document.getElementById('stat-learned');
+  if (statLearned) statLearned.textContent = `${masteredCount}/${totalWords}`;
+  
+  const statQuizzes = document.getElementById('stat-quizzes');
+  if (statQuizzes) statQuizzes.textContent = state.completedQuizzes;
+  
+  const dbTodayReviews = document.getElementById('db-today-reviews');
+  if (dbTodayReviews) dbTodayReviews.textContent = state.vocab.filter(w => w.status === 'reviewing' || w.status === 'learning').length;
+  
+  // Homework stats
+  const pendingHw = state.homework.filter(h => h.status === 'pending').length;
+  const dbPendingHw = document.getElementById('db-pending-hw');
+  if (dbPendingHw) dbPendingHw.textContent = pendingHw;
+  
+  // Weak words
+  const dbWeakWords = document.getElementById('db-weak-words');
+  if (dbWeakWords) dbWeakWords.textContent = reviewCount;
+  
+  // Goal Settings
+  const goalRangeVal = document.getElementById('goal-range-val');
+  if (goalRangeVal) goalRangeVal.textContent = state.toeicGoal;
+  const goalRange = document.getElementById('goal-range');
+  if (goalRange) goalRange.value = state.toeicGoal;
+  
+  // Progress Bar
+  const progressPercent = totalWords > 0 ? (masteredCount / totalWords) * 100 : 0;
+  const overallProgressBar = document.getElementById('overall-progress-bar');
+  if (overallProgressBar) overallProgressBar.style.width = `${progressPercent}%`;
+  const overallProgressText = document.getElementById('overall-progress-text');
+  if (overallProgressText) overallProgressText.textContent = `${Math.round(progressPercent)}% Hoàn thành`;
+  
+  // Custom alerts for weak sections
+  renderWeakAreaAlerts();
+}
+
+function updateGoalSetting(val) {
+  state.toeicGoal = parseInt(val);
+  document.getElementById('goal-range-val').textContent = val;
+  saveState();
+}
+
+// Render dynamic alerts based on practice logs
+function renderWeakAreaAlerts() {
+  const container = document.getElementById('db-weak-alerts');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  let weakAreas = [];
+  
+  // 1. Analyze part averages from test logs
+  const partsSum = {};
+  const partsCount = {};
+  
+  state.tests.forEach(test => {
+    if (test.partsScore) {
+      Object.keys(test.partsScore).forEach(part => {
+        partsSum[part] = (partsSum[part] || 0) + test.partsScore[part];
+        partsCount[part] = (partsCount[part] || 0) + 1;
+      });
+    }
+  });
+  
+  Object.keys(partsSum).forEach(part => {
+    const avg = partsSum[part] / partsCount[part];
+    if (avg < 60) {
+      weakAreas.push(`⚠️ Bạn đang yếu <strong>${part}</strong> (Điểm trung bình: ${Math.round(avg)}%)`);
+    }
+  });
+  
+  // 2. Vocabulary warnings
+  const reviewingCount = state.vocab.filter(w => w.status === 'reviewing').length;
+  if (reviewingCount > 10) {
+    weakAreas.push(`⚠️ Bạn đang có <strong>${reviewingCount} từ hay quên</strong> cần được ôn tập lại.`);
+  }
+  
+  if (weakAreas.length === 0) {
+    container.innerHTML = `<div style="color: var(--accent-success); font-size: 0.9rem;">✨ Chưa phát hiện điểm yếu nào lớn! Tiếp tục phát huy.</div>`;
+  } else {
+    weakAreas.forEach(alertHtml => {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'stat-bar-row';
+      alertDiv.style.background = 'rgba(239, 68, 68, 0.05)';
+      alertDiv.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+      alertDiv.style.padding = '0.8rem';
+      alertDiv.style.borderRadius = '12px';
+      alertDiv.style.marginBottom = '0.5rem';
+      alertDiv.style.fontSize = '0.9rem';
+      alertDiv.innerHTML = alertHtml;
+      container.appendChild(alertDiv);
+    });
+  }
+}
+
+// View Controller Routing
+function showView(viewId) {
+  document.querySelectorAll('.view-section').forEach(section => {
+    section.classList.remove('active');
+  });
+  const targetView = document.getElementById(viewId);
+  if (targetView) {
+    targetView.classList.add('active');
+  }
+  
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    if (btn.getAttribute('data-view') === viewId) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // View specific loading events
+  if (viewId === 'dashboard') {
+    updateDashboardStats();
+  } else if (viewId === 'vocab-view') {
+    switchVocabTab('vocab-list');
+  } else if (viewId === 'homework-view') {
+    switchHwTab('hw-reading');
+  } else if (viewId === 'mock-view') {
+    renderTestLogs();
+  } else if (viewId === 'stats-view') {
+    renderStatisticsPage();
+  }
+}
+
+// Navigation Initialization
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showView(btn.getAttribute('data-view'));
+    });
+  });
+});
+
+// ==========================================
+// 📚 MODULE 2: VOCABULARY
+// ==========================================
+
+function switchVocabTab(tabId) {
+  document.querySelectorAll('#vocab-view .tab-btn').forEach(btn => {
+    if (btn.getAttribute('onclick').includes(tabId)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  document.querySelectorAll('#vocab-view .tab-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  document.getElementById(tabId).classList.add('active');
+  
+  if (tabId === 'vocab-list') {
+    renderVocabBank();
+  } else if (tabId === 'vocab-review') {
+    startSpacedReviewSession();
+  } else if (tabId === 'vocab-match') {
+    resetMatchGameView();
+  } else if (tabId === 'vocab-spell') {
+    initSpellMode();
+  }
+}
+
+// Render word bank list
+function renderVocabBank() {
+  const grid = document.getElementById('vbank-grid');
+  grid.innerHTML = '';
+  const searchVal = document.getElementById('vbank-search').value.toLowerCase();
+  const filterStatus = document.getElementById('vbank-filter').value;
+  
+  state.vocab.forEach((wordData, index) => {
+    if (searchVal && 
+        !wordData.word.toLowerCase().includes(searchVal) && 
+        !wordData.meaning.toLowerCase().includes(searchVal)) {
+      return;
+    }
+    
+    if (filterStatus !== 'all' && wordData.status !== filterStatus) {
+      return;
+    }
+    
+    let statusClass = 'new';
+    let statusText = 'Mới';
+    if (wordData.status === 'mastered') {
+      statusClass = 'mastered';
+      statusText = 'Đã thuộc';
+    } else if (wordData.status === 'reviewing') {
+      statusClass = 'reviewing';
+      statusText = 'Hay quên';
+    } else if (wordData.status === 'learning') {
+      statusClass = 'learning';
+      statusText = 'Đang nhớ';
+    }
+    
+    const card = document.createElement('div');
+    card.className = 'glass-card word-library-card';
+    card.innerHTML = `
+      <div class="word-library-header">
+        <div>
+          <span class="word-library-title">${wordData.word}</span>
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">(${wordData.type})</span>
+        </div>
+        <span class="status-badge ${statusClass}">${statusText}</span>
+      </div>
+      <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>${wordData.pronunciation}</span>
+        <button onclick="playWordTTS('${wordData.word}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);">🔊</button>
+      </div>
+      <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 0.8rem;">${wordData.meaning}</div>
+      <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
+        <div style="color: var(--text-secondary); margin-bottom: 0.2rem;">${wordData.definition}</div>
+        <div style="font-style: italic;">e.g. ${wordData.example}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function playWordTTS(word, event) {
+  if (event) event.stopPropagation();
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.95;
+  window.speechSynthesis.speak(utterance);
+}
+
+// Single Word Add
+function saveSingleWord(event) {
+  event.preventDefault();
+  const wordInput = document.getElementById('add-vocab-word').value.trim();
+  const meaningInput = document.getElementById('add-vocab-meaning').value.trim();
+  const typeInput = document.getElementById('add-vocab-type').value;
+  const pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
+  const exampleInput = document.getElementById('add-vocab-example').value.trim();
+  const topicInput = document.getElementById('add-vocab-topic').value.trim() || 'Cá nhân';
+  
+  if (!wordInput || !meaningInput) {
+    alert("Vui lòng nhập Từ vựng và Nghĩa dịch!");
+    return;
+  }
+  
+  state.vocab.unshift({
+    word: wordInput,
+    type: typeInput,
+    pronunciation: pronunciationInput,
+    meaning: meaningInput,
+    definition: '',
+    example: exampleInput,
+    exampleMeaning: '',
+    topic: topicInput,
+    status: 'new',
+    lastReviewed: null,
+    reviewCount: 0
+  });
+  
+  saveState();
+  document.getElementById('add-word-form').reset();
+  alert(`Đã thêm từ "${wordInput}" vào kho từ cá nhân!`);
+  switchVocabTab('vocab-list');
+}
+
+// Batch Import Parser
+function importBatchWords() {
+  const textarea = document.getElementById('import-batch-area');
+  const text = textarea.value.trim();
+  if (!text) {
+    alert("Vui lòng dán danh sách từ vựng vào hộp văn bản!");
+    return;
+  }
+  
+  const lines = text.split('\n');
+  let importedCount = 0;
+  
+  lines.forEach(line => {
+    // Split by hyphen or colon
+    const parts = line.split(/[-:]/);
+    if (parts.length >= 2) {
+      const word = parts[0].trim();
+      const meaning = parts.slice(1).join('-').trim();
+      
+      // Prevent duplicates
+      if (word && meaning && !state.vocab.some(w => w.word.toLowerCase() === word.toLowerCase())) {
+        state.vocab.unshift({
+          word: word,
+          type: 'noun',
+          pronunciation: '',
+          meaning: meaning,
+          definition: '',
+          example: '',
+          exampleMeaning: '',
+          topic: 'Nhập lô',
+          status: 'new',
+          lastReviewed: null,
+          reviewCount: 0
+        });
+        importedCount++;
+      }
+    }
+  });
+  
+  saveState();
+  textarea.value = '';
+  alert(`Đã nhập thành công ${importedCount} từ vào hệ thống!`);
+  switchVocabTab('vocab-list');
+}
+
+// Spaced Repetition Practice
+let activeReviewList = [];
+let activeReviewIndex = 0;
+
+function startSpacedReviewSession() {
+  // Select words: either reviewing (Hay quên) or learning (Đang nhớ)
+  activeReviewList = state.vocab.filter(w => w.status === 'reviewing' || w.status === 'learning' || w.status === 'new');
+  // Shuffle list
+  activeReviewList.sort(() => 0.5 - Math.random());
+  
+  if (activeReviewList.length === 0) {
+    document.getElementById('vocab-review-active').style.display = 'none';
+    document.getElementById('vocab-review-empty').style.display = 'block';
+    return;
+  }
+  
+  document.getElementById('vocab-review-active').style.display = 'block';
+  document.getElementById('vocab-review-empty').style.display = 'none';
+  
+  activeReviewIndex = 0;
+  showReviewCard(0);
+}
+
+function showReviewCard(index) {
+  if (index < 0 || index >= activeReviewList.length) {
+    alert("Bạn đã hoàn thành tất cả các từ cần ôn hôm nay!");
+    updateStreakForToday();
+    switchVocabTab('vocab-list');
+    return;
+  }
+  
+  // Abort active speech recognition
+  if (speechRecognition && speechIsListening) {
+    speechRecognition.stop();
+  }
+  
+  activeReviewIndex = index;
+  const wordData = activeReviewList[index];
+  const cardElement = document.getElementById('review-flashcard');
+  
+  cardElement.classList.remove('is-flipped');
+  
+  // Front
+  document.getElementById('rv-front-word').textContent = wordData.word;
+  document.getElementById('rv-front-type').textContent = wordData.type;
+  document.getElementById('rv-front-phonetic').textContent = wordData.pronunciation || '/.../';
+  
+  const resultDiv = document.getElementById('speech-grading-result');
+  if (resultDiv) resultDiv.textContent = '';
+  
+  // Back
+  document.getElementById('rv-back-meaning').textContent = wordData.meaning;
+  document.getElementById('rv-back-example').textContent = wordData.example || 'Chưa có ví dụ';
+  
+  document.getElementById('review-progress').textContent = `${index + 1}/${activeReviewList.length}`;
+}
+
+function flipReviewCard() {
+  document.getElementById('review-flashcard').classList.toggle('is-flipped');
+}
+
+function reviewChoice(status) {
+  const activeWord = activeReviewList[activeReviewIndex];
+  // Find real word in state vocab
+  const vocabWord = state.vocab.find(w => w.word.toLowerCase() === activeWord.word.toLowerCase());
+  
+  if (vocabWord) {
+    vocabWord.status = status;
+    vocabWord.lastReviewed = new Date().toISOString();
+    vocabWord.reviewCount = (vocabWord.reviewCount || 0) + 1;
+    saveState();
+  }
+  
+  showReviewCard(activeReviewIndex + 1);
+}
+
+// ==========================================
+// 📖 MODULE 3 & 4: HOMEWORK
+// ==========================================
+let currentHwType = 'reading'; // 'reading' or 'listening'
+
+function switchHwTab(typeTabId) {
+  currentHwType = typeTabId === 'hw-reading' ? 'reading' : 'listening';
+  
+  document.querySelectorAll('#homework-view .tab-btn').forEach(btn => {
+    if (btn.getAttribute('onclick').includes(typeTabId)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  renderHomeworkList();
+  
+  // Clear details pane initially
+  document.getElementById('hw-details-pane').innerHTML = `
+    <div style="text-align: center; color: var(--text-secondary); padding: 4rem 1rem;">
+      <h3>Chọn bài tập từ danh sách bên trái để bắt đầu làm bài</h3>
+    </div>
+  `;
+}
+
+function renderHomeworkList() {
+  const container = document.getElementById('hw-list-container');
+  container.innerHTML = '';
+  
+  const filteredList = state.homework.filter(h => h.type === currentHwType);
+  
+  if (filteredList.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; color: var(--text-secondary); padding: 2rem 0; font-size: 0.9rem;">
+        Chưa có bài tập nào được tạo
+      </div>
+    `;
+    return;
+  }
+  
+  filteredList.forEach(hw => {
+    const item = document.createElement('div');
+    item.className = 'hw-list-item';
+    item.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+        <span style="font-weight: 600; font-family: var(--font-display);">${hw.title}</span>
+        <span class="hw-status ${hw.status}">${hw.status === 'completed' ? 'Đã nộp' : 'Chưa làm'}</span>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+        <span>Số câu hỏi: ${hw.questionsCount}</span>
+        <span>${hw.dateLogged ? new Date(hw.dateLogged).toLocaleDateString('vi-VN') : ''}</span>
+      </div>
+    `;
+    item.onclick = () => loadHomeworkDetails(hw.id);
+    container.appendChild(item);
+  });
+}
+
+// Load Homework details into right pane
+let currentActiveHwId = null;
+
+function loadHomeworkDetails(hwId) {
+  currentActiveHwId = hwId;
+  const hw = state.homework.find(h => h.id === hwId);
+  if (!hw) return;
+  
+  // Highlight active
+  document.querySelectorAll('.hw-list-item').forEach(item => {
+    if (item.onclick.toString().includes(hwId)) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+  
+  const detailsPane = document.getElementById('hw-details-pane');
+  
+  let audioHtml = '';
+  if (hw.type === 'listening' && hw.source) {
+    audioHtml = `
+      <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1rem;">
+        <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Nguồn âm thanh:</h4>
+        <audio controls src="${hw.source}" style="width: 100%;"></audio>
+      </div>
+    `;
+  }
+  
+  let answersFormHtml = '';
+  for (let i = 1; i <= hw.questionsCount; i++) {
+    const studentAns = hw.studentAnswers ? hw.studentAnswers[i] || '' : '';
+    const correctAns = hw.answers ? hw.answers[i] || '' : '';
+    let validationClass = '';
+    
+    if (hw.status === 'completed') {
+      if (studentAns === correctAns) {
+        validationClass = 'style="border-color: var(--accent-success); background: var(--accent-success-glow);"';
+      } else {
+        validationClass = 'style="border-color: var(--accent-danger); background: var(--accent-danger-glow);"';
+      }
+    }
+    
+    answersFormHtml += `
+      <div class="answer-bubble-row" ${validationClass}>
+        <span style="font-weight:600; width: 40px;">Câu ${i}:</span>
+        <select class="answer-select hw-ans-input" data-q="${i}" ${hw.status === 'completed' ? 'disabled' : ''}>
+          <option value="">- Chọn -</option>
+          <option value="A" ${studentAns === 'A' ? 'selected' : ''}>A</option>
+          <option value="B" ${studentAns === 'B' ? 'selected' : ''}>B</option>
+          <option value="C" ${studentAns === 'C' ? 'selected' : ''}>C</option>
+          <option value="D" ${studentAns === 'D' ? 'selected' : ''}>D</option>
+        </select>
+        ${hw.status === 'completed' ? `<span style="font-size: 0.8rem; margin-left: auto; color: var(--accent-success); font-weight: 600;">Đáp án: ${correctAns}</span>` : ''}
+      </div>
+    `;
+  }
+
+  const rightColumnHtml = `
+    ${audioHtml}
+    <div class="glass-card" style="margin-bottom: 1.5rem;">
+      <h3 style="margin-bottom: 1rem; font-size: 1.1rem; display: flex; justify-content: space-between;">
+        <span>Phiếu điền đáp án</span>
+        ${hw.status === 'completed' ? `<span style="color: var(--accent-primary);">Độ chính xác: ${calculateHwAccuracy(hw)}%</span>` : ''}
+      </h3>
+      <div class="answer-grid">
+        ${answersFormHtml}
+      </div>
+      ${hw.status === 'pending' ? `
+        <button class="btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="submitHomeworkAnswers()">Nộp bài & Kiểm tra đáp án</button>
+      ` : ''}
+    </div>
+    
+    <!-- Quick Vocab Extractor inside Homework -->
+    <div class="glass-card">
+      <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--accent-primary);">⚡ Trích xuất từ vựng</h3>
+      <form onsubmit="extractWordFromHw(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="ext-word" class="form-control" placeholder="Từ vựng mới" required>
+          </div>
+          <div class="form-group">
+            <input type="text" id="ext-meaning" class="form-control" placeholder="Nghĩa dịch" required>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: -0.5rem; margin-bottom: 1rem;">
+          <input type="text" id="ext-example" class="form-control" placeholder="Ngữ cảnh / Câu ví dụ (Tự lấy khi bôi đen chữ)">
+        </div>
+        <button type="submit" class="btn-primary" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); width: 100%;">Thêm vào kho từ</button>
+      </form>
+    </div>
+  `;
+
+  if (hw.content) {
+    detailsPane.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <h2 style="font-family: var(--font-display);">${hw.title}</h2>
+        <span style="font-weight: 600; color: var(--accent-primary); font-size: 1.1rem;">${hw.part}</span>
+      </div>
+      <div class="hw-split-board" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem;">
+        <div>
+          <h4 style="margin-bottom: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Nội dung bài học / Passage</h4>
+          <div id="hw-passage-text" onmouseup="handlePassageTextSelection()" style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 16px; min-height: 280px; line-height: 1.6; font-size: 1rem; color: var(--text-primary); white-space: pre-wrap; max-height: 500px; overflow-y: auto;">${hw.content}</div>
+          <div style="margin-top: 1rem; background: var(--accent-primary-glow); border: 1px dashed var(--accent-primary); padding: 0.8rem; border-radius: 12px; font-size: 0.8rem; color: var(--text-primary); line-height: 1.4;">
+            💡 <strong>Mẹo hay:</strong> Bạn có thể dùng chuột bôi đen bất kỳ từ mới nào bên trong đoạn văn bản phía trên. Hệ thống sẽ tự động bắt từ vựng đó và trích xuất câu văn ngữ cảnh đưa vào khung lưu từ vựng bên phải!
+          </div>
+        </div>
+        <div>
+          ${rightColumnHtml}
+        </div>
+      </div>
+    `;
+  } else {
+    detailsPane.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <h2 style="font-family: var(--font-display);">${hw.title}</h2>
+        <span style="font-weight: 600; color: var(--accent-primary); font-size: 1.1rem;">${hw.part || ''}</span>
+      </div>
+      ${rightColumnHtml}
+    `;
+  }
+}
+
+function calculateHwAccuracy(hw) {
+  let correct = 0;
+  for (let i = 1; i <= hw.questionsCount; i++) {
+    if (hw.studentAnswers[i] === hw.answers[i]) {
+      correct++;
+    }
+  }
+  return Math.round((correct / hw.questionsCount) * 100);
+}
+
+// Add New Homework Log Form
+function openAddHwModal() {
+  document.getElementById('hw-modal-title').textContent = currentHwType === 'reading' ? 'Thêm bài tập Reading' : 'Thêm bài tập Listening';
+  document.getElementById('hw-audio-source-group').style.display = currentHwType === 'listening' ? 'block' : 'none';
+  
+  // Populate Part options
+  const partSelect = document.getElementById('hw-part');
+  partSelect.innerHTML = '';
+  if (currentHwType === 'reading') {
+    partSelect.innerHTML = `
+      <option value="Part 5">Part 5 - Điền từ vào câu</option>
+      <option value="Part 6">Part 6 - Điền từ vào đoạn văn</option>
+      <option value="Part 7">Part 7 - Đọc hiểu đoạn văn</option>
+    `;
+  } else {
+    partSelect.innerHTML = `
+      <option value="Part 1">Part 1 - Mô tả tranh</option>
+      <option value="Part 2">Part 2 - Hỏi đáp</option>
+      <option value="Part 3">Part 3 - Hội thoại</option>
+      <option value="Part 4">Part 4 - Bài nói ngắn</option>
+    `;
+  }
+
+  // Clear previous options
+  const container = document.getElementById('hw-modal-answers-input');
+  container.innerHTML = '';
+  generateHwModalAnswers(10);
+  
+  document.getElementById('add-hw-modal').style.display = 'flex';
+}
+
+function closeHwModal() {
+  document.getElementById('add-hw-modal').style.display = 'none';
+}
+
+function generateHwModalAnswers(count) {
+  const container = document.getElementById('hw-modal-answers-input');
+  container.innerHTML = '';
+  for (let i = 1; i <= count; i++) {
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.gap = '0.5rem';
+    div.innerHTML = `
+      <span style="font-size: 0.85rem;">Câu ${i}:</span>
+      <select class="answer-select hw-modal-ans-val" data-q="${i}">
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+    `;
+    container.appendChild(div);
+  }
+}
+
+// Trigger answer input fields generation based on questions count dropdown
+function onHwCountChange(val) {
+  generateHwModalAnswers(parseInt(val));
+}
+
+// Save homework
+function saveHomeworkLog(event) {
+  event.preventDefault();
+  const title = document.getElementById('hw-title').value.trim();
+  const qCount = parseInt(document.getElementById('hw-qcount').value);
+  const part = document.getElementById('hw-part').value;
+  const content = document.getElementById('hw-content').value.trim();
+  const audioSource = document.getElementById('hw-audio-source').value.trim();
+  
+  if (!title) {
+    alert("Vui lòng nhập tên bài tập!");
+    return;
+  }
+  
+  // Extract key answers
+  const answers = {};
+  document.querySelectorAll('.hw-modal-ans-val').forEach(select => {
+    answers[select.getAttribute('data-q')] = select.value;
+  });
+  
+  const newHw = {
+    id: 'hw_' + Date.now(),
+    title: title,
+    type: currentHwType,
+    part: part,
+    content: content,
+    source: audioSource,
+    status: 'pending',
+    questionsCount: qCount,
+    answers: answers,
+    studentAnswers: {},
+    dateLogged: new Date().toISOString()
+  };
+  
+  state.homework.unshift(newHw);
+  saveState();
+  closeHwModal();
+  document.getElementById('add-hw-form').reset();
+  // Clear OCR text container
+  document.getElementById('hw-content').value = '';
+  renderHomeworkList();
+  alert("Bài tập đã được lưu thành công!");
+}
+
+// Save answers when user submits homework
+function submitHomeworkAnswers() {
+  if (!currentActiveHwId) return;
+  const hw = state.homework.find(h => h.id === currentActiveHwId);
+  if (!hw) return;
+  
+  const studentAnswers = {};
+  let answeredAll = true;
+  
+  document.querySelectorAll('.hw-ans-input').forEach(select => {
+    const qNum = select.getAttribute('data-q');
+    studentAnswers[qNum] = select.value;
+    if (!select.value) answeredAll = false;
+  });
+  
+  if (!answeredAll) {
+    if (!confirm("Bạn chưa điền đầy đủ đáp án. Bạn vẫn muốn nộp bài?")) {
+      return;
+    }
+  }
+  
+  hw.studentAnswers = studentAnswers;
+  hw.status = 'completed';
+  
+  saveState();
+  loadHomeworkDetails(currentActiveHwId);
+  renderHomeworkList();
+  updateStreakForToday();
+}
+
+// Capture Vocab directly from homework details
+function extractWordFromHw(event) {
+  event.preventDefault();
+  const wordInput = document.getElementById('ext-word').value.trim();
+  const meaningInput = document.getElementById('ext-meaning').value.trim();
+  const exampleInput = document.getElementById('ext-example').value.trim();
+  const hw = state.homework.find(h => h.id === currentActiveHwId);
+  
+  if (!wordInput || !meaningInput) return;
+  
+  state.vocab.unshift({
+    word: wordInput,
+    type: 'noun',
+    pronunciation: '',
+    meaning: meaningInput,
+    definition: '',
+    example: exampleInput,
+    exampleMeaning: '',
+    topic: hw ? `Bài tập: ${hw.title} (${hw.part})` : 'Bài tập',
+    status: 'new',
+    lastReviewed: null,
+    reviewCount: 0
+  });
+  
+  saveState();
+  document.getElementById('ext-word').value = '';
+  document.getElementById('ext-meaning').value = '';
+  document.getElementById('ext-example').value = '';
+  alert(`Đã trích xuất từ "${wordInput}" thành công vào kho từ vựng cá nhân!`);
+}
+
+// ==========================================
+// 📝 MODULE 5: PRACTICE LOG & MOCK TEST
+// ==========================================
+
+function renderTestLogs() {
+  const tbody = document.getElementById('mock-logs-table');
+  tbody.innerHTML = '';
+  
+  if (state.tests.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">Chưa có lượt thi thử nào được ghi lại</td></tr>`;
+    return;
+  }
+  
+  state.tests.forEach(test => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${new Date(test.date).toLocaleDateString('vi-VN')}</td>
+      <td>${test.type === 'mock' ? 'Mock Test' : 'Luyện Part'}</td>
+      <td>${test.listeningScore || 0}</td>
+      <td>${test.readingScore || 0}</td>
+      <td style="font-weight: 700; color: var(--accent-primary);">${test.totalScore}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function saveTestLog(event) {
+  event.preventDefault();
+  const type = document.getElementById('log-type').value;
+  const listeningScore = parseInt(document.getElementById('log-listening').value) || 0;
+  const readingScore = parseInt(document.getElementById('log-reading').value) || 0;
+  
+  // Custom part scores check to detect weak areas
+  const partsScore = {};
+  for (let i = 1; i <= 7; i++) {
+    const val = document.getElementById(`part-${i}-score`).value;
+    if (val !== "") {
+      partsScore[`Part ${i}`] = parseInt(val);
+    }
+  }
+  
+  const newTest = {
+    id: 'test_' + Date.now(),
+    type: type,
+    listeningScore: listeningScore,
+    readingScore: readingScore,
+    totalScore: listeningScore + readingScore,
+    partsScore: partsScore,
+    date: new Date().toISOString()
+  };
+  
+  state.tests.unshift(newTest);
+  saveState();
+  document.getElementById('mock-test-form').reset();
+  renderTestLogs();
+  alert("Kết quả thi đã được ghi nhận!");
+}
+
+// ==========================================
+// 📊 MODULE 6: STATISTICS & ANALYSIS
+// ==========================================
+
+function renderStatisticsPage() {
+  const totalWords = state.vocab.length;
+  const masteredCount = state.vocab.filter(w => w.status === 'mastered').length;
+  const reviewingCount = state.vocab.filter(w => w.status === 'reviewing').length;
+  const learningCount = state.vocab.filter(w => w.status === 'learning').length;
+  const newCount = state.vocab.filter(w => w.status === 'new').length;
+  
+  // Visual stats bars
+  updateStatsBar('stats-mastered-bar', masteredCount, totalWords, 'stats-mastered-pct');
+  updateStatsBar('stats-reviewing-bar', reviewingCount, totalWords, 'stats-reviewing-pct');
+  updateStatsBar('stats-learning-bar', learningCount, totalWords, 'stats-learning-pct');
+  updateStatsBar('stats-new-bar', newCount, totalWords, 'stats-new-pct');
+  
+  // Target completion score
+  const goalDiff = document.getElementById('stats-goal-diff');
+  if (state.tests.length > 0) {
+    const highestScore = Math.max(...state.tests.map(t => t.totalScore));
+    document.getElementById('stats-current-score').textContent = highestScore;
+    const diff = state.toeicGoal - highestScore;
+    goalDiff.textContent = diff > 0 ? `Cần thêm ${diff} điểm để đạt mục tiêu` : `Đã đạt mục tiêu! 🎉`;
+  } else {
+    document.getElementById('stats-current-score').textContent = 'Chưa thi';
+    goalDiff.textContent = `Mục tiêu: ${state.toeicGoal} điểm`;
+  }
+  
+  // Average homework accuracies
+  const readingHw = state.homework.filter(h => h.type === 'reading' && h.status === 'completed');
+  const listeningHw = state.homework.filter(h => h.type === 'listening' && h.status === 'completed');
+  
+  const readingAvg = readingHw.length > 0 ? Math.round(readingHw.reduce((acc, h) => acc + calculateHwAccuracy(h), 0) / readingHw.length) : 0;
+  const listeningAvg = listeningHw.length > 0 ? Math.round(listeningHw.reduce((acc, h) => acc + calculateHwAccuracy(h), 0) / listeningHw.length) : 0;
+  
+  document.getElementById('stats-reading-avg').textContent = `${readingAvg}%`;
+  document.getElementById('stats-listening-avg').textContent = `${listeningAvg}%`;
+}
+
+function updateStatsBar(barId, val, total, textId) {
+  const percent = total > 0 ? Math.round((val / total) * 100) : 0;
+  document.getElementById(barId).style.width = `${percent}%`;
+  document.getElementById(textId).textContent = `${val} từ (${percent}%)`;
+}
+
+// ==========================================
+// 📸 OPTIONAL MODULE: OCR HANDOUT SCANNER
+// ==========================================
+
+function handleOCRImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const ocrStatus = document.getElementById('ocr-status');
+  const ocrProgress = document.getElementById('ocr-progress');
+  const textarea = document.getElementById('import-batch-area');
+
+  if (typeof Tesseract === 'undefined') {
+    alert("Thư viện Tesseract.js chưa được tải xong. Vui lòng kiểm tra kết nối mạng!");
+    return;
+  }
+
+  // Show progress indicator
+  ocrStatus.style.display = 'block';
+  ocrProgress.textContent = '0%';
+
+  const reader = new FileReader();
+  reader.onload = function() {
+    Tesseract.recognize(
+      reader.result,
+      'eng+vie', // Recognize both English and Vietnamese
+      {
+        logger: m => {
+          if (m.status === 'recognizing') {
+            ocrProgress.textContent = `${Math.round(m.progress * 100)}%`;
+          }
+        }
+      }
+    ).then(({ data: { text } }) => {
+      // Hide status indicator
+      ocrStatus.style.display = 'none';
+      
+      // Clean and format text
+      let cleanedText = text
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n');
+
+      textarea.value = (textarea.value ? textarea.value + '\n' : '') + cleanedText;
+      alert("Đã quét và trích xuất chữ thành công! Vui lòng kiểm tra lại nội dung trong ô văn bản bên dưới.");
+      // Clear input so same file can be uploaded again
+      input.value = '';
+    }).catch(err => {
+      console.error(err);
+      ocrStatus.style.display = 'none';
+      alert("Đã xảy ra lỗi trong quá trình quét ảnh: " + err.message);
+      input.value = '';
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
+
+// ==========================================
+// 🧩 MODULE: MATCH GAME (GHÉP THẺ)
+// ==========================================
+
+let matchTimerInterval = null;
+let matchStartTime = null;
+let selectedCards = [];
+let matchedPairsCount = 0;
+let totalPairsCount = 0;
+
+function resetMatchGameView() {
+  if (matchTimerInterval) clearInterval(matchTimerInterval);
+  document.getElementById('match-timer').textContent = 'Thời gian: 0.0s';
+  document.getElementById('match-start-screen').style.display = 'block';
+  document.getElementById('match-playground').style.display = 'none';
+  document.getElementById('match-success-screen').style.display = 'none';
+}
+
+function initMatchGame() {
+  if (state.vocab.length < 4) {
+    alert("Bạn cần tối thiểu 4 từ vựng trong kho từ để chơi game ghép thẻ!");
+    switchVocabTab('vocab-list');
+    return;
+  }
+
+  // Hide start and success screens, show playground
+  document.getElementById('match-start-screen').style.display = 'none';
+  document.getElementById('match-success-screen').style.display = 'none';
+  document.getElementById('match-playground').style.display = 'block';
+
+  // Select 6 random words (or fewer if database is small)
+  const gameWordsCount = Math.min(6, state.vocab.length);
+  const shuffledVocab = [...state.vocab].sort(() => 0.5 - Math.random());
+  const selectedWords = shuffledVocab.slice(0, gameWordsCount);
+
+  totalPairsCount = gameWordsCount;
+  matchedPairsCount = 0;
+  selectedCards = [];
+
+  // Generate cards (word card + meaning card)
+  const cards = [];
+  selectedWords.forEach(w => {
+    cards.push({ id: `word_${w.word}`, text: w.word, type: 'word', value: w.word });
+    cards.push({ id: `meaning_${w.word}`, text: w.meaning, type: 'meaning', value: w.word });
+  });
+
+  // Shuffle card deck
+  cards.sort(() => 0.5 - Math.random());
+
+  // Render cards
+  const grid = document.getElementById('match-cards-grid');
+  grid.innerHTML = '';
+  cards.forEach(card => {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'match-card';
+    cardDiv.id = card.id;
+    cardDiv.textContent = card.text;
+    cardDiv.onclick = () => selectMatchCard(cardDiv, card);
+    grid.appendChild(cardDiv);
+  });
+
+  // Start Timer
+  if (matchTimerInterval) clearInterval(matchTimerInterval);
+  matchStartTime = Date.now();
+  matchTimerInterval = setInterval(() => {
+    const elapsed = (Date.now() - matchStartTime) / 1000;
+    document.getElementById('match-timer').textContent = `Thời gian: ${elapsed.toFixed(1)}s`;
+  }, 100);
+}
+
+function selectMatchCard(cardDiv, cardData) {
+  // Prevent selecting already matched cards or double-selecting same card
+  if (cardDiv.classList.contains('correct') || cardDiv.classList.contains('selected')) return;
+
+  // Add selection state
+  cardDiv.classList.add('selected');
+  selectedCards.push({ element: cardDiv, data: cardData });
+
+  if (selectedCards.length === 2) {
+    const first = selectedCards[0];
+    const second = selectedCards[1];
+
+    // Prevent matching two cards of the same type (e.g. word with word)
+    if (first.data.type !== second.data.type && first.data.value === second.data.value) {
+      // Correct Match
+      setTimeout(() => {
+        first.element.className = 'match-card correct';
+        second.element.className = 'match-card correct';
+        matchedPairsCount++;
+
+        if (matchedPairsCount === totalPairsCount) {
+          endMatchGame();
+        }
+      }, 300);
+    } else {
+      // Incorrect Match
+      setTimeout(() => {
+        first.element.classList.add('wrong');
+        second.element.classList.add('wrong');
+        
+        setTimeout(() => {
+          first.element.classList.remove('selected', 'wrong');
+          second.element.classList.remove('selected', 'wrong');
+        }, 500);
+      }, 300);
+    }
+    // Clear selection buffer
+    selectedCards = [];
+  }
+}
+
+function endMatchGame() {
+  clearInterval(matchTimerInterval);
+  const elapsed = (Date.now() - matchStartTime) / 1000;
+  
+  document.getElementById('match-playground').style.display = 'none';
+  document.getElementById('match-success-screen').style.display = 'block';
+  document.getElementById('match-final-time').textContent = `${elapsed.toFixed(1)}s`;
+
+  updateStreakForToday();
+}
+
+
+// ==========================================
+// ✍️ MODULE: SPELL & WRITE MODE (LUYỆN GÕ)
+// ==========================================
+
+let spellList = [];
+let spellIndex = 0;
+
+function initSpellMode() {
+  // Gather words
+  spellList = [...state.vocab].sort(() => 0.5 - Math.random());
+  
+  if (spellList.length === 0) {
+    alert("Hãy thêm từ vựng vào kho từ trước khi chơi chế độ luyện gõ!");
+    switchVocabTab('vocab-list');
+    return;
+  }
+
+  document.getElementById('spell-playground').style.display = 'block';
+  document.getElementById('spell-success-screen').style.display = 'none';
+  
+  spellIndex = 0;
+  showSpellWord(0);
+}
+
+function showSpellWord(index) {
+  if (index >= spellList.length) {
+    document.getElementById('spell-playground').style.display = 'none';
+    document.getElementById('spell-success-screen').style.display = 'block';
+    updateStreakForToday();
+    return;
+  }
+
+  spellIndex = index;
+  const wordData = spellList[index];
+  
+  document.getElementById('spell-progress').textContent = `${index + 1}/${spellList.length}`;
+  
+  let hintText = wordData.meaning;
+  if (wordData.example) {
+    // Replace case-insensitive matching word in example sentence with blank lines
+    const regex = new RegExp(`\\b${wordData.word}\\b`, 'gi');
+    const clozeSentence = wordData.example.replace(regex, '______');
+    hintText = `${wordData.meaning}<br><br><span style="font-size: 0.95rem; font-weight: normal; color: var(--text-secondary); display: block; padding-top: 0.8rem; border-top: 1px dashed var(--border-color); font-style: italic;">Ngữ cảnh: "${clozeSentence}"</span>`;
+  }
+  
+  document.getElementById('spell-hint-meaning').innerHTML = hintText;
+  document.getElementById('spell-hint-type').textContent = `(${wordData.type})`;
+  
+  const input = document.getElementById('spell-user-input');
+  input.value = '';
+  input.disabled = false;
+  input.focus();
+  
+  const feedback = document.getElementById('spell-feedback-msg');
+  feedback.textContent = '';
+  feedback.style.color = '';
+}
+
+function checkSpellAnswer() {
+  const input = document.getElementById('spell-user-input');
+  const answer = input.value.trim().toLowerCase();
+  const correctAnswer = spellList[spellIndex].word.trim().toLowerCase();
+  const feedback = document.getElementById('spell-feedback-msg');
+  
+  if (!answer) return;
+  
+  input.disabled = true;
+  
+  if (answer === correctAnswer) {
+    feedback.textContent = "✓ Chính xác!";
+    feedback.style.color = "var(--accent-success)";
+    
+    // Auto load next word
+    setTimeout(() => {
+      showSpellWord(spellIndex + 1);
+    }, 1200);
+  } else {
+    feedback.innerHTML = `✗ Sai rồi! Đáp án đúng: <strong style="color: var(--accent-success);">${spellList[spellIndex].word}</strong>`;
+    feedback.style.color = "var(--accent-danger)";
+    
+    // Delay load next word
+    setTimeout(() => {
+      showSpellWord(spellIndex + 1);
+    }, 2500);
+  }
+}
+
+function handleSpellKeyPress(event) {
+  if (event.key === 'Enter') {
+    checkSpellAnswer();
+  }
+}
+
+// Handout OCR Scanner
+function handleHwOCRUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const ocrStatus = document.getElementById('hw-ocr-status');
+  const ocrProgress = document.getElementById('hw-ocr-progress');
+  const textarea = document.getElementById('hw-content');
+
+  if (typeof Tesseract === 'undefined') {
+    alert("Thư viện Tesseract.js chưa được tải xong. Vui lòng kiểm tra kết nối mạng!");
+    return;
+  }
+
+  // Show progress indicator
+  ocrStatus.style.display = 'block';
+  ocrProgress.textContent = '0%';
+
+  const reader = new FileReader();
+  reader.onload = function() {
+    Tesseract.recognize(
+      reader.result,
+      'eng+vie',
+      {
+        logger: m => {
+          if (m.status === 'recognizing') {
+            ocrProgress.textContent = `${Math.round(m.progress * 100)}%`;
+          }
+        }
+      }
+    ).then(({ data: { text } }) => {
+      ocrStatus.style.display = 'none';
+      
+      let cleanedText = text
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n');
+
+      textarea.value = (textarea.value ? textarea.value + '\n' : '') + cleanedText;
+      alert("Đã quét và trích xuất nội dung tờ đề bài thành công!");
+      input.value = '';
+    }).catch(err => {
+      console.error(err);
+      ocrStatus.style.display = 'none';
+      alert("Đã xảy ra lỗi trong quá trình quét ảnh: " + err.message);
+      input.value = '';
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
+
+// Selection extractor
+function handlePassageTextSelection() {
+  const selection = window.getSelection();
+  const selectedText = selection.toString().trim();
+  if (selectedText.length < 2 || selectedText.split(/\s+/).length > 4) return; // Ignore single letters or long paragraphs
+
+  const fullText = selection.anchorNode.textContent;
+  
+  // Find sentence containing the selected word
+  let sentence = "";
+  const sentences = fullText.match(/[^.!?]+[.!?]+/g) || [fullText];
+  for (let s of sentences) {
+    if (s.toLowerCase().includes(selectedText.toLowerCase())) {
+      sentence = s.trim();
+      break;
+    }
+  }
+  
+  if (!sentence) sentence = selectedText;
+
+  const extWordInput = document.getElementById('ext-word');
+  if (extWordInput) {
+    extWordInput.value = selectedText;
+    
+    // Auto-fill example sentence context
+    const extExample = document.getElementById('ext-example');
+    if (extExample) {
+      extExample.value = sentence;
+    }
+    
+    // Highlight inputs
+    extWordInput.style.borderColor = 'var(--accent-success)';
+    setTimeout(() => { extWordInput.style.borderColor = ''; }, 1000);
+    
+    if (extExample) {
+      extExample.style.borderColor = 'var(--accent-success)';
+      setTimeout(() => { extExample.style.borderColor = ''; }, 1000);
+    }
+  }
+}
+
+// ==========================================
+// 🎙️ MODULE: SPEECH GRADER (CHẤM ĐIỂM PHÁT ÂM)
+// ==========================================
+
+let speechRecognition = null;
+let speechIsListening = false;
+
+function startSpeechRecognition(event) {
+  if (event) event.stopPropagation(); // Avoid card flipping
+  
+  const targetWord = activeReviewList[activeReviewIndex]?.word;
+  if (!targetWord) return;
+
+  const resultDiv = document.getElementById('speech-grading-result');
+  const micBtn = document.getElementById('btn-mic');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Web Speech API). Hãy dùng Google Chrome hoặc Microsoft Edge!");
+    return;
+  }
+
+  if (speechIsListening) {
+    speechRecognition.stop();
+    return;
+  }
+
+  speechRecognition = new SpeechRecognition();
+  speechRecognition.lang = 'en-US';
+  speechRecognition.interimResults = false;
+  speechRecognition.maxAlternatives = 1;
+
+  speechRecognition.onstart = () => {
+    speechIsListening = true;
+    micBtn.style.background = 'var(--accent-danger)';
+    micBtn.style.borderColor = 'var(--accent-danger)';
+    micBtn.textContent = '🎙️';
+    resultDiv.textContent = '🎙️ Đang nghe... Hãy phát âm từ vựng!';
+    resultDiv.style.color = 'var(--accent-warning)';
+  };
+
+  speechRecognition.onresult = (e) => {
+    const speechResult = e.results[0][0].transcript.trim().toLowerCase();
+    const cleanTarget = targetWord.trim().toLowerCase();
+    
+    // Calculate match percentage
+    const accuracy = calculateWordSimilarity(speechResult, cleanTarget);
+    
+    resultDiv.innerHTML = `Bạn đã đọc: "<strong>${speechResult}</strong>"<br>Độ chính xác: <strong style="font-size: 1.1rem; color: ${accuracy >= 80 ? 'var(--accent-success)' : 'var(--accent-danger)'};">${accuracy}%</strong>`;
+  };
+
+  speechRecognition.onerror = (e) => {
+    console.error(e);
+    resultDiv.textContent = '❌ Không nghe thấy giọng nói hoặc có lỗi xảy ra.';
+    resultDiv.style.color = 'var(--accent-danger)';
+    resetMicButtonState();
+  };
+
+  speechRecognition.onend = () => {
+    resetMicButtonState();
+  };
+
+  speechRecognition.start();
+}
+
+function resetMicButtonState() {
+  speechIsListening = false;
+  const micBtn = document.getElementById('btn-mic');
+  if (micBtn) {
+    micBtn.style.background = 'var(--bg-tertiary)';
+    micBtn.style.borderColor = 'var(--border-color)';
+    micBtn.textContent = '🎤';
+  }
+}
+
+// String similarity calculator
+function calculateWordSimilarity(s1, s2) {
+  s1 = s1.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
+  s2 = s2.replace(/[^a-zA-Z0-9\s]/g, '').trim().toLowerCase();
+  
+  if (s1 === s2) return 100;
+  if (s1.length === 0 || s2.length === 0) return 0;
+  
+  // Clean plural/singular match boost
+  if (s1.includes(s2) || s2.includes(s1)) {
+    const ratio = Math.min(s1.length, s2.length) / Math.max(s1.length, s2.length);
+    if (ratio > 0.7) return Math.round(ratio * 100);
+  }
+
+  const costs = [];
+  for (let i = 0; i <= s1.length; i++) {
+    let lastValue = i;
+    for (let j = 0; j <= s2.length; j++) {
+      if (i === 0) {
+        costs[j] = j;
+      } else {
+        if (j > 0) {
+          let newValue = costs[j - 1];
+          if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+          }
+          costs[j - 1] = lastValue;
+          lastValue = newValue;
+        }
+      }
+    }
+    if (i > 0) costs[s2.length] = lastValue;
+  }
+  
+  const distance = costs[s2.length];
+  const maxLength = Math.max(s1.length, s2.length);
+  const similarity = (maxLength - distance) / maxLength;
+  return Math.round(similarity * 100);
+}
+
+// ==========================================
+// 🔍 MODULE: AUTO-LOOKUP DICTIONARY
+// ==========================================
+
+async function lookupWordDetails() {
+  const wordInput = document.getElementById('add-vocab-word');
+  const word = wordInput.value.trim();
+  const statusSpan = document.getElementById('lookup-status');
+  
+  if (!word) {
+    alert("Vui lòng nhập từ vựng trước khi tra cứu!");
+    return;
+  }
+  
+  statusSpan.style.display = 'block';
+  statusSpan.textContent = '🔄 Đang tra cứu dữ liệu...';
+  statusSpan.style.color = 'var(--accent-warning)';
+  
+  // Step 1: Check offline seed database
+  let foundInSeed = false;
+  if (typeof toeicVocabulary !== 'undefined') {
+    for (const catKey of Object.keys(toeicVocabulary)) {
+      const matchWord = toeicVocabulary[catKey].words.find(w => w.word.toLowerCase() === word.toLowerCase());
+      if (matchWord) {
+        document.getElementById('add-vocab-type').value = matchWord.type || 'noun';
+        document.getElementById('add-vocab-pronunciation').value = matchWord.pronunciation || '';
+        document.getElementById('add-vocab-meaning').value = matchWord.meaning || '';
+        document.getElementById('add-vocab-example').value = matchWord.example || '';
+        document.getElementById('add-vocab-topic').value = toeicVocabulary[catKey].title || '';
+        
+        statusSpan.textContent = '✨ Tra cứu thành công (Từ kho dữ liệu TOEIC)!';
+        statusSpan.style.color = 'var(--accent-success)';
+        foundInSeed = true;
+        break;
+      }
+    }
+  }
+  
+  if (foundInSeed) {
+    setTimeout(() => { statusSpan.style.display = 'none'; }, 2000);
+    return;
+  }
+  
+  // Step 2: Call online APIs
+  try {
+    const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    let pronunciation = '';
+    let type = 'noun';
+    let example = '';
+    
+    if (dictResponse.ok) {
+      const dictData = await dictResponse.json();
+      const entry = dictData[0];
+      pronunciation = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
+      
+      if (entry.meanings && entry.meanings.length > 0) {
+        const meaning = entry.meanings[0];
+        type = meaning.partOfSpeech || 'noun';
+        if (meaning.definitions && meaning.definitions.length > 0) {
+          example = meaning.definitions.find(d => d.example)?.example || '';
+        }
+      }
+    }
+    
+    const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
+    let translatedMeaning = '';
+    if (translateResponse.ok) {
+      const translateData = await translateResponse.json();
+      translatedMeaning = translateData.responseData.translatedText || '';
+      if (translatedMeaning.toLowerCase().includes('mymemory')) {
+        translatedMeaning = '';
+      }
+    }
+    
+    document.getElementById('add-vocab-type').value = type;
+    document.getElementById('add-vocab-pronunciation').value = pronunciation;
+    document.getElementById('add-vocab-meaning').value = translatedMeaning;
+    document.getElementById('add-vocab-example').value = example;
+    document.getElementById('add-vocab-topic').value = 'Cá nhân';
+    
+    statusSpan.textContent = '✨ Tra cứu online thành công!';
+    statusSpan.style.color = 'var(--accent-success)';
+    
+  } catch (error) {
+    console.error(error);
+    statusSpan.textContent = '❌ Lỗi tra cứu online. Hãy tự điền thủ công.';
+    statusSpan.style.color = 'var(--accent-danger)';
+  }
+  
+  setTimeout(() => { statusSpan.style.display = 'none'; }, 3000);
+}
