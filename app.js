@@ -1980,14 +1980,21 @@ function startSpeechRecognition(event) {
     });
 }
 
+// Global interim speech storage
+let latestTranscript = '';
+let latestConfidence = 0.85;
+
 function startSpeechAPIEngine(targetWord, phonetic) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
   
   speechRecognition = new SpeechRecognition();
   speechRecognition.lang = 'en-US';
-  speechRecognition.interimResults = false;
+  speechRecognition.interimResults = true; // Capture speech continuously!
   speechRecognition.maxAlternatives = 1;
+
+  latestTranscript = '';
+  latestConfidence = 0.85;
 
   if (SpeechGrammarList) {
     try {
@@ -2005,32 +2012,43 @@ function startSpeechAPIEngine(targetWord, phonetic) {
   };
 
   speechRecognition.onresult = (e) => {
-    const speechResult = e.results[0][0].transcript.trim().toLowerCase();
-    const confidence = e.results[0][0].confidence || 0.85;
+    let interimTranscript = '';
+    for (let i = e.resultIndex; i < e.results.length; ++i) {
+      const resultText = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        latestTranscript = resultText.trim().toLowerCase();
+        latestConfidence = e.results[i][0].confidence || 0.85;
+      } else {
+        interimTranscript += resultText;
+      }
+    }
     
-    stopMicTracks();
-
-    const grading = analyzeAudioSpeechFeatures(speechResult, targetWord, phonetic, volumeHistory, frequencyHistory, confidence);
-    showGradingResultsInModal(grading, targetWord, phonetic, speechResult);
+    // Fallback: if we only have interim transcript, keep updating it so manual submit works
+    if (!latestTranscript && interimTranscript) {
+      latestTranscript = interimTranscript.trim().toLowerCase();
+    }
   };
 
   speechRecognition.onerror = (e) => {
     console.error(e);
-    stopMicTracks();
-    const mockGrading = {
-      overall: 0,
-      confidence: 0,
-      audioQuality: 50,
-      phonemeAccuracy: 0,
-      wordAccuracy: 0,
-      fluency: 0,
-      stress: 0,
-      intonation: 0,
-      rhythm: 0,
-      phonemes: [],
-      feedback: [{ type: 'error', text: 'Không phát hiện giọng nói rõ ràng. Hãy thử nói lại!' }]
-    };
-    showGradingResultsInModal(mockGrading, targetWord, phonetic, "");
+    // Only stop and fail if it's not a harmless 'no-speech' error during active recording
+    if (e.error !== 'no-speech') {
+      stopMicTracks();
+      const mockGrading = {
+        overall: 0,
+        confidence: 0,
+        audioQuality: 50,
+        phonemeAccuracy: 0,
+        wordAccuracy: 0,
+        fluency: 0,
+        stress: 0,
+        intonation: 0,
+        rhythm: 0,
+        phonemes: [],
+        feedback: [{ type: 'error', text: 'Không phát hiện giọng nói rõ ràng. Hãy thử nói lại!' }]
+      };
+      showGradingResultsInModal(mockGrading, targetWord, phonetic, "");
+    }
   };
 
   speechRecognition.onend = () => {
@@ -2090,14 +2108,14 @@ function closeSpeechModal() {
 }
 
 function submitSpeechRecognition() {
-  if (speechRecognition && speechIsListening) {
-    try {
-      speechRecognition.stop();
-    } catch (e) {
-      stopMicTracks();
-    }
+  stopMicTracks();
+  
+  const finalSpeechResult = latestTranscript.trim().toLowerCase();
+  
+  if (finalSpeechResult) {
+    const grading = analyzeAudioSpeechFeatures(finalSpeechResult, lastTargetWord, lastPhonetic, volumeHistory, frequencyHistory, latestConfidence);
+    showGradingResultsInModal(grading, lastTargetWord, lastPhonetic, finalSpeechResult);
   } else {
-    stopMicTracks();
     // Force grading with empty string if user clicked submit without speaking
     const mockGrading = {
       overall: 0,
