@@ -1429,10 +1429,14 @@ function startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn) {
 
   // Optimize speech decoder for the exact target word
   if (SpeechGrammarList) {
-    const speechGrammarList = new SpeechGrammarList();
-    const grammar = '#JSGF V1.0; grammar words; public <word> = ' + targetWord.replace(/[-]/g, ' ') + ' ;';
-    speechGrammarList.addFromString(grammar, 1);
-    speechRecognition.grammars = speechGrammarList;
+    try {
+      const speechGrammarList = new SpeechGrammarList();
+      const grammar = '#JSGF V1.0; grammar words; public <word> = ' + targetWord.replace(/[-]/g, ' ') + ' ;';
+      speechGrammarList.addFromString(grammar, 1);
+      speechRecognition.grammars = speechGrammarList;
+    } catch (e) {
+      console.warn("SpeechGrammarList configuration is ignored due to browser constraints:", e);
+    }
   }
 
   speechRecognition.onstart = () => {
