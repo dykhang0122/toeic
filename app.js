@@ -624,6 +624,7 @@ function editVocabWord(index, event) {
   document.getElementById('add-vocab-type').value = wordData.type;
   document.getElementById('add-vocab-pronunciation').value = wordData.pronunciation || '';
   document.getElementById('add-vocab-example').value = wordData.example || '';
+  document.getElementById('add-vocab-example-meaning').value = wordData.exampleMeaning || '';
   
   const topicSelect = document.getElementById('add-vocab-topic-select');
   const topicInput = document.getElementById('add-vocab-topic');
@@ -661,6 +662,7 @@ async function saveSingleWord(event) {
   let typeInput = document.getElementById('add-vocab-type').value;
   let pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
   let exampleInput = document.getElementById('add-vocab-example').value.trim();
+  let exampleMeaningInput = document.getElementById('add-vocab-example-meaning').value.trim();
   
   const topicSelect = document.getElementById('add-vocab-topic-select').value;
   let topicInput = topicSelect === 'custom' ? document.getElementById('add-vocab-topic').value.trim() : topicSelect;
@@ -682,13 +684,12 @@ async function saveSingleWord(event) {
   saveBtn.textContent = '🔄 Đang lưu dữ liệu...';
 
   // Auto lookup if fields are empty
-  let exampleMeaningInput = '';
   if (!pronunciationInput || !meaningInput || !exampleInput || topicInput === 'Cá nhân') {
     const info = await getWordDetailsAuto(wordInput);
     if (!pronunciationInput) pronunciationInput = info.pronunciation;
     if (!meaningInput) meaningInput = info.meaning || meaningInput;
     if (!exampleInput) exampleInput = info.example;
-    exampleMeaningInput = info.exampleMeaning || '';
+    if (!exampleMeaningInput) exampleMeaningInput = info.exampleMeaning || '';
     if (topicInput === 'Cá nhân' && info.topic !== 'Cá nhân') topicInput = info.topic;
     if (typeInput === 'noun' && info.type !== 'noun') typeInput = info.type;
   }
@@ -2450,78 +2451,39 @@ async function lookupWordDetails() {
   statusSpan.textContent = '🔄 Đang tra cứu dữ liệu...';
   statusSpan.style.color = 'var(--accent-warning)';
   
-  // Step 1: Check offline seed database
-  let foundInSeed = false;
-  if (typeof toeicVocabulary !== 'undefined') {
-    for (const catKey of Object.keys(toeicVocabulary)) {
-      const matchWord = toeicVocabulary[catKey].words.find(w => w.word.toLowerCase() === word.toLowerCase());
-      if (matchWord) {
-        document.getElementById('add-vocab-type').value = matchWord.type || 'noun';
-        document.getElementById('add-vocab-pronunciation').value = matchWord.pronunciation || '';
-        document.getElementById('add-vocab-meaning').value = matchWord.meaning || '';
-        document.getElementById('add-vocab-example').value = matchWord.example || '';
-        document.getElementById('add-vocab-topic').value = toeicVocabulary[catKey].title || '';
-        
-        statusSpan.textContent = '✨ Tra cứu thành công (Từ kho dữ liệu TOEIC)!';
-        statusSpan.style.color = 'var(--accent-success)';
-        foundInSeed = true;
-        break;
-      }
-    }
-  }
-  
-  if (foundInSeed) {
-    setTimeout(() => { statusSpan.style.display = 'none'; }, 2000);
-    return;
-  }
-  
-  // Step 2: Call online APIs
   try {
-    const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
-    let pronunciation = '';
-    let type = 'noun';
-    let example = '';
+    const info = await getWordDetailsAuto(word);
     
-    if (dictResponse.ok) {
-      const dictData = await dictResponse.json();
-      const entry = dictData[0];
-      pronunciation = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
-      
-      if (entry.meanings && entry.meanings.length > 0) {
-        const meaning = entry.meanings[0];
-        type = meaning.partOfSpeech || 'noun';
-        if (meaning.definitions && meaning.definitions.length > 0) {
-          example = meaning.definitions.find(d => d.example)?.example || '';
-        }
+    document.getElementById('add-vocab-type').value = info.type;
+    document.getElementById('add-vocab-pronunciation').value = info.pronunciation || '';
+    document.getElementById('add-vocab-meaning').value = info.meaning || '';
+    document.getElementById('add-vocab-example').value = info.example || '';
+    document.getElementById('add-vocab-example-meaning').value = info.exampleMeaning || '';
+    
+    // Select topic in dropdown
+    const topicSelect = document.getElementById('add-vocab-topic-select');
+    const topicInput = document.getElementById('add-vocab-topic');
+    if (topicSelect && topicInput) {
+      const exists = Array.from(topicSelect.options).some(opt => opt.value === info.topic);
+      if (exists) {
+        topicSelect.value = info.topic;
+        topicInput.style.display = 'none';
+      } else {
+        topicSelect.value = 'custom';
+        topicInput.value = info.topic;
+        topicInput.style.display = 'block';
       }
     }
     
-    const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
-    let translatedMeaning = '';
-    if (translateResponse.ok) {
-      const translateData = await translateResponse.json();
-      translatedMeaning = translateData.responseData.translatedText || '';
-      if (translatedMeaning.toLowerCase().includes('mymemory')) {
-        translatedMeaning = '';
-      }
-    }
-    
-    document.getElementById('add-vocab-type').value = type;
-    document.getElementById('add-vocab-pronunciation').value = pronunciation;
-    document.getElementById('add-vocab-meaning').value = translatedMeaning;
-    document.getElementById('add-vocab-example').value = example;
-    document.getElementById('add-vocab-topic').value = 'Cá nhân';
-    
-    statusSpan.textContent = '✨ Tra cứu online thành công!';
+    statusSpan.textContent = '✨ Tra cứu thành công!';
     statusSpan.style.color = 'var(--accent-success)';
-    
   } catch (error) {
     console.error(error);
     statusSpan.textContent = '❌ Lỗi tra cứu online. Hãy tự điền thủ công.';
     statusSpan.style.color = 'var(--accent-danger)';
   }
   
-  setTimeout(() => { statusSpan.style.display = 'none'; }, 3000);
+  setTimeout(() => { statusSpan.style.display = 'none'; }, 2000);
 }
 
 // Keyboard Shortcuts for Flashcards
