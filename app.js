@@ -405,34 +405,60 @@ function generateTemplateExample(wordOrPhrase, type) {
   const clean = wordOrPhrase.trim();
   const lower = clean.toLowerCase();
   
+  // Calculate a deterministic index based on the word character codes
+  let charSum = 0;
+  for (let i = 0; i < clean.length; i++) {
+    charSum += clean.charCodeAt(i);
+  }
+
   if (type === 'verb') {
     const templates = [
-      `The board of directors decided to ${lower} the new operational guidelines to improve corporate efficiency.`,
-      `We had to ${lower} the scheduled seminar due to unexpected conflicts in the manager's itinerary.`,
-      `The department supervisor requested all team members to ${lower} the requirements before submitting the proposal.`
+      `The executive committee plans to ${lower} the proposed budget during tomorrow's financial conference.`,
+      `The department supervisor requested all staff members to ${lower} the project files before the deadline.`,
+      `We had to ${lower} the scheduled seminar due to unexpected conflicts in the coordinator's itinerary.`,
+      `To improve workplace productivity, the manager decided to ${lower} a new operational strategy.`,
+      `The technical team will ${lower} the database systems during the scheduled server maintenance.`,
+      `The regional office strives to ${lower} customer satisfaction by offering premium services.`,
+      `Please do not hesitate to ${lower} our client relation representatives if you have any questions.`,
+      `The board of directors authorized the firm to ${lower} the partnership agreement next month.`
     ];
-    return templates[clean.length % templates.length];
+    return templates[charSum % templates.length];
   } else if (type === 'adjective') {
     const templates = [
-      `The marketing campaign proved highly ${lower}, leading to a substantial increase in our quarterly revenue.`,
-      `All employees are eligible for ${lower} training sessions organized by the human resources department.`,
-      `The executive auditor provided a ${lower} report regarding the company's current financial status.`
+      `The newly launched marketing campaign proved highly ${lower}, leading to a substantial increase in quarterly sales.`,
+      `All staff members are eligible for ${lower} training programs organized by the human resources department.`,
+      `The executive auditor provided a ${lower} report regarding the company's current financial status.`,
+      `The manager expressed his appreciation for the team's ${lower} contributions to the development project.`,
+      `Please ensure that you have all the ${lower} documents ready before meeting the foreign delegation.`,
+      `The supervisor was pleased with the ${lower} feedback received from our regular corporate clients.`,
+      `The board is seeking a ${lower} candidate who possesses excellent communication and negotiation skills.`,
+      `Due to the ${lower} nature of the contract, all details must remain strictly confidential.`
     ];
-    return templates[clean.length % templates.length];
+    return templates[charSum % templates.length];
   } else if (type === 'adverb') {
     const templates = [
-      `The administrative staff handled the client's complicated inquiries ${lower} and professionally.`,
-      `The corporate guidelines will be updated ${lower} to comply with the new international trade regulations.`,
-      `Our technical support team resolved the system network issues ${lower} during the scheduled maintenance.`
+      `The administrative assistant handled the client's complicated billing inquiries ${lower} and professionally.`,
+      `The corporate guidelines will be revised ${lower} to comply with new international trade regulations.`,
+      `Our technical support team resolved the server connection issues ${lower} during the lunch break.`,
+      `The new production facility operates ${lower}, resulting in significantly reduced manufacturing costs.`,
+      `The market analyst predicted that the company's stock value would rise ${lower} next quarter.`,
+      `Please read the instructions ${lower} before operating the printing machinery.`,
+      `The marketing team ${lower} completed the promotional flyer design for the upcoming summer sale.`,
+      `We must plan our budget ${lower} to avoid any financial deficits in the next fiscal year.`
     ];
-    return templates[clean.length % templates.length];
+    return templates[charSum % templates.length];
   } else { // noun or default
     const templates = [
-      `The company will issue a full refund if there is any discrepancy in the final ${lower}.`,
+      `The company will issue a full refund if there is any major discrepancy in the final ${lower} details.`,
       `All qualified candidates must submit their application documents to be considered for the ${lower}.`,
-      `The facility manager announced a new safety policy regarding the usage of the office ${lower}.`
+      `The facility manager announced a new safety policy regarding the usage of the office ${lower}.`,
+      `The board of directors approved the recent ${lower} to expand our presence in the international market.`,
+      `Please review the attached ${lower} to confirm your scheduled presentation time at the annual conference.`,
+      `The facility supervisor issued a strict warning concerning the proper maintenance of the laboratory ${lower}.`,
+      `The corporate attorney is currently drafting the official ${lower} for the joint venture.`,
+      `Employees must wear their identification badges at all times when entering the corporate ${lower}.`
     ];
-    return templates[clean.length % templates.length];
+    return templates[charSum % templates.length];
   }
 }
 
