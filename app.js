@@ -458,6 +458,23 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
 
   // Step 2: Call online APIs
   try {
+    // Fetch translation first to help align part of speech
+    let translatedMeaning = '';
+    try {
+      const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
+      if (translateResponse.ok) {
+        const translateData = await translateResponse.json();
+        translatedMeaning = translateData.responseData.translatedText || '';
+        if (translatedMeaning.toLowerCase().includes('mymemory')) {
+          translatedMeaning = '';
+        }
+      }
+    } catch (e) {
+      console.warn("MyMemory translation error:", e);
+    }
+    result.meaning = translatedMeaning;
+
+    // Fetch dictionary details
     const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
     if (dictResponse.ok) {
       const dictData = await dictResponse.json();
@@ -465,20 +482,32 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
       result.pronunciation = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
       
       if (entry.meanings && entry.meanings.length > 0) {
-        const meaning = entry.meanings[0];
-        result.type = meaning.partOfSpeech || defaultType;
-        if (meaning.definitions && meaning.definitions.length > 0) {
-          result.example = meaning.definitions.find(d => d.example)?.example || '';
+        // Simple helper to detect action keywords in Vietnamese meaning
+        const detectVietnamesePOS = (text) => {
+          if (!text) return null;
+          const lower = text.toLowerCase();
+          const verbKeywords = ['cầm', 'nắm', 'giữ', 'lấy', 'làm', 'chạy', 'tạo', 'đi', 'đến', 'hợp tác', 'giao', 'hoãn', 'sáp nhập', 'trang trí', 'thi hành', 'thực hiện', 'phê duyệt', 'đàm phán', 'thương lượng', 'tăng', 'giảm', 'hoàn tiền', 'mua', 'bán', 'chấm dứt', 'hủy', 'đăng ký', 'yêu cầu', 'kiểm tra', 'đi dạo', 'lát', 'xếp', 'điều chỉnh'];
+          for (const kw of verbKeywords) {
+            if (lower.includes(kw)) return 'verb';
+          }
+          return null;
+        };
+
+        const detectedPos = detectVietnamesePOS(translatedMeaning);
+        let selectedMeaning = entry.meanings[0];
+
+        // If Vietnamese translation points to a verb and a verb definition exists, use it!
+        if (detectedPos) {
+          const matchMeaning = entry.meanings.find(m => m.partOfSpeech === detectedPos);
+          if (matchMeaning) {
+            selectedMeaning = matchMeaning;
+          }
         }
-      }
-    }
-    
-    const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
-    if (translateResponse.ok) {
-      const translateData = await translateResponse.json();
-      let translatedMeaning = translateData.responseData.translatedText || '';
-      if (translatedMeaning && !translatedMeaning.toLowerCase().includes('mymemory')) {
-        result.meaning = translatedMeaning;
+
+        result.type = selectedMeaning.partOfSpeech || defaultType;
+        if (selectedMeaning.definitions && selectedMeaning.definitions.length > 0) {
+          result.example = selectedMeaning.definitions.find(d => d.example)?.example || '';
+        }
       }
     }
   } catch (error) {
