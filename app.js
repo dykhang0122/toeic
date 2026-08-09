@@ -490,7 +490,16 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
         const detectVietnamesePOS = (text) => {
           if (!text) return null;
           const lower = text.toLowerCase();
-          const verbKeywords = ['cầm', 'nắm', 'giữ', 'lấy', 'làm', 'chạy', 'tạo', 'đi', 'đến', 'hợp tác', 'giao', 'hoãn', 'sáp nhập', 'trang trí', 'thi hành', 'thực hiện', 'phê duyệt', 'đàm phán', 'thương lượng', 'tăng', 'giảm', 'hoàn tiền', 'mua', 'bán', 'chấm dứt', 'hủy', 'đăng ký', 'yêu cầu', 'kiểm tra', 'đi dạo', 'lát', 'xếp', 'điều chỉnh'];
+          const verbKeywords = [
+            'cầm', 'nắm', 'giữ', 'lấy', 'làm', 'chạy', 'tạo', 'đi', 'đến', 'hợp tác', 'giao', 'hoãn',
+            'sáp nhập', 'trang trí', 'thi hành', 'thực hiện', 'phê duyệt', 'đàm phán', 'thương lượng',
+            'tăng', 'giảm', 'hoàn tiền', 'mua', 'bán', 'chấm dứt', 'hủy', 'đăng ký', 'yêu cầu', 'kiểm tra',
+            'đi dạo', 'lát', 'xếp', 'điều chỉnh', 'tìm', 'kiếm', 'theo đuổi', 'đáp ứng', 'giúp', 'hỗ trợ',
+            'gửi', 'nhận', 'trả', 'đặt', 'ký', 'kí', 'nhập', 'xuất', 'báo cáo', 'thông báo', 'quản lý',
+            'tổ chức', 'vận hành', 'hoạt động', 'áp dụng', 'sử dụng', 'dùng', 'thu', 'chi', 'đạt',
+            'đòi', 'hỏi', 'yêu', 'ghét', 'thích', 'mong', 'muốn', 'cần', 'đầu tư', 'sản xuất', 'bảo đảm',
+            'cam kết', 'bảo hành', 'đổi', 'học', 'đọc', 'viết', 'nghe', 'nói', 'phát triển', 'xây', 'gây'
+          ];
           for (const kw of verbKeywords) {
             if (lower.includes(kw)) return 'verb';
           }
