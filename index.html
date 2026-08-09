@@ -201,47 +201,58 @@
       <!-- Tab: Spaced Repetition -->
       <div id="vocab-review" class="tab-content">
         <!-- Active Review Frame -->
-        <div id="vocab-review-active" class="flashcard-container" style="display: none;">
-          <div class="flashcard-header">
+        <div id="vocab-review-active" class="flashcard-container" style="display: none; max-width: 650px; margin: 0 auto;">
+          <div class="flashcard-header" style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; font-size: 0.9rem;">
             <div style="font-weight: 600; color: var(--accent-primary);">Bộ từ ôn tập ngắt quãng</div>
-            <div id="review-progress" style="color: var(--text-secondary); font-size: 0.9rem;">0/0</div>
+            <div id="review-progress" style="color: var(--text-secondary);">0/0</div>
           </div>
-          <div class="card-scene" onclick="flipReviewCard()">
-            <div id="review-flashcard" class="card">
+          
+          <div class="oq-card-scene" onclick="flipReviewCard()">
+            <div id="review-flashcard" class="oq-card">
               <!-- Front -->
-              <div class="card-face card-front">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                  <span style="font-size: 0.85rem; color: var(--accent-primary); font-weight: 600; letter-spacing: 1px;">Từ vựng</span>
-                  <div style="display: flex; gap: 0.5rem;">
-                    <button id="btn-mic" class="btn-tts" onclick="startSpeechRecognition(event)" style="background: var(--bg-tertiary); border-color: var(--border-color);">🎤</button>
-                    <button class="btn-tts" onclick="playWordTTS(document.getElementById('rv-front-word').textContent, event)">🔊</button>
-                  </div>
+              <div class="oq-card-face oq-card-front">
+                <div class="oq-header-tool">
+                  <button class="oq-settings-btn" onclick="event.stopPropagation(); alert('Tính năng cấu hình đang được cập nhật!');">⚙️</button>
+                  <span style="font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Mặt trước</span>
                 </div>
-                <div class="card-word-info" style="align-items: center; justify-content: center; flex: 1;">
-                  <span id="rv-front-word" class="card-word">Word</span>
-                  <span id="rv-front-type" class="card-type">noun</span>
-                  <span id="rv-front-phonetic" class="card-phonetic">/phonetic/</span>
-                  <div id="speech-grading-result" style="margin-top: 1rem; font-size: 0.9rem; font-weight: 700; min-height: 1.5rem; text-align: center; color: var(--accent-warning);"></div>
+                <div class="oq-center-info">
+                  <span id="rv-front-word" class="oq-word">Word</span>
+                  <span class="oq-meta"><span id="rv-front-type">noun</span> - <span id="rv-front-phonetic">/phonetic/</span></span>
                 </div>
-                <div class="hint-flip">Chạm để lật xem nghĩa dịch</div>
+                <div class="oq-footer-tools" onclick="event.stopPropagation();">
+                  <button id="btn-mic" class="oq-mic-btn" onclick="startSpeechRecognition(event)">🎤</button>
+                  <label class="oq-switch" title="Tự động phát âm thanh">
+                    <input type="checkbox" id="autoplay-audio" checked>
+                    <span class="oq-slider"></span>
+                  </label>
+                  <button class="oq-sound-btn" onclick="playWordTTS(document.getElementById('rv-front-word').textContent, event)">🔊</button>
+                </div>
               </div>
+              
               <!-- Back -->
-              <div class="card-face card-back">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                  <span style="font-size: 0.85rem; color: var(--accent-success); font-weight: 600; letter-spacing: 1px;">Nghĩa dịch</span>
+              <div class="oq-card-face oq-card-back">
+                <div class="oq-header-tool">
+                  <button class="oq-settings-btn" onclick="event.stopPropagation();">⚙️</button>
+                  <span style="font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent-success);">Mặt sau</span>
                 </div>
-                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
-                  <span id="rv-back-meaning" class="card-meaning">Ý nghĩa</span>
-                  <div class="card-example-box" style="margin-top: 1.5rem;">
-                    <div id="rv-back-example" class="card-example">Example sentence</div>
+                <div class="oq-center-info">
+                  <span id="rv-back-meaning" class="oq-meaning">Ý nghĩa</span>
+                  <div class="oq-example-box">
+                    <div id="rv-back-example" class="oq-example">Example sentence</div>
                   </div>
                 </div>
-                <div class="hint-flip">Chạm để lật lại mặt trước</div>
+                <div class="oq-footer-tools" onclick="event.stopPropagation();">
+                  <button class="oq-sound-btn" style="border: none; background: transparent; width: auto; font-size: 0.85rem;" disabled>Lật lại mặt trước để ghi âm</button>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Speech grading outputs below card -->
+          <div id="speech-grading-result" style="margin-top: 1rem; width: 100%;"></div>
+
           <!-- Selection buttons -->
-          <div class="card-controls">
+          <div class="card-controls" style="margin-top: 1.5rem;">
             <button class="btn-choice btn-review" onclick="reviewChoice('reviewing')">🔴 Hay quên</button>
             <button class="btn-choice btn-master" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); border-color: rgba(245, 158, 11, 0.4);" onclick="reviewChoice('learning')">🟡 Đang nhớ</button>
             <button class="btn-choice btn-master" onclick="reviewChoice('mastered')">🟢 Đã thuộc</button>

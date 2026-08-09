@@ -457,6 +457,14 @@ function showReviewCard(index) {
   document.getElementById('rv-back-example').textContent = wordData.example || 'Chưa có ví dụ';
   
   document.getElementById('review-progress').textContent = `${index + 1}/${activeReviewList.length}`;
+
+  // Autoplay TTS if toggle is checked
+  setTimeout(() => {
+    const autoplayToggle = document.getElementById('autoplay-audio');
+    if (autoplayToggle && autoplayToggle.checked) {
+      playWordTTS(wordData.word);
+    }
+  }, 300);
 }
 
 function flipReviewCard() {
