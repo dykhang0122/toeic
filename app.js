@@ -307,7 +307,8 @@ function renderVocabBank() {
       <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 0.8rem;">${wordData.meaning}</div>
       <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
         <div style="color: var(--text-secondary); margin-bottom: 0.2rem;">${wordData.definition}</div>
-        <div style="font-style: italic;">e.g. ${wordData.example}</div>
+        <div style="font-style: italic; color: var(--text-primary);">e.g. ${wordData.example}</div>
+        ${wordData.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.3rem;">Dịch: ${wordData.exampleMeaning}</div>` : ''}
       </div>
     `;
     grid.appendChild(card);
@@ -362,6 +363,24 @@ function generateTemplateExample(wordOrPhrase, type) {
   }
 }
 
+// Fetch translation for example sentences
+async function translateExampleText(text) {
+  if (!text) return '';
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|vi`);
+    if (res.ok) {
+      const data = await res.json();
+      let transText = data.responseData.translatedText || '';
+      if (transText && !transText.toLowerCase().includes('mymemory')) {
+        return transText;
+      }
+    }
+  } catch (e) {
+    console.warn("Example translation error:", e);
+  }
+  return '';
+}
+
 // Lookup details for a single English word
 async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
   let result = {
@@ -370,6 +389,7 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     pronunciation: '',
     meaning: '',
     example: '',
+    exampleMeaning: '',
     topic: 'Cá nhân'
   };
 
@@ -382,6 +402,7 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
         result.pronunciation = matchWord.pronunciation || '';
         result.meaning = matchWord.meaning || '';
         result.example = matchWord.example || '';
+        result.exampleMeaning = matchWord.exampleMeaning || '';
         result.topic = toeicVocabulary[catKey].title || 'Cá nhân';
         return result;
       }
@@ -425,6 +446,11 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     result.pronunciation = '/' + word.toLowerCase() + '/';
   }
 
+  // Auto translate example sentence
+  if (result.example) {
+    result.exampleMeaning = await translateExampleText(result.example);
+  }
+
   return result;
 }
 
@@ -437,6 +463,7 @@ async function getWordDetailsAuto(rawWord) {
     pronunciation: '',
     meaning: '',
     example: '',
+    exampleMeaning: '',
     topic: 'Cá nhân'
   };
 
@@ -469,6 +496,7 @@ async function getWordDetailsAuto(rawWord) {
     }
     
     result.example = generateTemplateExample(word, type);
+    result.exampleMeaning = await translateExampleText(result.example);
     return result;
   } else {
     // Single word
@@ -652,6 +680,16 @@ function showReviewCard(index) {
   // Back
   document.getElementById('rv-back-meaning').textContent = wordData.meaning;
   document.getElementById('rv-back-example').textContent = wordData.example || 'Chưa có ví dụ';
+  
+  const exMeanEl = document.getElementById('rv-back-example-meaning');
+  if (exMeanEl) {
+    if (wordData.exampleMeaning) {
+      exMeanEl.textContent = wordData.exampleMeaning;
+      exMeanEl.style.display = 'block';
+    } else {
+      exMeanEl.style.display = 'none';
+    }
+  }
   
   document.getElementById('review-progress').textContent = `${index + 1}/${activeReviewList.length}`;
   const navProgress = document.getElementById('oq-nav-progress');
