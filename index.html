@@ -248,8 +248,28 @@
             </div>
           </div>
 
+          <!-- Shortcut hints -->
+          <div style="text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-top: 1rem; font-weight: 500;">
+            Phím tắt: <kbd style="background: rgba(255,255,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">←</kbd> <kbd style="background: rgba(255,255,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">→</kbd> để chuyển thẻ • <kbd style="background: rgba(255,255,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">Space</kbd> / <kbd style="background: rgba(255,255,255,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">Enter</kbd> để lật thẻ
+          </div>
+
+          <!-- Bottom Navigation Bar matching OpenQuiz -->
+          <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;">
+            <button class="oq-sound-btn" style="width: 40px; height: 40px; border-radius: 50%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;" title="Xem Tiến độ" onclick="alert('Tiến độ học hôm nay: ' + (activeReviewIndex + 1) + '/' + activeReviewList.length + ' từ')">📊</button>
+            
+            <button class="oq-sound-btn" style="width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" onclick="previousReviewCard(event)">←</button>
+            <span id="oq-nav-progress" style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Thẻ 1 / 11</span>
+            <button class="oq-sound-btn" style="width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" onclick="nextReviewCard(event)">→</button>
+            
+            <button class="oq-sound-btn" style="width: 40px; height: 40px; border-radius: 50%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;" title="Trộn thẻ học" onclick="shuffleReviewCards()">🔀</button>
+          </div>
+
+          <div style="text-align: center; margin-top: 1rem;">
+            <a href="#" style="color: var(--text-secondary); font-size: 0.8rem; text-decoration: none;" onclick="alert('Mẹo: Nhấn phím SPACE để lật xem nghĩa dịch, phím mũi tên để sang từ tiếp theo!')">Xem hướng dẫn cách học</a>
+          </div>
+
           <!-- Speech grading outputs below card -->
-          <div id="speech-grading-result" style="margin-top: 1rem; width: 100%;"></div>
+          <div id="speech-grading-result" style="margin-top: 1.2rem; width: 100%;"></div>
 
           <!-- Selection buttons -->
           <div class="card-controls" style="margin-top: 1.5rem;">

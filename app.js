@@ -457,6 +457,10 @@ function showReviewCard(index) {
   document.getElementById('rv-back-example').textContent = wordData.example || 'Chưa có ví dụ';
   
   document.getElementById('review-progress').textContent = `${index + 1}/${activeReviewList.length}`;
+  const navProgress = document.getElementById('oq-nav-progress');
+  if (navProgress) {
+    navProgress.textContent = `Thẻ ${index + 1} / ${activeReviewList.length}`;
+  }
 
   // Autoplay TTS if toggle is checked
   setTimeout(() => {
@@ -469,6 +473,28 @@ function showReviewCard(index) {
 
 function flipReviewCard() {
   document.getElementById('review-flashcard').classList.toggle('is-flipped');
+}
+
+function previousReviewCard(event) {
+  if (event) event.stopPropagation();
+  if (activeReviewIndex > 0) {
+    showReviewCard(activeReviewIndex - 1);
+  }
+}
+
+function nextReviewCard(event) {
+  if (event) event.stopPropagation();
+  if (activeReviewIndex < activeReviewList.length - 1) {
+    showReviewCard(activeReviewIndex + 1);
+  } else {
+    alert("Bạn đang ở từ vựng cuối cùng!");
+  }
+}
+
+function shuffleReviewCards() {
+  activeReviewList.sort(() => 0.5 - Math.random());
+  activeReviewIndex = 0;
+  showReviewCard(0);
 }
 
 function reviewChoice(status) {
@@ -1394,10 +1420,20 @@ function startSpeechRecognition(event) {
 
 function startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+  
   speechRecognition = new SpeechRecognition();
   speechRecognition.lang = 'en-US';
   speechRecognition.interimResults = false;
   speechRecognition.maxAlternatives = 1;
+
+  // Optimize speech decoder for the exact target word
+  if (SpeechGrammarList) {
+    const speechGrammarList = new SpeechGrammarList();
+    const grammar = '#JSGF V1.0; grammar words; public <word> = ' + targetWord.replace(/[-]/g, ' ') + ' ;';
+    speechGrammarList.addFromString(grammar, 1);
+    speechRecognition.grammars = speechGrammarList;
+  }
 
   speechRecognition.onstart = () => {
     speechIsListening = true;
@@ -1880,3 +1916,22 @@ async function lookupWordDetails() {
   
   setTimeout(() => { statusSpan.style.display = 'none'; }, 3000);
 }
+
+// Keyboard Shortcuts for Flashcards
+document.addEventListener('keydown', (event) => {
+  const activeReviewEl = document.getElementById('vocab-review-active');
+  if (activeReviewEl && activeReviewEl.style.display !== 'none') {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+      return;
+    }
+    
+    if (event.key === 'ArrowLeft') {
+      previousReviewCard(event);
+    } else if (event.key === 'ArrowRight') {
+      nextReviewCard(event);
+    } else if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault(); // Stop spacebar scrolling
+      flipReviewCard();
+    }
+  }
+});
