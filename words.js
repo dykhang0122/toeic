@@ -215,5 +215,214 @@ const toeicVocabulary = {
         "exampleMeaning": "Cửa hàng cung cấp nhiều lựa chọn hàng hóa chất lượng."
       }
     ]
+  },
+  "listening_p12": {
+    "title": "Listening Part 1 & 2",
+    "icon": "📸",
+    "description": "Mô tả tranh & Hỏi đáp nhanh",
+    "words": [
+      {
+        "word": "Inspect",
+        "type": "verb",
+        "pronunciation": "/ɪnˈspekt/",
+        "meaning": "Kiểm tra, thanh tra",
+        "definition": "Look at (someone or something) closely, typically to assess their condition.",
+        "example": "The technician is inspecting the machinery.",
+        "exampleMeaning": "Kỹ thuật viên đang kiểm tra máy móc."
+      },
+      {
+        "word": "Stroll",
+        "type": "verb",
+        "pronunciation": "/strəʊl/",
+        "meaning": "Đi dạo",
+        "definition": "Walk in a leisurely way.",
+        "example": "People are strolling through the park.",
+        "exampleMeaning": "Mọi người đang đi dạo qua công viên."
+      },
+      {
+        "word": "Stack",
+        "type": "verb",
+        "pronunciation": "/stæk/",
+        "meaning": "Xếp chồng lên nhau",
+        "definition": "Arrange number of things in a pile.",
+        "example": "Boxes are stacked on the warehouse floor.",
+        "exampleMeaning": "Các hộp được xếp chồng trên sàn kho."
+      },
+      {
+        "word": "Pave",
+        "type": "verb",
+        "pronunciation": "/peɪv/",
+        "meaning": "Lát đường",
+        "definition": "Cover a piece of ground with concrete, asphalt, or stones.",
+        "example": "Workers are paving the walkway.",
+        "exampleMeaning": "Các công nhân đang lát lối đi bộ."
+      },
+      {
+        "word": "Adjust",
+        "type": "verb",
+        "pronunciation": "/əˈdʒʌst/",
+        "meaning": "Điều chỉnh",
+        "definition": "Alter or move something slightly in order to achieve the desired fit or appearance.",
+        "example": "He is adjusting the computer monitor.",
+        "exampleMeaning": "Anh ấy đang điều chỉnh màn hình máy tính."
+      }
+    ]
+  },
+  "listening_p34": {
+    "title": "Listening Part 3 & 4",
+    "icon": "🎙️",
+    "description": "Hội thoại & Bài nói ngắn",
+    "words": [
+      {
+        "word": "Colleague",
+        "type": "noun",
+        "pronunciation": "/ˈkɒl.iːɡ/",
+        "meaning": "Đồng nghiệp",
+        "definition": "A person with whom one works in a profession or business.",
+        "example": "I need to consult with a colleague first.",
+        "exampleMeaning": "Tôi cần tham khảo ý kiến của đồng nghiệp trước."
+      },
+      {
+        "word": "Postpone",
+        "type": "verb",
+        "pronunciation": "/pəʊstˈpəʊn/",
+        "meaning": "Trì hoãn, hoãn lại",
+        "definition": "Cause or arrange for something to take place at a time later than that first planned.",
+        "example": "The meeting has been postponed until Friday.",
+        "exampleMeaning": "Cuộc họp đã được trì hoãn cho đến thứ Sáu."
+      },
+      {
+        "word": "Merger",
+        "type": "noun",
+        "pronunciation": "/ˈmɜː.dʒər/",
+        "meaning": "Sự sáp nhập",
+        "definition": "A combination of two things, especially companies, into one.",
+        "example": "The merger between the two companies was announced.",
+        "exampleMeaning": "Sự sáp nhập giữa hai công ty đã được công bố."
+      },
+      {
+        "word": "Redecorate",
+        "type": "verb",
+        "pronunciation": "/ˌriːˈdek.ə.reɪt/",
+        "meaning": "Trang trí lại",
+        "definition": "Apply new paint or wallpaper to a room or building.",
+        "example": "We plan to redecorate the lobby next month.",
+        "exampleMeaning": "Chúng tôi có kế hoạch trang trí lại sảnh vào tháng tới."
+      },
+      {
+        "word": "Headquarters",
+        "type": "noun",
+        "pronunciation": "/ˌhedˈkwɔː.təz/",
+        "meaning": "Trụ sở chính",
+        "definition": "The premises serving as the administrative center of an enterprise.",
+        "example": "Our corporate headquarters is located in Seoul.",
+        "exampleMeaning": "Trụ sở chính của công ty chúng tôi được đặt tại Seoul."
+      }
+    ]
+  },
+  "reading_p56": {
+    "title": "Reading Part 5 & 6",
+    "icon": "📝",
+    "description": "Hoàn thành câu & Đoạn văn",
+    "words": [
+      {
+        "word": "Consequently",
+        "type": "adverb",
+        "pronunciation": "/ˈn.sɪ.kwənt.li/",
+        "meaning": "Hậu quả là, do đó",
+        "definition": "As a result.",
+        "example": "He was late; consequently, he missed the train.",
+        "exampleMeaning": "Anh ấy đã đến muộn; do đó, anh ấy đã lỡ tàu."
+      },
+      {
+        "word": "Implement",
+        "type": "verb",
+        "pronunciation": "/ˈɪm.plɪ.ment/",
+        "meaning": "Thực hiện, thi hành",
+        "definition": "Put a decision, plan, or agreement into effect.",
+        "example": "We will implement the new policy next week.",
+        "exampleMeaning": "Chúng tôi sẽ thực hiện chính sách mới vào tuần tới."
+      },
+      {
+        "word": "Complimentary",
+        "type": "adjective",
+        "pronunciation": "/ˌkɒm.plɪˈmen.tər.i/",
+        "meaning": "Miễn phí",
+        "definition": "Given free of charge.",
+        "example": "Guests receive a complimentary breakfast.",
+        "exampleMeaning": "Khách nhận được bữa sáng miễn phí."
+      },
+      {
+        "word": "Inquire",
+        "type": "verb",
+        "pronunciation": "/ɪnˈkwaɪər/",
+        "meaning": "Yêu cầu thông tin, hỏi thăm",
+        "definition": "Ask for information from someone.",
+        "example": "I am calling to inquire about the job vacancy.",
+        "exampleMeaning": "Tôi gọi điện để hỏi về vị trí công việc còn trống."
+      },
+      {
+        "word": "Eligible",
+        "type": "adjective",
+        "pronunciation": "/ˈel.ɪ.dʒə.bəl/",
+        "meaning": "Đủ điều kiện, đủ tư cách",
+        "definition": "Having the right to do or obtain something.",
+        "example": "Employees are eligible for a pension after 10 years.",
+        "exampleMeaning": "Nhân viên đủ điều kiện nhận lương hưu sau 10 năm."
+      }
+    ]
+  },
+  "reading_p7": {
+    "title": "Reading Part 7",
+    "icon": "📖",
+    "description": "Đọc hiểu văn bản & Đoạn văn",
+    "words": [
+      {
+        "word": "Subscriber",
+        "type": "noun",
+        "pronunciation": "/səbˈskraɪ.bər/",
+        "meaning": "Người đăng ký, thuê bao",
+        "definition": "A person who pays to receive a publication regularly.",
+        "example": "Our magazine has over ten thousand subscribers.",
+        "exampleMeaning": "Tạp chí của chúng tôi có hơn mười nghìn người đăng ký."
+      },
+      {
+        "word": "Acquisition",
+        "type": "noun",
+        "pronunciation": "/ˌæk.wɪˈzɪʃ.ən/",
+        "meaning": "Sự mua lại, thâu tóm",
+        "definition": "An asset or object bought or obtained, typically by a library or museum, or a company purchase.",
+        "example": "The recent acquisition expanded their market share.",
+        "exampleMeaning": "Sự mua lại gần đây đã mở rộng thị phần của họ."
+      },
+      {
+        "word": "Warranty",
+        "type": "noun",
+        "pronunciation": "/ˈwɒr.ən.ti/",
+        "meaning": "Phiếu bảo hành, sự bảo hành",
+        "definition": "A written guarantee, issued to the purchaser of an article by its manufacturer.",
+        "example": "The laptop comes with a two-year warranty.",
+        "exampleMeaning": "Máy tính xách tay đi kèm với bảo hành hai năm."
+      },
+      {
+        "word": "Promotional",
+        "type": "adjective",
+        "pronunciation": "/prəˈməʊ.ʃən.əl/",
+        "meaning": "Thuộc quảng cáo, khuyến mãi",
+        "definition": "Relating to the publicization of a product or venture so as to increase sales.",
+        "example": "They are distributing promotional flyers in the city.",
+        "exampleMeaning": "Họ đang phát tờ rơi quảng cáo trong thành phố."
+      },
+      {
+        "word": "Terminate",
+        "type": "verb",
+        "pronunciation": "/ˈtɜː.mɪ.neɪt/",
+        "meaning": "Chấm dứt, hủy hợp đồng",
+        "definition": "Bring to an end.",
+        "example": "The landlord decided to terminate the lease early.",
+        "exampleMeaning": "Chủ nhà quyết định chấm dứt hợp đồng thuê sớm."
+      }
+    ]
   }
 };
+
