@@ -1374,7 +1374,7 @@ function startSpeechRecognition(event) {
   lastTargetWord = targetWord;
   lastPhonetic = phonetic;
 
-  // Open modal
+  // Open modal immediately
   const modal = document.getElementById('oq-speech-modal');
   if (modal) {
     modal.style.display = 'flex';
@@ -1514,7 +1514,7 @@ function startSpeechAPIEngine(targetWord, phonetic) {
     stopMicTracks();
 
     const grading = analyzeAudioSpeechFeatures(speechResult, targetWord, phonetic, volumeHistory, frequencyHistory, confidence);
-    `;
+    showGradingResultsInModal(grading, targetWord, phonetic, speechResult);
   };
 
   speechRecognition.onerror = (e) => {
