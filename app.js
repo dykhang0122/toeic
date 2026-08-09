@@ -1315,12 +1315,20 @@ function handlePassageTextSelection() {
 
 let speechRecognition = null;
 let speechIsListening = false;
+let audioCtx = null;
+let audioAnalyser = null;
+let audioStream = null;
+let audioDataInterval = null;
+let volumeHistory = [];
+let frequencyHistory = [];
 
 function startSpeechRecognition(event) {
   if (event) event.stopPropagation(); // Avoid card flipping
   
-  const targetWord = activeReviewList[activeReviewIndex]?.word;
-  if (!targetWord) return;
+  const targetWordData = activeReviewList[activeReviewIndex];
+  if (!targetWordData) return;
+  const targetWord = targetWordData.word;
+  const phonetic = targetWordData.pronunciation || "";
 
   const resultDiv = document.getElementById('speech-grading-result');
   const micBtn = document.getElementById('btn-mic');
@@ -1336,6 +1344,48 @@ function startSpeechRecognition(event) {
     return;
   }
 
+  // Request Microphone stream and setup Web Audio API
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      audioStream = stream;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioAnalyser = audioCtx.createAnalyser();
+      audioAnalyser.fftSize = 512;
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(audioAnalyser);
+
+      volumeHistory = [];
+      frequencyHistory = [];
+
+      const bufferLength = audioAnalyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      audioDataInterval = setInterval(() => {
+        if (!speechIsListening) return;
+        audioAnalyser.getByteFrequencyData(dataArray);
+        
+        // Calculate RMS volume level
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          sum += dataArray[i];
+        }
+        const avg = sum / bufferLength;
+        volumeHistory.push(avg);
+        
+        // Save frequency distribution (copy frame values)
+        frequencyHistory.push(Array.from(dataArray));
+      }, 20);
+
+      startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn);
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Không thể truy cập Microphone. Vui lòng cấp quyền sử dụng micro cho website!");
+    });
+}
+
+function startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   speechRecognition = new SpeechRecognition();
   speechRecognition.lang = 'en-US';
   speechRecognition.interimResults = false;
@@ -1352,12 +1402,74 @@ function startSpeechRecognition(event) {
 
   speechRecognition.onresult = (e) => {
     const speechResult = e.results[0][0].transcript.trim().toLowerCase();
-    const cleanTarget = targetWord.trim().toLowerCase();
     
-    // Calculate match percentage
-    const accuracy = calculateWordSimilarity(speechResult, cleanTarget);
+    // Stop recording and process Web Audio features
+    clearInterval(audioDataInterval);
+    if (audioCtx && audioCtx.state !== 'closed') {
+      audioCtx.close();
+    }
+    if (audioStream) {
+      audioStream.getTracks().forEach(track => track.stop());
+    }
+
+    const grading = analyzeAudioSpeechFeatures(speechResult, targetWord, phonetic, volumeHistory, frequencyHistory);
     
-    resultDiv.innerHTML = `Bạn đã đọc: "<strong>${speechResult}</strong>"<br>Độ chính xác: <strong style="font-size: 1.1rem; color: ${accuracy >= 80 ? 'var(--accent-success)' : 'var(--accent-danger)'};">${accuracy}%</strong>`;
+    // Build beautiful UI response
+    resultDiv.innerHTML = `
+      <div class="speech-grade-card">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-align: center;">
+          Bạn đã đọc: <strong style="color: var(--text-primary);">"${speechResult}"</strong>
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <span style="font-weight: 600;">Điểm tổng quát:</span>
+          <span style="font-size: 1.4rem; font-weight: 800; font-family: var(--font-display); color: ${grading.overall >= 80 ? 'var(--accent-success)' : grading.overall >= 50 ? 'var(--accent-warning)' : 'var(--accent-danger)'};">${grading.overall}%</span>
+        </div>
+
+        <div class="speech-score-row">
+          <span>Phát âm âm vị (Pronunciation)</span>
+          <strong>${grading.pronunciation}%</strong>
+        </div>
+        <div class="speech-progress-track">
+          <div class="speech-progress-bar" style="width: ${grading.pronunciation}%; background: var(--accent-success);"></div>
+        </div>
+
+        <div class="speech-score-row">
+          <span>Độ lưu loát (Fluency)</span>
+          <strong>${grading.fluency}%</strong>
+        </div>
+        <div class="speech-progress-track">
+          <div class="speech-progress-bar" style="width: ${grading.fluency}%; background: var(--accent-primary);"></div>
+        </div>
+
+        <div class="speech-score-row">
+          <span>Nhấn trọng âm (Stress)</span>
+          <strong>${grading.stress}%</strong>
+        </div>
+        <div class="speech-progress-track">
+          <div class="speech-progress-bar" style="width: ${grading.stress}%; background: var(--accent-warning);"></div>
+        </div>
+
+        <div class="speech-score-row">
+          <span>Âm cuối (Ending Sounds)</span>
+          <strong>${grading.ending}%</strong>
+        </div>
+        <div class="speech-progress-track">
+          <div class="speech-progress-bar" style="width: ${grading.ending}%; background: var(--accent-danger);"></div>
+        </div>
+
+        <!-- Detailed Feedback Warnings -->
+        <div style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.8rem;">
+          <h5 style="margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Phân tích chi tiết:</h5>
+          ${grading.feedback.map(f => `
+            <div class="speech-feedback-item">
+              <span class="speech-feedback-icon">${f.type === 'error' ? '❌' : f.type === 'warning' ? '⚠️' : '✅'}</span>
+              <span style="color: ${f.type === 'error' ? 'var(--accent-danger)' : f.type === 'warning' ? 'var(--accent-warning)' : 'var(--text-primary)'};">${f.text}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
   };
 
   speechRecognition.onerror = (e) => {
@@ -1365,6 +1477,13 @@ function startSpeechRecognition(event) {
     resultDiv.textContent = '❌ Không nghe thấy giọng nói hoặc có lỗi xảy ra.';
     resultDiv.style.color = 'var(--accent-danger)';
     resetMicButtonState();
+    clearInterval(audioDataInterval);
+    if (audioCtx && audioCtx.state !== 'closed') {
+      audioCtx.close();
+    }
+    if (audioStream) {
+      audioStream.getTracks().forEach(track => track.stop());
+    }
   };
 
   speechRecognition.onend = () => {
@@ -1422,6 +1541,130 @@ function calculateWordSimilarity(s1, s2) {
   const maxLength = Math.max(s1.length, s2.length);
   const similarity = (maxLength - distance) / maxLength;
   return Math.round(similarity * 100);
+}
+
+// Acoustic analysis processor
+function analyzeAudioSpeechFeatures(speechResult, targetWord, phonetic, volumes, frequencies) {
+  const cleanTarget = targetWord.trim().toLowerCase();
+  const cleanSpeech = speechResult.trim().toLowerCase();
+  
+  // Base Text/Pronunciation score using edit distance
+  let pronScore = calculateWordSimilarity(cleanSpeech, cleanTarget);
+  
+  // Default values
+  let fluency = 90;
+  let stress = 85;
+  let ending = 90;
+  const feedback = [];
+
+  if (cleanSpeech.includes(cleanTarget) || cleanTarget.includes(cleanSpeech)) {
+    if (pronScore < 85) pronScore = 85;
+  }
+
+  // 1. Fluency analysis based on silence frame gaps
+  if (volumes.length > 5) {
+    const threshold = 1.5;
+    const activeFrames = volumes.map(v => v > threshold);
+    const startIndex = activeFrames.indexOf(true);
+    const endIndex = activeFrames.lastIndexOf(true);
+    
+    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+      const activeSegment = volumes.slice(startIndex, endIndex + 1);
+      const silentFrames = activeSegment.filter(v => v <= threshold).length;
+      const ratio = silentFrames / activeSegment.length;
+      
+      fluency = Math.max(20, Math.round((1 - ratio) * 100));
+      if (fluency < 75) {
+        feedback.push({ type: 'warning', text: 'Nói hơi ngắt quãng hoặc ngập ngừng giữa các âm.' });
+      } else {
+        feedback.push({ type: 'success', text: 'Đoạn nói lưu loát, liền mạch.' });
+      }
+    }
+  }
+
+  // 2. Ending sound analysis (t, d, s, z, etc.)
+  const endsWithConsonant = /[tdszkpvgf]$/.test(cleanTarget) || phonetic.endsWith('t/') || phonetic.endsWith('d/') || phonetic.endsWith('s/') || phonetic.endsWith('z/') || phonetic.endsWith('k/') || phonetic.endsWith('p/') || phonetic.endsWith('v/');
+  if (endsWithConsonant) {
+    if (frequencies.length > 10) {
+      const lastFrames = frequencies.slice(-8);
+      let highFreqSum = 0;
+      let totalSum = 0;
+      for (const frame of lastFrames) {
+        for (let i = 0; i < frame.length; i++) {
+          totalSum += frame[i];
+          if (i > 30) { // High frequency above ~3kHz
+            highFreqSum += frame[i];
+          }
+        }
+      }
+      const ratio = totalSum > 0 ? (highFreqSum / totalSum) : 0;
+      
+      if (ratio < 0.15) {
+        ending = Math.max(30, Math.round(ratio * 500));
+        feedback.push({ type: 'error', text: `Phát âm thiếu âm gió hoặc âm bật hơi ở cuối từ (Ending sounds like /${cleanTarget.slice(-1)}/).` });
+      } else {
+        ending = Math.min(100, 85 + Math.round(ratio * 100));
+        feedback.push({ type: 'success', text: `Phát âm rõ ràng phụ âm cuối của từ.` });
+      }
+    }
+  } else {
+    ending = 100; // No ending consonant required
+  }
+
+  // 3. Syllable stress analysis
+  const syllableCount = (phonetic.match(/[aeiouʌɑæɔʊɜə]/gi) || [1]).length;
+  const stressIndex = phonetic.indexOf('ˈ');
+
+  if (syllableCount > 1 && stressIndex !== -1 && volumes.length > 8) {
+    const stressPercentLocation = stressIndex / phonetic.length;
+    
+    // Split volumes array into equal segments matching syllable count
+    const segLength = Math.floor(volumes.length / syllableCount);
+    let peakIndex = 0;
+    let maxVal = -1;
+    
+    for (let s = 0; s < syllableCount; s++) {
+      const seg = volumes.slice(s * segLength, (s + 1) * segLength);
+      const segAvg = seg.length > 0 ? seg.reduce((a,b)=>a+b, 0)/seg.length : 0;
+      if (segAvg > maxVal) {
+        maxVal = segAvg;
+        peakIndex = s;
+      }
+    }
+
+    const expectedSyllableIndex = Math.floor(stressPercentLocation * syllableCount);
+    if (peakIndex === expectedSyllableIndex) {
+      stress = 95;
+      feedback.push({ type: 'success', text: `Nhấn trọng âm chính chính xác (Syallable ${expectedSyllableIndex + 1}).` });
+    } else {
+      stress = 50;
+      const targetSyl = expectedSyllableIndex === 0 ? "đầu" : expectedSyllableIndex === 1 ? "thứ hai" : "thứ ba";
+      feedback.push({ type: 'warning', text: `Trọng âm nhấn chưa chuẩn (Nên nhấn mạnh hơn vào âm tiết ${targetSyl}).` });
+    }
+  } else {
+    stress = 100;
+  }
+
+  // Calculate Overall Score (weighted average)
+  let overall = Math.round(
+    (pronScore * 0.45) + (stress * 0.20) + (ending * 0.20) + (fluency * 0.15)
+  );
+  
+  if (pronScore < 40) {
+    overall = Math.round(pronScore);
+    feedback.unshift({ type: 'error', text: 'Hệ thống không nhận dạng được từ vựng bạn vừa phát âm. Hãy đọc to, rõ ràng hơn!' });
+  } else if (overall > 90) {
+    feedback.unshift({ type: 'success', text: 'Chúc mừng! Bạn đã phát âm chuẩn bản xứ từ vựng này!' });
+  }
+
+  return {
+    overall,
+    pronunciation: pronScore,
+    fluency,
+    stress,
+    ending,
+    feedback
+  };
 }
 
 // ==========================================

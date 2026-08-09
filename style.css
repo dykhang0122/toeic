@@ -918,3 +918,50 @@ main {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
+/* Speech Grading Breakdown */
+.speech-grade-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-top: 1rem;
+  text-align: left;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.speech-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.speech-progress-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+}
+
+.speech-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s ease-out;
+}
+
+.speech-feedback-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+
+.speech-feedback-icon {
+  font-size: 0.85rem;
+}
+
