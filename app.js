@@ -345,7 +345,11 @@ function renderVocabBank() {
           <span class="word-library-title">${wordData.word}</span>
           <span style="font-size: 0.8rem; color: var(--text-secondary);">(${wordData.type})</span>
         </div>
-        <span class="status-badge ${statusClass}">${statusText}</span>
+        <div style="display: flex; align-items: center; gap: 0.5rem;" onclick="event.stopPropagation();">
+          <button onclick="editVocabWord(${index}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 2px;" title="Sửa từ">✏️</button>
+          <button onclick="deleteVocabWord(${index}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 2px;" title="Xóa từ">❌</button>
+          <span class="status-badge ${statusClass}">${statusText}</span>
+        </div>
       </div>
       <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
         <span>${wordData.pronunciation}</span>
@@ -580,7 +584,9 @@ async function getWordDetailsAuto(rawWord) {
   }
 }
 
-// Single Word Add with automatic fallback lookups
+// Active edit tracker
+let activeEditIndex = null;
+
 // Toggle custom topic text input visibility based on select dropdown value
 function toggleCustomTopicInput() {
   const select = document.getElementById('add-vocab-topic-select');
@@ -596,7 +602,56 @@ function toggleCustomTopicInput() {
   }
 }
 
-// Single Word Add with automatic fallback lookups
+// Edit existing vocabulary word
+function editVocabWord(index, event) {
+  if (event) event.stopPropagation();
+  const wordData = state.vocab[index];
+  activeEditIndex = index;
+  
+  // Switch to Add Tab
+  switchVocabTab('vocab-add');
+  
+  // Update form header and submit button label
+  const formHeader = document.querySelector('#vocab-add h2');
+  if (formHeader) formHeader.textContent = 'Chỉnh sửa từ vựng';
+  
+  const submitBtn = document.querySelector('#add-word-form button[type="submit"]');
+  if (submitBtn) submitBtn.textContent = 'Cập nhật từ vựng';
+  
+  // Pre-fill fields
+  document.getElementById('add-vocab-word').value = wordData.word;
+  document.getElementById('add-vocab-meaning').value = wordData.meaning;
+  document.getElementById('add-vocab-type').value = wordData.type;
+  document.getElementById('add-vocab-pronunciation').value = wordData.pronunciation || '';
+  document.getElementById('add-vocab-example').value = wordData.example || '';
+  
+  const topicSelect = document.getElementById('add-vocab-topic-select');
+  const topicInput = document.getElementById('add-vocab-topic');
+  if (topicSelect && topicInput) {
+    const exists = Array.from(topicSelect.options).some(opt => opt.value === wordData.topic);
+    if (exists) {
+      topicSelect.value = wordData.topic;
+      topicInput.style.display = 'none';
+    } else {
+      topicSelect.value = 'custom';
+      topicInput.value = wordData.topic;
+      topicInput.style.display = 'block';
+    }
+  }
+}
+
+// Delete vocabulary word
+function deleteVocabWord(index, event) {
+  if (event) event.stopPropagation();
+  const wordData = state.vocab[index];
+  if (confirm(`Bạn có chắc muốn xóa từ "${wordData.word}" khỏi kho từ vựng cá nhân?`)) {
+    state.vocab.splice(index, 1);
+    saveState();
+    renderVocabBank();
+  }
+}
+
+// Single Word Add/Edit with automatic fallback lookups
 async function saveSingleWord(event) {
   event.preventDefault();
   const rawWordInput = document.getElementById('add-vocab-word').value.trim();
@@ -624,7 +679,7 @@ async function saveSingleWord(event) {
   const saveBtn = event.target.querySelector('button[type="submit"]');
   const originalText = saveBtn.textContent;
   saveBtn.disabled = true;
-  saveBtn.textContent = '🔄 Đang tự động tra cứu...';
+  saveBtn.textContent = '🔄 Đang lưu dữ liệu...';
 
   // Auto lookup if fields are empty
   let exampleMeaningInput = '';
@@ -638,6 +693,11 @@ async function saveSingleWord(event) {
     if (typeInput === 'noun' && info.type !== 'noun') typeInput = info.type;
   }
 
+  // Always enforce translation for example if present
+  if (exampleInput && !exampleMeaningInput) {
+    exampleMeaningInput = await translateExampleText(exampleInput);
+  }
+
   if (!meaningInput) {
     saveBtn.disabled = false;
     saveBtn.textContent = originalText;
@@ -645,27 +705,55 @@ async function saveSingleWord(event) {
     return;
   }
   
-  state.vocab.unshift({
-    word: wordInput,
-    type: typeInput,
-    pronunciation: pronunciationInput,
-    meaning: meaningInput,
-    definition: '',
-    example: exampleInput,
-    exampleMeaning: exampleMeaningInput,
-    topic: topicInput,
-    status: 'new',
-    lastReviewed: null,
-    reviewCount: 0
-  });
+  if (activeEditIndex !== null) {
+    // Update existing vocab item
+    state.vocab[activeEditIndex] = {
+      ...state.vocab[activeEditIndex],
+      word: wordInput,
+      type: typeInput,
+      pronunciation: pronunciationInput,
+      meaning: meaningInput,
+      example: exampleInput,
+      exampleMeaning: exampleMeaningInput,
+      topic: topicInput
+    };
+    alert(`Đã cập nhật từ "${wordInput}" thành công!`);
+  } else {
+    // Add new vocab item
+    state.vocab.unshift({
+      word: wordInput,
+      type: typeInput,
+      pronunciation: pronunciationInput,
+      meaning: meaningInput,
+      definition: '',
+      example: exampleInput,
+      exampleMeaning: exampleMeaningInput,
+      topic: topicInput,
+      status: 'new',
+      lastReviewed: null,
+      reviewCount: 0
+    });
+    alert(`Đã thêm từ "${wordInput}" vào kho từ cá nhân!`);
+  }
   
   saveState();
+  
+  // Reset form headers back to default
+  const formHeader = document.querySelector('#vocab-add h2');
+  if (formHeader) formHeader.textContent = 'Thêm từ vựng mới';
+  
+  const submitBtn = document.querySelector('#add-word-form button[type="submit"]');
+  if (submitBtn) submitBtn.textContent = 'Lưu vào kho từ';
+  
+  activeEditIndex = null;
   document.getElementById('add-word-form').reset();
+  
   const customTopicInput = document.getElementById('add-vocab-topic');
   if (customTopicInput) customTopicInput.style.display = 'none';
+  
   saveBtn.disabled = false;
   saveBtn.textContent = originalText;
-  alert(`Đã thêm từ "${wordInput}" vào kho từ cá nhân!`);
+  
   switchVocabTab('vocab-list');
 }
 
