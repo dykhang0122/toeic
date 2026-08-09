@@ -2030,29 +2030,28 @@ function startSpeechAPIEngine(targetWord, phonetic) {
   };
 
   speechRecognition.onerror = (e) => {
-    console.error(e);
-    // Only stop and fail if it's not a harmless 'no-speech' error during active recording
-    if (e.error !== 'no-speech') {
+    console.warn("SpeechRecognition error:", e.error);
+    // If it's a fatal error like not-allowed or service-not-allowed, alert the user
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
       stopMicTracks();
-      const mockGrading = {
-        overall: 0,
-        confidence: 0,
-        audioQuality: 50,
-        phonemeAccuracy: 0,
-        wordAccuracy: 0,
-        fluency: 0,
-        stress: 0,
-        intonation: 0,
-        rhythm: 0,
-        phonemes: [],
-        feedback: [{ type: 'error', text: 'Không phát hiện giọng nói rõ ràng. Hãy thử nói lại!' }]
-      };
-      showGradingResultsInModal(mockGrading, targetWord, phonetic, "");
+      alert("Lỗi truy cập Micro: Quyền sử dụng micro bị từ chối hoặc không được hỗ trợ.");
     }
   };
 
   speechRecognition.onend = () => {
     speechIsListening = false;
+    
+    // Auto-restart speech engine if the recording modal is still open and active
+    const modal = document.getElementById('oq-speech-modal');
+    const recordingState = document.getElementById('oq-modal-state-recording');
+    if (modal && modal.style.display === 'flex' && recordingState && recordingState.style.display !== 'none') {
+      try {
+        speechRecognition.start();
+        speechIsListening = true;
+      } catch (err) {
+        // Recognition already started or not ready yet, safe to ignore
+      }
+    }
   };
 
   speechRecognition.start();
