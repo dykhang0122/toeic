@@ -595,8 +595,112 @@
     </div>
   </div>
 
+  <!-- 🎙️ OpenQuiz Style Speech Evaluation Modal -->
+  <div id="oq-speech-modal" class="oq-modal-overlay" style="display: none;">
+    <div class="oq-modal-container">
+      <button class="oq-modal-close-btn" onclick="closeSpeechModal()">×</button>
+      
+      <!-- Word display block -->
+      <div class="oq-modal-word-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Đọc văn bản này:</span>
+          <button class="oq-sound-btn" style="width: 36px; height: 36px; border: none; background: transparent; font-size: 1.1rem;" onclick="playWordTTS(document.getElementById('oq-modal-word-text').textContent)">🔊</button>
+        </div>
+        <div id="oq-modal-word-text" class="oq-modal-word-title">abide by</div>
+        
+        <!-- Results extra word details (meaning, translation, synonyms) -->
+        <div id="oq-modal-word-details" style="display: none; text-align: left; margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 0.8rem; font-size: 0.9rem; color: #475569; line-height: 1.5;">
+          <div><strong>Nghĩa:</strong> <span id="oq-modal-detail-meaning">tuân thủ, tuân theo</span></div>
+          <div style="margin-top: 0.3rem;"><strong>Ví dụ:</strong> <span id="oq-modal-detail-example" style="font-style: italic;">All employees must abide by the company rules.</span></div>
+          <div style="margin-top: 0.3rem;"><strong>Từ đồng nghĩa:</strong> <span id="oq-modal-detail-synonyms">comply with, follow, obey</span></div>
+        </div>
+      </div>
+
+      <!-- STATE 1: Recording Mode -->
+      <div id="oq-modal-state-recording" style="display: block; width: 100%;">
+        <!-- Waveform Container -->
+        <div class="oq-waveform-box">
+          <div class="oq-waveform-visual" id="oq-waveform-visualizer">
+            <!-- Simulated blue waves rendered dynamically or via CSS -->
+            <div class="oq-wave-bar" style="height: 4px;"></div>
+            <div class="oq-wave-bar" style="height: 8px;"></div>
+            <div class="oq-wave-bar" style="height: 12px;"></div>
+            <div class="oq-wave-bar" style="height: 16px;"></div>
+            <div class="oq-wave-bar" style="height: 24px;"></div>
+            <div class="oq-wave-bar" style="height: 38px;"></div>
+            <div class="oq-wave-bar" style="height: 20px;"></div>
+            <div class="oq-wave-bar" style="height: 8px;"></div>
+            <div class="oq-wave-bar" style="height: 4px;"></div>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.85rem; margin-top: 0.8rem; font-weight: 500;">
+          <span>Tối đa 0:30</span>
+          <span id="oq-recording-timer">0:00</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+          <button class="oq-btn-cancel" onclick="closeSpeechModal()">Hủy</button>
+          <button class="oq-btn-submit" onclick="submitSpeechRecognition()">↑ Gửi</button>
+        </div>
+      </div>
+
+      <!-- STATE 2: Grading Results Mode -->
+      <div id="oq-modal-state-results" style="display: none; width: 100%;">
+        <!-- Circular Score view -->
+        <div class="oq-score-circle-box">
+          <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 0.3rem;">Điểm tổng</div>
+          <div style="display: flex; align-items: baseline; justify-content: center;">
+            <span id="oq-res-overall" style="font-size: 3rem; font-weight: 800; color: #10b981; font-family: var(--font-display);">89</span>
+            <span style="font-size: 1.1rem; color: #94a3b8; font-weight: 700; margin-left: 0.2rem;">/100</span>
+          </div>
+        </div>
+
+        <!-- Audio play buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1.2rem 0;">
+          <button class="oq-audio-btn oq-btn-user-voice" id="oq-play-user-recording">
+            <span>🎙️ Bạn nói</span>
+          </button>
+          <button class="oq-audio-btn oq-btn-ai-voice" onclick="playWordTTS(document.getElementById('oq-modal-word-text').textContent)">
+            <span>🔊 AI phát âm</span>
+          </button>
+        </div>
+
+        <!-- Three sub-scores grid -->
+        <div class="oq-metrics-grid">
+          <div class="oq-metric-card">
+            <span class="oq-metric-label">Độ chính xác</span>
+            <span class="oq-metric-val correct" id="oq-res-accuracy">96</span>
+          </div>
+          <div class="oq-metric-card">
+            <span class="oq-metric-label">Độ lưu loát</span>
+            <span class="oq-metric-val correct" id="oq-res-fluency">100</span>
+          </div>
+          <div class="oq-metric-card">
+            <span class="oq-metric-label">Độ hoàn thiện</span>
+            <span class="oq-metric-val correct" id="oq-res-completeness">100</span>
+          </div>
+        </div>
+
+        <!-- Phoneme & Syllable detailed breakdown -->
+        <div style="margin-top: 1.5rem; text-align: left;">
+          <div style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.8rem;">Phân tích từng từ</div>
+          <div id="oq-breakdown-container" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Rendered dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Modal footer buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; border-top: 1px solid #f1f5f9; padding-top: 1.2rem;">
+          <button class="oq-btn-cancel" onclick="retrySpeechRecording()">🔄 Thử lại</button>
+          <button class="oq-btn-submit" onclick="closeSpeechModalAndGoNext()">Tiếp theo →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="words.js?v=3"></script>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

@@ -1347,6 +1347,13 @@ function handlePassageTextSelection() {
 // 🎙️ MODULE: SPEECH GRADER (CHẤM ĐIỂM PHÁT ÂM)
 // ==========================================
 
+let mediaRecorder = null;
+let recordedChunks = [];
+let audioPlaybackUrl = null;
+let recordingSeconds = 0;
+let recordingTimerInterval = null;
+let lastTargetWord = "";
+let lastPhonetic = "";
 let speechRecognition = null;
 let speechIsListening = false;
 let audioCtx = null;
@@ -1363,54 +1370,112 @@ function startSpeechRecognition(event) {
   if (!targetWordData) return;
   const targetWord = targetWordData.word;
   const phonetic = targetWordData.pronunciation || "";
+  
+  lastTargetWord = targetWord;
+  lastPhonetic = phonetic;
 
-  const resultDiv = document.getElementById('speech-grading-result');
-  const micBtn = document.getElementById('btn-mic');
-
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Web Speech API). Hãy dùng Google Chrome hoặc Microsoft Edge!");
-    return;
+  // Open modal
+  const modal = document.getElementById('oq-speech-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.getElementById('oq-modal-state-recording').style.display = 'block';
+    document.getElementById('oq-modal-state-results').style.display = 'none';
+    document.getElementById('oq-modal-word-details').style.display = 'none';
+    document.getElementById('oq-modal-word-text').textContent = targetWord;
   }
 
-  if (speechIsListening) {
-    speechRecognition.stop();
-    return;
-  }
+  // Reset timer
+  recordingSeconds = 0;
+  document.getElementById('oq-recording-timer').textContent = "0:00";
+  clearInterval(recordingTimerInterval);
+  recordingTimerInterval = setInterval(() => {
+    recordingSeconds++;
+    const mins = Math.floor(recordingSeconds / 60);
+    const secs = recordingSeconds % 60;
+    document.getElementById('oq-recording-timer').textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    if (recordingSeconds >= 30) {
+      submitSpeechRecognition();
+    }
+  }, 1000);
 
-  // Request Microphone stream and setup Web Audio API
+  // Setup Web Audio and MediaRecorder
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       audioStream = stream;
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       audioAnalyser = audioCtx.createAnalyser();
-      audioAnalyser.fftSize = 512;
+      audioAnalyser.fftSize = 256;
       const source = audioCtx.createMediaStreamSource(stream);
       source.connect(audioAnalyser);
 
       volumeHistory = [];
       frequencyHistory = [];
+      recordedChunks = [];
+
+      // MediaRecorder for user playback
+      try {
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            recordedChunks.push(e.data);
+          }
+        };
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+          if (audioPlaybackUrl) {
+            URL.revokeObjectURL(audioPlaybackUrl);
+          }
+          audioPlaybackUrl = URL.createObjectURL(audioBlob);
+          
+          const playBtn = document.getElementById('oq-play-user-recording');
+          if (playBtn) {
+            playBtn.onclick = () => {
+              if (audioPlaybackUrl) {
+                const audio = new Audio(audioPlaybackUrl);
+                audio.play();
+              }
+            };
+          }
+        };
+        mediaRecorder.start();
+      } catch (err) {
+        console.warn("MediaRecorder failed:", err);
+      }
 
       const bufferLength = audioAnalyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
+
+      // Render waveform dynamically
+      const visualizer = document.getElementById('oq-waveform-visualizer');
 
       audioDataInterval = setInterval(() => {
         if (!speechIsListening) return;
         audioAnalyser.getByteFrequencyData(dataArray);
         
-        // Calculate RMS volume level
         let sum = 0;
         for (let i = 0; i < bufferLength; i++) {
           sum += dataArray[i];
         }
         const avg = sum / bufferLength;
         volumeHistory.push(avg);
-        
-        // Save frequency distribution (copy frame values)
         frequencyHistory.push(Array.from(dataArray));
-      }, 20);
 
-      startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn);
+        // Update waveform heights
+        if (visualizer) {
+          const barsCount = 18;
+          visualizer.innerHTML = '';
+          for (let i = 0; i < barsCount; i++) {
+            const freqVal = dataArray[Math.floor(i * (bufferLength / barsCount))] || 0;
+            const barHeight = Math.max(4, Math.round(freqVal / 3.0));
+            const bar = document.createElement('div');
+            bar.className = 'oq-wave-bar';
+            bar.style.height = `${barHeight}px`;
+            visualizer.appendChild(bar);
+          }
+        }
+      }, 50);
+
+      startSpeechAPIEngine(targetWord, phonetic);
     })
     .catch(err => {
       console.error(err);
@@ -1418,7 +1483,7 @@ function startSpeechRecognition(event) {
     });
 }
 
-function startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn) {
+function startSpeechAPIEngine(targetWord, phonetic) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
   
@@ -1427,7 +1492,6 @@ function startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn) {
   speechRecognition.interimResults = false;
   speechRecognition.maxAlternatives = 1;
 
-  // Optimize speech decoder for the exact target word
   if (SpeechGrammarList) {
     try {
       const speechGrammarList = new SpeechGrammarList();
@@ -1435,127 +1499,21 @@ function startSpeechAPIEngine(targetWord, phonetic, resultDiv, micBtn) {
       speechGrammarList.addFromString(grammar, 1);
       speechRecognition.grammars = speechGrammarList;
     } catch (e) {
-      console.warn("SpeechGrammarList configuration is ignored due to browser constraints:", e);
+      console.warn("SpeechGrammarList configuration error:", e);
     }
   }
 
   speechRecognition.onstart = () => {
     speechIsListening = true;
-    micBtn.style.background = 'var(--accent-danger)';
-    micBtn.style.borderColor = 'var(--accent-danger)';
-    micBtn.textContent = '🎙️';
-    resultDiv.textContent = '🎙️ Đang nghe... Hãy phát âm từ vựng!';
-    resultDiv.style.color = 'var(--accent-warning)';
   };
 
   speechRecognition.onresult = (e) => {
     const speechResult = e.results[0][0].transcript.trim().toLowerCase();
-    const confidence = e.results[0][0].confidence || 0.85; // browser STT confidence float (0.0 to 1.0)
+    const confidence = e.results[0][0].confidence || 0.85;
     
-    // Stop recording and process Web Audio features
-    clearInterval(audioDataInterval);
-    if (audioCtx && audioCtx.state !== 'closed') {
-      audioCtx.close();
-    }
-    if (audioStream) {
-      audioStream.getTracks().forEach(track => track.stop());
-    }
+    stopMicTracks();
 
     const grading = analyzeAudioSpeechFeatures(speechResult, targetWord, phonetic, volumeHistory, frequencyHistory, confidence);
-    
-    // Build beautiful UI response
-    let phonemeHtml = '';
-    if (grading.overall > 0 && grading.phonemes && grading.phonemes.length > 0) {
-      phonemeHtml = `
-        <div style="margin: 1rem 0 0.5rem 0; font-size: 0.8rem; color: var(--text-secondary); text-align: center;">Tách phân tích âm vị (Phoneme-level GOP):</div>
-        <div class="phoneme-container">
-          ${grading.phonemes.map(p => `
-            <div class="phoneme-bubble">
-              <span class="phoneme-symbol">/${p.symbol}/</span>
-              <span class="phoneme-score ${p.score >= 80 ? 'correct' : p.score >= 60 ? 'warning' : 'error'}">${p.score}%</span>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }
-
-    resultDiv.innerHTML = `
-      <div class="speech-grade-card">
-        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-align: center;">
-          Bạn đã đọc: <strong style="color: var(--text-primary);">"${speechResult}"</strong>
-        </div>
-        
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
-          <span style="font-weight: 600;">Điểm tổng quát (Overall):</span>
-          <span style="font-size: 1.4rem; font-weight: 800; font-family: var(--font-display); color: ${grading.overall >= 80 ? 'var(--accent-success)' : grading.overall >= 50 ? 'var(--accent-warning)' : 'var(--accent-danger)'};">${grading.overall}%</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
-          <div>Độ tin cậy (Confidence): <strong style="color: var(--text-primary);">${grading.confidence}%</strong></div>
-          <div>Chất lượng mic (Audio Qual): <strong style="color: var(--text-primary);">${grading.audioQuality}%</strong></div>
-        </div>
-
-        ${phonemeHtml}
-
-        <div class="speech-score-row">
-          <span>Độ chính xác âm vị (Phoneme Accuracy - 35%)</span>
-          <strong>${grading.phonemeAccuracy}%</strong>
-        </div>
-        <div class="speech-progress-track">
-          <div class="speech-progress-bar" style="width: ${grading.phonemeAccuracy}%; background: var(--accent-success);"></div>
-        </div>
-
-        <div class="speech-score-row">
-          <span>Độ nhận diện từ (Word Accuracy - 15%)</span>
-          <strong>${grading.wordAccuracy}%</strong>
-        </div>
-        <div class="speech-progress-track">
-          <div class="speech-progress-bar" style="width: ${grading.wordAccuracy}%; background: var(--accent-primary);"></div>
-        </div>
-
-        <div class="speech-score-row">
-          <span>Độ lưu loát (Fluency - 15%)</span>
-          <strong>${grading.fluency}%</strong>
-        </div>
-        <div class="speech-progress-track">
-          <div class="speech-progress-bar" style="width: ${grading.fluency}%; background: var(--accent-primary);"></div>
-        </div>
-
-        <div class="speech-score-row">
-          <span>Nhấn trọng âm (Stress - 15%)</span>
-          <strong>${grading.stress}%</strong>
-        </div>
-        <div class="speech-progress-track">
-          <div class="speech-progress-bar" style="width: ${grading.stress}%; background: var(--accent-warning);"></div>
-        </div>
-
-        <div class="speech-score-row">
-          <span>Âm điệu (Intonation - 10%)</span>
-          <strong>${grading.intonation}%</strong>
-        </div>
-        <div class="speech-progress-track">
-          <div class="speech-progress-bar" style="width: ${grading.intonation}%; background: var(--accent-warning);"></div>
-        </div>
-
-        <div class="speech-score-row">
-          <span>Nhịp điệu câu (Rhythm - 10%)</span>
-          <strong>${grading.rhythm}%</strong>
-        </div>
-        <div class="speech-progress-track">
-          <div class="speech-progress-bar" style="width: ${grading.rhythm}%; background: var(--accent-danger);"></div>
-        </div>
-
-        <!-- Detailed Feedback Warnings -->
-        <div style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.8rem;">
-          <h5 style="margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Phân tích chi tiết:</h5>
-          ${grading.feedback.map(f => `
-            <div class="speech-feedback-item">
-              <span class="speech-feedback-icon">${f.type === 'error' ? '❌' : f.type === 'warning' ? '⚠️' : '✅'}</span>
-              <span style="color: ${f.type === 'error' ? 'var(--accent-danger)' : f.type === 'warning' ? 'var(--accent-warning)' : 'var(--text-primary)'};">${f.text}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
     `;
   };
 
