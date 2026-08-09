@@ -323,17 +323,98 @@ function playWordTTS(word, event) {
 }
 
 // Single Word Add
-function saveSingleWord(event) {
+// Auto Lookup helper for single and batch operations
+async function getWordDetailsAuto(word) {
+  let result = {
+    word: word,
+    type: 'noun',
+    pronunciation: '',
+    meaning: '',
+    example: '',
+    topic: 'Cá nhân'
+  };
+
+  // Step 1: Check offline seed database
+  if (typeof toeicVocabulary !== 'undefined') {
+    for (const catKey of Object.keys(toeicVocabulary)) {
+      const matchWord = toeicVocabulary[catKey].words.find(w => w.word.toLowerCase() === word.toLowerCase());
+      if (matchWord) {
+        result.type = matchWord.type || 'noun';
+        result.pronunciation = matchWord.pronunciation || '';
+        result.meaning = matchWord.meaning || '';
+        result.example = matchWord.example || '';
+        result.topic = toeicVocabulary[catKey].title || 'Cá nhân';
+        return result;
+      }
+    }
+  }
+
+  // Step 2: Call online APIs
+  try {
+    const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    if (dictResponse.ok) {
+      const dictData = await dictResponse.json();
+      const entry = dictData[0];
+      result.pronunciation = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
+      
+      if (entry.meanings && entry.meanings.length > 0) {
+        const meaning = entry.meanings[0];
+        result.type = meaning.partOfSpeech || 'noun';
+        if (meaning.definitions && meaning.definitions.length > 0) {
+          result.example = meaning.definitions.find(d => d.example)?.example || '';
+        }
+      }
+    }
+    
+    const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
+    if (translateResponse.ok) {
+      const translateData = await translateResponse.json();
+      let translatedMeaning = translateData.responseData.translatedText || '';
+      if (translatedMeaning && !translatedMeaning.toLowerCase().includes('mymemory')) {
+        result.meaning = translatedMeaning;
+      }
+    }
+  } catch (error) {
+    console.error("Auto lookup error for word " + word + ":", error);
+  }
+
+  return result;
+}
+
+// Single Word Add with automatic fallback lookups
+async function saveSingleWord(event) {
   event.preventDefault();
   const wordInput = document.getElementById('add-vocab-word').value.trim();
-  const meaningInput = document.getElementById('add-vocab-meaning').value.trim();
-  const typeInput = document.getElementById('add-vocab-type').value;
-  const pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
-  const exampleInput = document.getElementById('add-vocab-example').value.trim();
-  const topicInput = document.getElementById('add-vocab-topic').value.trim() || 'Cá nhân';
+  let meaningInput = document.getElementById('add-vocab-meaning').value.trim();
+  let typeInput = document.getElementById('add-vocab-type').value;
+  let pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
+  let exampleInput = document.getElementById('add-vocab-example').value.trim();
+  let topicInput = document.getElementById('add-vocab-topic').value.trim() || 'Cá nhân';
   
-  if (!wordInput || !meaningInput) {
-    alert("Vui lòng nhập Từ vựng và Nghĩa dịch!");
+  if (!wordInput) {
+    alert("Vui lòng nhập Từ vựng!");
+    return;
+  }
+
+  const saveBtn = event.target.querySelector('button[type="submit"]');
+  const originalText = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = '🔄 Đang tự động tra cứu...';
+
+  // Auto lookup if fields are empty
+  if (!pronunciationInput || !meaningInput || !exampleInput || topicInput === 'Cá nhân') {
+    const info = await getWordDetailsAuto(wordInput);
+    if (!pronunciationInput) pronunciationInput = info.pronunciation;
+    if (!meaningInput) meaningInput = info.meaning || meaningInput;
+    if (!exampleInput) exampleInput = info.example;
+    if (topicInput === 'Cá nhân' && info.topic !== 'Cá nhân') topicInput = info.topic;
+    if (typeInput === 'noun' && info.type !== 'noun') typeInput = info.type;
+  }
+
+  if (!meaningInput) {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalText;
+    alert("Vui lòng nhập nghĩa dịch (Hệ thống không tự tra cứu được nghĩa cho từ này)!");
     return;
   }
   
@@ -353,12 +434,14 @@ function saveSingleWord(event) {
   
   saveState();
   document.getElementById('add-word-form').reset();
+  saveBtn.disabled = false;
+  saveBtn.textContent = originalText;
   alert(`Đã thêm từ "${wordInput}" vào kho từ cá nhân!`);
   switchVocabTab('vocab-list');
 }
 
-// Batch Import Parser
-function importBatchWords() {
+// Batch Import Parser with fully automatic dictionary lookups
+async function importBatchWords() {
   const textarea = document.getElementById('import-batch-area');
   const text = textarea.value.trim();
   if (!text) {
@@ -369,24 +452,30 @@ function importBatchWords() {
   const lines = text.split('\n');
   let importedCount = 0;
   
-  lines.forEach(line => {
-    // Split by hyphen or colon
+  const importBtn = document.querySelector('button[onclick="importBatchWords()"]');
+  const originalText = importBtn.textContent;
+  importBtn.disabled = true;
+  importBtn.textContent = '🔄 Đang phân tích & tra cứu online...';
+
+  const promises = lines.map(async (line) => {
     const parts = line.split(/[-:]/);
-    if (parts.length >= 2) {
+    if (parts.length >= 1) {
       const word = parts[0].trim();
-      const meaning = parts.slice(1).join('-').trim();
+      let meaning = parts.slice(1).join('-').trim();
       
-      // Prevent duplicates
-      if (word && meaning && !state.vocab.some(w => w.word.toLowerCase() === word.toLowerCase())) {
+      if (word && !state.vocab.some(w => w.word.toLowerCase() === word.toLowerCase())) {
+        const info = await getWordDetailsAuto(word);
+        const finalMeaning = meaning || info.meaning || 'Chưa cập nhật';
+        
         state.vocab.unshift({
           word: word,
-          type: 'noun',
-          pronunciation: '',
-          meaning: meaning,
+          type: info.type || 'noun',
+          pronunciation: info.pronunciation || '',
+          meaning: finalMeaning,
           definition: '',
-          example: '',
+          example: info.example || '',
           exampleMeaning: '',
-          topic: 'Nhập lô',
+          topic: info.topic !== 'Cá nhân' ? info.topic : 'Nhập lô',
           status: 'new',
           lastReviewed: null,
           reviewCount: 0
@@ -395,10 +484,14 @@ function importBatchWords() {
       }
     }
   });
+
+  await Promise.all(promises);
   
   saveState();
   textarea.value = '';
-  alert(`Đã nhập thành công ${importedCount} từ vào hệ thống!`);
+  importBtn.disabled = false;
+  importBtn.textContent = originalText;
+  alert(`Đã nhập thành công ${importedCount} từ. Hệ thống đã tự động tra cứu phiên âm, ví dụ và chủ đề cho từng từ!`);
   switchVocabTab('vocab-list');
 }
 
