@@ -413,14 +413,14 @@ function generateTemplateExample(wordOrPhrase, type) {
 
   if (type === 'verb') {
     const templates = [
-      `The executive committee plans to ${lower} the proposed budget during tomorrow's financial conference.`,
-      `The department supervisor requested all staff members to ${lower} the project files before the deadline.`,
-      `We had to ${lower} the scheduled seminar due to unexpected conflicts in the coordinator's itinerary.`,
-      `To improve workplace productivity, the manager decided to ${lower} a new operational strategy.`,
-      `The technical team will ${lower} the database systems during the scheduled server maintenance.`,
-      `The regional office strives to ${lower} customer satisfaction by offering premium services.`,
-      `Please do not hesitate to ${lower} our client relation representatives if you have any questions.`,
-      `The board of directors authorized the firm to ${lower} the partnership agreement next month.`
+      `The executive committee plans to ${lower} the new project guidelines during tomorrow's corporate meeting.`,
+      `The department supervisor requested all staff members to ${lower} the operational procedures as soon as possible.`,
+      `We had to ${lower} the scheduled presentation due to unexpected changes in the manager's itinerary.`,
+      `To improve workplace efficiency, the team decided to ${lower} the current business strategy.`,
+      `The technical team will ${lower} the office database systems during the scheduled server maintenance.`,
+      `Our regional director strives to ${lower} overall customer satisfaction by offering premium support.`,
+      `Please do not hesitate to ${lower} our client relations department if you have any questions.`,
+      `The board of directors authorized the firm to ${lower} the corporate contract next month.`
     ];
     return templates[charSum % templates.length];
   } else if (type === 'adjective') {
@@ -449,14 +449,14 @@ function generateTemplateExample(wordOrPhrase, type) {
     return templates[charSum % templates.length];
   } else { // noun or default
     const templates = [
-      `The company will issue a full refund if there is any major discrepancy in the final ${lower} details.`,
-      `All qualified candidates must submit their application documents to be considered for the ${lower}.`,
-      `The facility manager announced a new safety policy regarding the usage of the office ${lower}.`,
-      `The board of directors approved the recent ${lower} to expand our presence in the international market.`,
-      `Please review the attached ${lower} to confirm your scheduled presentation time at the annual conference.`,
-      `The facility supervisor issued a strict warning concerning the proper maintenance of the laboratory ${lower}.`,
-      `The corporate attorney is currently drafting the official ${lower} for the joint venture.`,
-      `Employees must wear their identification badges at all times when entering the corporate ${lower}.`
+      `The management emphasized the extreme importance of the new ${lower} in our department.`,
+      `We need to clarify all specific details regarding the ${lower} before the project begins.`,
+      `The project team prepared a comprehensive report about the ${lower} for the executive board.`,
+      `Our current business strategy focuses on optimizing the ${lower} in this fiscal year.`,
+      `The company announced a strict policy concerning the usage of the office ${lower}.`,
+      `Please review the attached documents to confirm your scheduled time for the ${lower}.`,
+      `All qualified candidates must submit their paperwork to be considered for the ${lower}.`,
+      `The director announced a new policy regarding the coordination of the corporate ${lower}.`
     ];
     return templates[charSum % templates.length];
   }
