@@ -9,7 +9,7 @@ let state = {
   tests: [] // Array of test log objects
 };
 
-// Seed Vocab from words.js if local database is empty
+// Seed Vocab from words.js if local database is empty or needs merging of new parts
 function seedInitialData() {
   if (state.vocab.length === 0 && typeof toeicVocabulary !== 'undefined') {
     Object.keys(toeicVocabulary).forEach(topicKey => {
@@ -31,6 +31,53 @@ function seedInitialData() {
       });
     });
     saveState();
+  } else if (state.vocab.length > 0 && typeof toeicVocabulary !== 'undefined') {
+    let updated = false;
+    
+    // 1. Copy missing fields (like exampleMeaning or pronunciation) from words.js to local words
+    state.vocab.forEach(localWord => {
+      Object.keys(toeicVocabulary).forEach(topicKey => {
+        const match = toeicVocabulary[topicKey].words.find(w => w.word.toLowerCase() === localWord.word.toLowerCase());
+        if (match) {
+          if (!localWord.exampleMeaning && match.exampleMeaning) {
+            localWord.exampleMeaning = match.exampleMeaning;
+            updated = true;
+          }
+          if (!localWord.pronunciation && match.pronunciation) {
+            localWord.pronunciation = match.pronunciation;
+            updated = true;
+          }
+        }
+      });
+    });
+
+    // 2. Import completely new category words (Listening P1-4, Reading P5-7) that do not exist locally
+    Object.keys(toeicVocabulary).forEach(topicKey => {
+      const topicData = toeicVocabulary[topicKey];
+      topicData.words.forEach(w => {
+        const exists = state.vocab.some(localWord => localWord.word.toLowerCase() === w.word.toLowerCase());
+        if (!exists) {
+          state.vocab.push({
+            word: w.word,
+            type: w.type || 'noun',
+            pronunciation: w.pronunciation || '',
+            meaning: w.meaning,
+            definition: w.definition || '',
+            example: w.example || '',
+            exampleMeaning: w.exampleMeaning || '',
+            topic: topicData.title,
+            status: 'new',
+            lastReviewed: null,
+            reviewCount: 0
+          });
+          updated = true;
+        }
+      });
+    });
+
+    if (updated) {
+      saveState();
+    }
   }
 }
 
@@ -505,6 +552,22 @@ async function getWordDetailsAuto(rawWord) {
 }
 
 // Single Word Add with automatic fallback lookups
+// Toggle custom topic text input visibility based on select dropdown value
+function toggleCustomTopicInput() {
+  const select = document.getElementById('add-vocab-topic-select');
+  const input = document.getElementById('add-vocab-topic');
+  if (select && input) {
+    if (select.value === 'custom') {
+      input.style.display = 'block';
+      input.required = true;
+    } else {
+      input.style.display = 'none';
+      input.required = false;
+    }
+  }
+}
+
+// Single Word Add with automatic fallback lookups
 async function saveSingleWord(event) {
   event.preventDefault();
   const rawWordInput = document.getElementById('add-vocab-word').value.trim();
@@ -514,7 +577,10 @@ async function saveSingleWord(event) {
   let typeInput = document.getElementById('add-vocab-type').value;
   let pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
   let exampleInput = document.getElementById('add-vocab-example').value.trim();
-  let topicInput = document.getElementById('add-vocab-topic').value.trim() || 'Cá nhân';
+  
+  const topicSelect = document.getElementById('add-vocab-topic-select').value;
+  let topicInput = topicSelect === 'custom' ? document.getElementById('add-vocab-topic').value.trim() : topicSelect;
+  if (!topicInput) topicInput = 'Cá nhân';
   
   if (!wordInput) {
     alert("Vui lòng nhập Từ vựng!");
@@ -532,11 +598,13 @@ async function saveSingleWord(event) {
   saveBtn.textContent = '🔄 Đang tự động tra cứu...';
 
   // Auto lookup if fields are empty
+  let exampleMeaningInput = '';
   if (!pronunciationInput || !meaningInput || !exampleInput || topicInput === 'Cá nhân') {
     const info = await getWordDetailsAuto(wordInput);
     if (!pronunciationInput) pronunciationInput = info.pronunciation;
     if (!meaningInput) meaningInput = info.meaning || meaningInput;
     if (!exampleInput) exampleInput = info.example;
+    exampleMeaningInput = info.exampleMeaning || '';
     if (topicInput === 'Cá nhân' && info.topic !== 'Cá nhân') topicInput = info.topic;
     if (typeInput === 'noun' && info.type !== 'noun') typeInput = info.type;
   }
@@ -555,7 +623,7 @@ async function saveSingleWord(event) {
     meaning: meaningInput,
     definition: '',
     example: exampleInput,
-    exampleMeaning: '',
+    exampleMeaning: exampleMeaningInput,
     topic: topicInput,
     status: 'new',
     lastReviewed: null,
@@ -564,6 +632,8 @@ async function saveSingleWord(event) {
   
   saveState();
   document.getElementById('add-word-form').reset();
+  const customTopicInput = document.getElementById('add-vocab-topic');
+  if (customTopicInput) customTopicInput.style.display = 'none';
   saveBtn.disabled = false;
   saveBtn.textContent = originalText;
   alert(`Đã thêm từ "${wordInput}" vào kho từ cá nhân!`);

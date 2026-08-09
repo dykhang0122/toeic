@@ -165,7 +165,19 @@
           </div>
           <div class="form-group">
             <label>Chủ đề / Nguồn gom</label>
-            <input type="text" id="add-vocab-topic" class="form-control" placeholder="e.g. Office, Reading HW, Trung tâm">
+            <select id="add-vocab-topic-select" class="form-control" onchange="toggleCustomTopicInput()">
+              <option value="Cá nhân">Cá nhân (Personal)</option>
+              <option value="Office & Workplace">Office & Workplace</option>
+              <option value="Travel & Leisure">Travel & Leisure</option>
+              <option value="Finance & Economy">Finance & Economy</option>
+              <option value="Shopping & Dining">Shopping & Dining</option>
+              <option value="Listening Part 1 & 2">Listening Part 1 & 2</option>
+              <option value="Listening Part 3 & 4">Listening Part 3 & 4</option>
+              <option value="Reading Part 5 & 6">Reading Part 5 & 6</option>
+              <option value="Reading Part 7">Reading Part 7</option>
+              <option value="custom">-- Khác (Tự nhập) --</option>
+            </select>
+            <input type="text" id="add-vocab-topic" class="form-control" placeholder="Nhập chủ đề tùy chỉnh..." style="margin-top: 0.5rem; display: none;">
           </div>
           <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Lưu vào kho từ</button>
         </form>
@@ -702,6 +714,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="words.js?v=4"></script>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
