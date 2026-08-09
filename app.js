@@ -324,6 +324,7 @@ function playWordTTS(word, event) {
 
 // Single Word Add
 // Clean suffix from word and extract correct type (e.g., "Strenuous (adj)" -> word: "Strenuous", type: "adjective")
+// Clean suffix from word and extract correct type (e.g., "Strenuous (adj)" -> word: "Strenuous", type: "adjective")
 function extractWordAndType(rawWord) {
   let word = rawWord.trim();
   let type = 'noun'; // default
@@ -347,12 +348,25 @@ function extractWordAndType(rawWord) {
   return { word, type };
 }
 
-// Auto Lookup helper for single and batch operations
-async function getWordDetailsAuto(rawWord) {
-  const { word, type } = extractWordAndType(rawWord);
+// Generate template natural English example sentence if dictionary API has none
+function generateTemplateExample(wordOrPhrase, type) {
+  const clean = wordOrPhrase.trim();
+  if (type === 'verb') {
+    return `Researchers want to ${clean.toLowerCase()} the details soon.`;
+  } else if (type === 'adjective') {
+    return `This is a very ${clean.toLowerCase()} process for the team.`;
+  } else if (type === 'adverb') {
+    return `They completed their tasks extremely ${clean.toLowerCase()}.`;
+  } else { // noun or other
+    return `We should pay attention to the ${clean.toLowerCase()} immediately.`;
+  }
+}
+
+// Lookup details for a single English word
+async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
   let result = {
     word: word,
-    type: type,
+    type: defaultType,
     pronunciation: '',
     meaning: '',
     example: '',
@@ -364,7 +378,7 @@ async function getWordDetailsAuto(rawWord) {
     for (const catKey of Object.keys(toeicVocabulary)) {
       const matchWord = toeicVocabulary[catKey].words.find(w => w.word.toLowerCase() === word.toLowerCase());
       if (matchWord) {
-        result.type = matchWord.type || type;
+        result.type = matchWord.type || defaultType;
         result.pronunciation = matchWord.pronunciation || '';
         result.meaning = matchWord.meaning || '';
         result.example = matchWord.example || '';
@@ -384,7 +398,7 @@ async function getWordDetailsAuto(rawWord) {
       
       if (entry.meanings && entry.meanings.length > 0) {
         const meaning = entry.meanings[0];
-        result.type = meaning.partOfSpeech || type;
+        result.type = meaning.partOfSpeech || defaultType;
         if (meaning.definitions && meaning.definitions.length > 0) {
           result.example = meaning.definitions.find(d => d.example)?.example || '';
         }
@@ -403,7 +417,63 @@ async function getWordDetailsAuto(rawWord) {
     console.error("Auto lookup error for word " + word + ":", error);
   }
 
+  // Fallback example & pronunciation if not resolved
+  if (!result.example) {
+    result.example = generateTemplateExample(word, result.type);
+  }
+  if (!result.pronunciation) {
+    result.pronunciation = '/' + word.toLowerCase() + '/';
+  }
+
   return result;
+}
+
+// Master resolver: handles single words and multi-word phrases (e.g. "Golf clubs", "Giving a presentation")
+async function getWordDetailsAuto(rawWord) {
+  const { word, type } = extractWordAndType(rawWord);
+  let result = {
+    word: word,
+    type: type,
+    pronunciation: '',
+    meaning: '',
+    example: '',
+    topic: 'Cá nhân'
+  };
+
+  const subWords = word.split(/\s+/).filter(w => w.length > 0);
+  if (subWords.length > 1) {
+    // Resolve phrase details word-by-word for phonetics
+    const phoneticsList = [];
+    for (const sub of subWords) {
+      const subInfo = await getSingleWordDetailsAuto(sub);
+      if (subInfo.pronunciation) {
+        phoneticsList.push(subInfo.pronunciation.replace(/[\/\[\]]/g, ''));
+      } else {
+        phoneticsList.push(sub);
+      }
+    }
+    result.pronunciation = '/' + phoneticsList.join(' ') + '/';
+    
+    // Auto translate the whole phrase
+    try {
+      const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
+      if (translateResponse.ok) {
+        const translateData = await translateResponse.json();
+        let translatedMeaning = translateData.responseData.translatedText || '';
+        if (translatedMeaning && !translatedMeaning.toLowerCase().includes('mymemory')) {
+          result.meaning = translatedMeaning;
+        }
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    
+    result.example = generateTemplateExample(word, type);
+    return result;
+  } else {
+    // Single word
+    return await getSingleWordDetailsAuto(word, type);
+  }
 }
 
 // Single Word Add with automatic fallback lookups
