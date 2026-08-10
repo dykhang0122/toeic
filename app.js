@@ -1129,6 +1129,119 @@ async function saveSingleWord(event) {
 }
 
 // Batch Import Parser with fully automatic dictionary lookups
+// Parse a single batch line into { word, meanings: [{type, meaning}] }
+// Handles formats like:
+//   "Branch (n) : chi nhánh"
+//   "Conduct (v) thực hiện (n) : hành vi , cách ứng sử"
+//   "Record : (n) hồ sơ (v) ghi chép , thu âm"
+//   "Associate (n) đồng nghiệp (v) liên kết (adj) thuộc cấp phó"
+//   "Objectively adv : khách quan"
+//   "Priorizre (V) ; ưu tiên"
+function parseBatchLine(line) {
+  line = line.trim();
+  if (!line) return null;
+  
+  // Normalize POS markers: (n), (v), (adj), (adv), (N), (V), etc.
+  // Also handle standalone "adv", "adj" without parentheses (e.g., "Objectively adv :")
+  const posRegex = /\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi;
+  const standalonePosBefore = /^([A-Za-z][A-Za-z\s'-]*?)\s+(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]/i;
+  
+  // Step 1: Extract the clean English word
+  // The word is the leading English text before the first POS marker, colon, semicolon, or Vietnamese character
+  let cleanWord = '';
+  
+  // Check if line has POS markers
+  const firstPosMatch = line.match(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/i);
+  const firstColonIdx = line.search(/[:;]/);
+  const firstVietnameseIdx = line.search(/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i);
+  
+  if (firstPosMatch) {
+    // Word is everything before the first POS marker
+    cleanWord = line.substring(0, firstPosMatch.index).trim();
+  } else if (firstColonIdx > 0) {
+    // No POS marker, word is everything before the first colon/semicolon
+    const beforeColon = line.substring(0, firstColonIdx).trim();
+    // Check for standalone POS like "Objectively adv"
+    const standMatch = beforeColon.match(/^([A-Za-z][A-Za-z\s'-]*?)\s+(n|v|adj|adv|noun|verb|adjective|adverb)$/i);
+    if (standMatch) {
+      cleanWord = standMatch[1].trim();
+    } else {
+      cleanWord = beforeColon;
+    }
+  } else {
+    cleanWord = line;
+  }
+  
+  // Remove trailing colons/semicolons/spaces from word
+  cleanWord = cleanWord.replace(/[\s:;]+$/, '').trim();
+  if (!cleanWord) return null;
+  
+  // Step 2: Parse meanings by splitting on POS markers
+  // Remove the word from the beginning of the line
+  let remainder = line.substring(cleanWord.length).trim();
+  // Remove leading colons/semicolons
+  remainder = remainder.replace(/^[\s:;]+/, '').trim();
+  
+  const meanings = [];
+  
+  // Find all POS markers and their positions in the remainder
+  const posMatches = [];
+  let posMatch;
+  const posRe = /\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi;
+  while ((posMatch = posRe.exec(remainder)) !== null) {
+    posMatches.push({ index: posMatch.index, end: posMatch.index + posMatch[0].length, type: posMatch[1] });
+  }
+  
+  // Also check for standalone POS at the very beginning (e.g., "adv : khách quan")
+  const standAloneMatch = remainder.match(/^(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]?\s*/i);
+  if (standAloneMatch && posMatches.length === 0) {
+    posMatches.push({ index: 0, end: standAloneMatch[0].length, type: standAloneMatch[1] });
+  }
+  
+  function normalizePOS(raw) {
+    const r = raw.toLowerCase().trim();
+    if (r === 'n' || r === 'noun') return 'noun';
+    if (r === 'v' || r === 'verb') return 'verb';
+    if (r === 'adj' || r === 'adjective') return 'adjective';
+    if (r === 'adv' || r === 'adverb') return 'adverb';
+    return 'noun';
+  }
+  
+  if (posMatches.length > 0) {
+    // Extract text between consecutive POS markers
+    for (let i = 0; i < posMatches.length; i++) {
+      const posType = normalizePOS(posMatches[i].type);
+      const startIdx = posMatches[i].end;
+      const endIdx = i + 1 < posMatches.length ? posMatches[i + 1].index : remainder.length;
+      let meaningText = remainder.substring(startIdx, endIdx).replace(/^[\s:;]+/, '').replace(/[\s:;]+$/, '').trim();
+      
+      if (meaningText) {
+        meanings.push({ type: posType, meaning: meaningText });
+      } else {
+        meanings.push({ type: posType, meaning: '' });
+      }
+    }
+  }
+  
+  // If no POS markers were found, check if there's text after the word (could be a simple "word : meaning" format)
+  if (meanings.length === 0 && remainder) {
+    // Check for standalone POS before colon like "Objectively adv : khách quan"
+    const standMatch2 = remainder.match(/^(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]?\s*(.*)/i);
+    if (standMatch2) {
+      meanings.push({ type: normalizePOS(standMatch2[1]), meaning: standMatch2[2].trim() });
+    } else {
+      meanings.push({ type: 'noun', meaning: remainder });
+    }
+  }
+  
+  // If still no meanings, default
+  if (meanings.length === 0) {
+    meanings.push({ type: 'noun', meaning: '' });
+  }
+  
+  return { word: cleanWord, meanings };
+}
+
 async function importBatchWords() {
   const textarea = document.getElementById('import-batch-area');
   const text = textarea.value.trim();
@@ -1145,51 +1258,120 @@ async function importBatchWords() {
   importBtn.disabled = true;
   importBtn.textContent = '🔄 Đang phân tích & tra cứu online...';
 
-  const promises = lines.map(async (line) => {
-    const parts = line.split(/[-:]/);
-    if (parts.length >= 1) {
-      const rawWord = parts[0].trim();
-      let meaning = parts.slice(1).join('-').trim();
-      
-      const { word, type } = extractWordAndType(rawWord);
-      
-      if (word && !state.vocab.some(w => w.word.toLowerCase() === word.toLowerCase())) {
-        const info = await getWordDetailsAuto(word);
-        if (info.meanings && info.meanings.length > 0) {
-          if (meaning) {
-            info.meanings[0].meaning = meaning;
+  for (const line of lines) {
+    const parsed = parseBatchLine(line);
+    if (!parsed || !parsed.word) continue;
+    
+    const cleanWord = parsed.word;
+    
+    // Skip if already exists
+    if (state.vocab.some(w => w.word.toLowerCase() === cleanWord.toLowerCase())) continue;
+    
+    // Auto-lookup pronunciation and examples from dictionary
+    let pronunciation = '';
+    const lookupMeanings = [];
+    
+    try {
+      const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
+      if (dictResponse.ok) {
+        const dictData = await dictResponse.json();
+        const firstEntry = dictData[0];
+        
+        // Get pronunciation
+        let rawPhonetic = firstEntry.phonetic || '';
+        if (!rawPhonetic && firstEntry.phonetics) {
+          const found = firstEntry.phonetics.find(p => p.text && p.text.startsWith('/'));
+          rawPhonetic = found ? found.text : '';
+        }
+        rawPhonetic = rawPhonetic.replace(/[()]/g, '').replace(/\s+/g, '').trim();
+        if (rawPhonetic && !rawPhonetic.startsWith('/')) rawPhonetic = '/' + rawPhonetic;
+        if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
+        pronunciation = rawPhonetic;
+        
+        // Collect dictionary definitions grouped by POS for matching examples
+        const dictByPOS = {};
+        for (const entry of dictData) {
+          if (!entry.meanings) continue;
+          for (const mGroup of entry.meanings) {
+            const pos = mGroup.partOfSpeech || 'noun';
+            if (!dictByPOS[pos]) dictByPOS[pos] = [];
+            for (const def of mGroup.definitions) {
+              dictByPOS[pos].push({
+                definition: def.definition || '',
+                example: def.example || ''
+              });
+            }
           }
-        } else {
-          info.meanings = [{
-            type: type,
-            meaning: meaning || 'Chưa cập nhật',
-            definition: '',
-            example: '',
-            exampleMeaning: ''
-          }];
         }
         
-        state.vocab.unshift({
-          word: word,
-          pronunciation: info.pronunciation || '',
-          topic: info.topic !== 'Cá nhân' ? info.topic : 'Nhập lô',
-          status: 'new',
-          lastReviewed: null,
-          reviewCount: 0,
-          meanings: info.meanings
+        // For each user-provided meaning, find matching dictionary example
+        for (const userMeaning of parsed.meanings) {
+          const posKey = userMeaning.type;
+          const dictDefs = dictByPOS[posKey] || [];
+          // Pick the best dictionary entry (prefer one with an example)
+          const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
+          
+          let exText = bestDict ? bestDict.example : '';
+          let defText = bestDict ? bestDict.definition : '';
+          if (!exText) {
+            exText = generateTemplateExample(cleanWord, posKey);
+          }
+          
+          // Translate example sentence
+          let exTrans = '';
+          if (exText) {
+            exTrans = await translateExampleText(exText);
+          }
+          
+          lookupMeanings.push({
+            type: posKey,
+            meaning: userMeaning.meaning || 'Chưa cập nhật',
+            definition: defText,
+            example: exText,
+            exampleMeaning: exTrans
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Batch lookup error for " + cleanWord + ":", e);
+    }
+    
+    // If lookup failed, use user-provided meanings directly
+    if (lookupMeanings.length === 0) {
+      for (const userMeaning of parsed.meanings) {
+        const exText = generateTemplateExample(cleanWord, userMeaning.type);
+        const exTrans = exText ? await translateExampleText(exText) : '';
+        lookupMeanings.push({
+          type: userMeaning.type,
+          meaning: userMeaning.meaning || 'Chưa cập nhật',
+          definition: '',
+          example: exText,
+          exampleMeaning: exTrans
         });
-        importedCount++;
       }
     }
-  });
+    
+    if (!pronunciation) {
+      pronunciation = '/' + cleanWord.toLowerCase() + '/';
+    }
+    
+    state.vocab.unshift({
+      word: cleanWord,
+      pronunciation: pronunciation,
+      topic: 'Nhập lô',
+      status: 'new',
+      lastReviewed: null,
+      reviewCount: 0,
+      meanings: lookupMeanings
+    });
+    importedCount++;
+  }
 
-  await Promise.all(promises);
-  
   saveState();
   textarea.value = '';
   importBtn.disabled = false;
   importBtn.textContent = originalText;
-  alert(`Đã nhập thành công ${importedCount} từ. Hệ thống đã tự động tra cứu phiên âm, ví dụ và chủ đề cho từng từ!`);
+  alert(`Đã nhập thành công ${importedCount} từ. Hệ thống đã tự động tra cứu phiên âm và ví dụ cho từng từ!`);
   switchVocabTab('vocab-list');
 }
 
