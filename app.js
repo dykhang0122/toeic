@@ -723,21 +723,6 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
 
   // Step 2: Call online APIs
   try {
-    // Fetch translation first to get a main translation for the word
-    let translatedMeaning = '';
-    try {
-      const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
-      if (translateResponse.ok) {
-        const translateData = await translateResponse.json();
-        translatedMeaning = translateData.responseData.translatedText || '';
-        if (translatedMeaning.toLowerCase().includes('mymemory')) {
-          translatedMeaning = '';
-        }
-      }
-    } catch (e) {
-      console.warn("MyMemory translation error:", e);
-    }
-
     // Fetch dictionary details
     const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
     if (dictResponse.ok) {
@@ -767,22 +752,21 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
               exText = generateTemplateExample(word, mType);
             }
 
-            // Try to get translation specific to the part of speech
+            // Get translation specific to the part of speech (Only 1 API call per POS)
             let viMeaning = await translateWordByPOS(word, mType);
-            
-            // Fallback to general translation or definition translation if empty
             if (!viMeaning) {
-              if (i === 0 && translatedMeaning) {
-                viMeaning = translatedMeaning;
-              } else if (defText) {
-                const defTrans = await translateExampleText(defText);
-                viMeaning = defTrans || translatedMeaning || 'Chưa cập nhật';
-              } else {
-                viMeaning = translatedMeaning || 'Chưa cập nhật';
-              }
+              // Fallback: translate the definition text (cheaper than translating whole word repeatedly)
+              viMeaning = await translateExampleText(defText);
+            }
+            if (!viMeaning) {
+              viMeaning = 'Chưa cập nhật';
             }
 
-            const exTrans = exText ? await translateExampleText(exText) : '';
+            // Translate example sentence only for the first two meanings to avoid rate limiting
+            let exTrans = '';
+            if (i < 2 && exText) {
+              exTrans = await translateExampleText(exText);
+            }
 
             result.meanings.push({
               type: mType,
