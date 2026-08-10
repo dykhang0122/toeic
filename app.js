@@ -525,6 +525,72 @@ function updateDeleteButtonsVisibility() {
   });
 }
 
+// Sanitization Helper & Standard Schema Transformer
+const VALID_POS_SET = new Set(['NOUN', 'VERB', 'ADJECTIVE', 'ADVERB', 'PHRASE']);
+
+function normalizePOS(rawPOS) {
+  if (!rawPOS) return '';
+  const p = rawPOS.toString().trim().toUpperCase();
+  if (p === 'N' || p === 'NOUN') return 'NOUN';
+  if (p === 'V' || p === 'VERB') return 'VERB';
+  if (p === 'ADJ' || p === 'ADJECTIVE') return 'ADJECTIVE';
+  if (p === 'ADV' || p === 'ADVERB') return 'ADVERB';
+  if (p === 'PHRASE' || p === 'GERUND' || p === 'EXPRESSION' || p === 'IDIOM') return 'PHRASE';
+  return VALID_POS_SET.has(p) ? p : '';
+}
+
+function sanitizeIPA(rawIPA) {
+  if (!rawIPA) return '';
+  let clean = rawIPA.trim();
+  clean = clean.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '');
+  clean = clean.replace(/[()]/g, '').trim();
+  if (!clean || clean === '/' || clean === '/.../') return '';
+  if (!clean.startsWith('/')) clean = '/' + clean;
+  if (!clean.endsWith('/')) clean = clean + '/';
+  return clean;
+}
+
+function sanitizeVocabEntry(raw) {
+  if (!raw) return null;
+  const word = sanitizeWordTitle(raw.word || '');
+  const ipa = sanitizeIPA(raw.ipa || raw.pronunciation || '');
+  
+  const rawMeanings = (raw.meanings && raw.meanings.length > 0)
+    ? raw.meanings
+    : [{
+        type: raw.type || raw.pos || '',
+        meaning: raw.meaning || raw.meaning_vi || '',
+        definition: raw.definition || raw.definition_en || '',
+        example: raw.example || raw.example_en || '',
+        exampleMeaning: raw.exampleMeaning || raw.example_vi || ''
+      }];
+
+  const meanings = rawMeanings.map(m => {
+    const normPOS = normalizePOS(m.type || m.pos || '');
+    return {
+      pos: normPOS, // "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "PHRASE" | ""
+      type: normPOS ? normPOS.toLowerCase() : '',
+      meaning_vi: cleanVietnameseTranslation(m.meaning || m.meaning_vi || ''),
+      meaning: cleanVietnameseTranslation(m.meaning || m.meaning_vi || ''),
+      definition_en: m.definition || m.definition_en || '',
+      definition: m.definition || m.definition_en || '',
+      example_en: m.example || m.example_en || '',
+      example: m.example || m.example_en || '',
+      example_vi: cleanVietnameseTranslation(m.exampleMeaning || m.example_vi || ''),
+      exampleMeaning: cleanVietnameseTranslation(m.exampleMeaning || m.example_vi || '')
+    };
+  });
+
+  return {
+    word: word,
+    ipa: ipa,
+    pronunciation: ipa,
+    topic: raw.topic || 'Cá nhân',
+    status: raw.status || 'new',
+    meanings: meanings
+  };
+}
+
 // Render word bank list
 function renderVocabBank() {
   const grid = document.getElementById('vbank-grid');
@@ -545,7 +611,10 @@ function renderVocabBank() {
     topicFilterDropdown.innerHTML = topicOptionsHtml;
   }
 
-  state.vocab.forEach((wordData, index) => {
+  state.vocab.forEach((rawWordData, index) => {
+    const wordData = sanitizeVocabEntry(rawWordData);
+    if (!wordData || !wordData.word) return;
+
     const matchSearch = !searchVal || 
         wordData.word.toLowerCase().includes(searchVal) ||
         (wordData.meanings && wordData.meanings.some(m => m.meaning.toLowerCase().includes(searchVal) || (m.definition && m.definition.toLowerCase().includes(searchVal))));
@@ -554,52 +623,42 @@ function renderVocabBank() {
       return;
     }
     
-    if (filterStatus !== 'all' && wordData.status !== filterStatus) {
+    if (filterStatus !== 'all' && rawWordData.status !== filterStatus) {
       return;
     }
 
-    if (filterTopic !== 'all' && (wordData.topic || 'Cá nhân') !== filterTopic) {
+    if (filterTopic !== 'all' && (rawWordData.topic || 'Cá nhân') !== filterTopic) {
       return;
     }
     
     let statusClass = 'new';
     let statusText = 'Mới';
-    if (wordData.status === 'mastered') {
+    if (rawWordData.status === 'mastered') {
       statusClass = 'mastered';
       statusText = 'Đã thuộc';
-    } else if (wordData.status === 'reviewing') {
+    } else if (rawWordData.status === 'reviewing') {
       statusClass = 'reviewing';
       statusText = 'Hay quên';
-    } else if (wordData.status === 'learning') {
+    } else if (rawWordData.status === 'learning') {
       statusClass = 'learning';
       statusText = 'Đang nhớ';
     }
     
     let meaningsHtml = '';
-    if (wordData.meanings && wordData.meanings.length > 0) {
-      wordData.meanings.forEach((m, idx) => {
-        meaningsHtml += `
-          <div style="margin-top: 0.6rem; padding-top: 0.6rem; ${idx > 0 ? 'border-top: 1px dashed var(--border-color);' : ''}">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem; flex-wrap: wrap;">
-              <span class="status-badge" style="background: rgba(255,255,255,0.08); color: var(--text-secondary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.type}</span>
-              <span style="font-weight: 600; color: var(--accent-success);">${m.meaning}</span>
-            </div>
-            ${m.definition ? `<div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.2rem;">${m.definition}</div>` : ''}
-            ${m.example ? `<div style="font-style: italic; color: var(--text-primary); font-size: 0.8rem;">e.g. ${m.example}</div>` : ''}
-            ${m.exampleMeaning ? `<div style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.1rem;">Dịch: ${m.exampleMeaning}</div>` : ''}
+    wordData.meanings.forEach((m, idx) => {
+      const hasValidPOS = Boolean(m.pos);
+      meaningsHtml += `
+        <div style="margin-top: 0.6rem; padding-top: 0.6rem; ${idx > 0 ? 'border-top: 1px dashed var(--border-color);' : ''}">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem; flex-wrap: wrap;">
+            ${hasValidPOS ? `<span class="status-badge pos-badge-${m.pos.toLowerCase()}" style="background: rgba(255,255,255,0.08); color: var(--text-secondary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.pos}</span>` : ''}
+            <span style="font-weight: 600; color: var(--accent-success);">${m.meaning}</span>
           </div>
-        `;
-      });
-    } else {
-      meaningsHtml = `
-        <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 0.8rem;">${wordData.meaning}</div>
-        <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
-          <div style="color: var(--text-secondary); margin-bottom: 0.2rem;">${wordData.definition}</div>
-          <div style="font-style: italic; color: var(--text-primary);">e.g. ${wordData.example}</div>
-          ${wordData.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.3rem;">Dịch: ${wordData.exampleMeaning}</div>` : ''}
+          ${m.definition ? `<div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.2rem;">${m.definition}</div>` : ''}
+          ${m.example ? `<div style="font-style: italic; color: var(--text-primary); font-size: 0.8rem;">e.g. ${m.example}</div>` : ''}
+          ${m.exampleMeaning ? `<div style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.1rem;">Dịch: ${m.exampleMeaning}</div>` : ''}
         </div>
       `;
-    }
+    });
 
     const card = document.createElement('div');
     card.className = 'glass-card word-library-card';
@@ -615,8 +674,8 @@ function renderVocabBank() {
         </div>
       </div>
       <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-        <span>${wordData.pronunciation}</span>
-        <button onclick="playWordTTS('${wordData.word}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);">🔊</button>
+        ${wordData.ipa ? `<span class="ipa-text" style="font-family: monospace;">${wordData.ipa}</span>` : ''}
+        <button onclick="playWordTTS('${wordData.word}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);" title="Phát âm">🔊</button>
       </div>
       <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.4rem;">
         ${meaningsHtml}
@@ -1646,41 +1705,61 @@ function showReviewCard(index) {
   }
   
   activeReviewIndex = index;
-  const wordData = activeReviewList[index];
+  const rawWordData = activeReviewList[index];
+  const wordData = sanitizeVocabEntry(rawWordData);
+  if (!wordData) return;
+
   const cardElement = document.getElementById('review-flashcard');
-  
   cardElement.classList.remove('is-flipped');
   
-  // Front
-  const allTypes = wordData.meanings && wordData.meanings.length > 0
-    ? Array.from(new Set(wordData.meanings.map(m => m.type))).join(' / ')
-    : (wordData.type || 'noun');
+  // Front Side
+  const validTypes = Array.from(new Set(wordData.meanings.map(m => m.pos).filter(Boolean)));
+  const allTypesText = validTypes.length > 0 ? validTypes.join(' / ') : '';
+  
   document.getElementById('rv-front-word').textContent = wordData.word;
-  document.getElementById('rv-front-type').textContent = allTypes;
-  document.getElementById('rv-front-phonetic').textContent = wordData.pronunciation || '/.../';
+  
+  const typeElem = document.getElementById('rv-front-type');
+  if (typeElem) {
+    if (allTypesText) {
+      typeElem.textContent = allTypesText;
+      typeElem.style.display = 'inline-block';
+    } else {
+      typeElem.textContent = '';
+      typeElem.style.display = 'none';
+    }
+  }
+  
+  const phonElem = document.getElementById('rv-front-phonetic');
+  if (phonElem) {
+    if (wordData.ipa) {
+      phonElem.textContent = wordData.ipa;
+      phonElem.style.display = 'inline-block';
+    } else {
+      phonElem.textContent = '';
+      phonElem.style.display = 'none';
+    }
+  }
   
   const resultDiv = document.getElementById('speech-grading-result');
   if (resultDiv) resultDiv.textContent = '';
   
-  // Back
+  // Back Side
   const backCenterInfo = cardElement.querySelector('.oq-card-back .oq-center-info');
   if (backCenterInfo) {
     let meaningsHtml = '';
-    if (wordData.meanings && wordData.meanings.length > 0) {
-      wordData.meanings.forEach((m, idx) => {
-        meaningsHtml += `
-          <div style="text-align: left; margin-bottom: 0.8rem; padding-bottom: 0.8rem; ${idx < wordData.meanings.length - 1 ? 'border-bottom: 1px dashed rgba(255,255,255,0.15);' : ''}">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <span class="status-badge" style="background: rgba(255,255,255,0.1); color: var(--text-primary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.type}</span>
-              <span style="font-weight: 700; color: var(--accent-success); font-size: 1.1rem;">${m.meaning}</span>
-            </div>
-            ${m.definition ? `<div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem; font-weight: normal;">${m.definition}</div>` : ''}
-            ${m.example ? `<div style="font-size: 0.85rem; font-style: italic; color: var(--text-primary); margin-top: 0.4rem; font-weight: normal; border-left: 2px solid var(--accent-primary); padding-left: 0.4rem;">e.g. ${m.example}</div>` : ''}
-            ${m.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.2rem; font-style: italic; font-weight: normal; padding-left: 0.6rem;">${m.exampleMeaning}</div>` : ''}
+    wordData.meanings.forEach((m, idx) => {
+      meaningsHtml += `
+        <div style="text-align: left; margin-bottom: 0.8rem; padding-bottom: 0.8rem; ${idx < wordData.meanings.length - 1 ? 'border-bottom: 1px dashed rgba(255,255,255,0.15);' : ''}">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            ${m.pos ? `<span class="status-badge pos-badge-${m.pos.toLowerCase()}" style="background: rgba(255,255,255,0.1); color: var(--text-primary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.pos}</span>` : ''}
+            <span style="font-weight: 700; color: var(--accent-success); font-size: 1.1rem;">${m.meaning}</span>
           </div>
-        `;
-      });
-    }
+          ${m.definition ? `<div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem; font-weight: normal;">${m.definition}</div>` : ''}
+          ${m.example ? `<div style="font-size: 0.85rem; font-style: italic; color: var(--text-primary); margin-top: 0.4rem; font-weight: normal; border-left: 2px solid var(--accent-primary); padding-left: 0.4rem;">e.g. ${m.example}</div>` : ''}
+          ${m.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.2rem; font-style: italic; font-weight: normal; padding-left: 0.6rem;">${m.exampleMeaning}</div>` : ''}
+        </div>
+      `;
+    });
     backCenterInfo.style.maxHeight = '280px';
     backCenterInfo.style.overflowY = 'auto';
     backCenterInfo.innerHTML = meaningsHtml;
