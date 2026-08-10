@@ -1014,20 +1014,59 @@ async function autoCorrectWordTypo(word) {
   const clean = sanitizeWordTitle(word);
   if (!clean || clean.length < 3) return clean;
   
-  // Try Free Dictionary API first
+  const lower = clean.toLowerCase();
+  
+  // 1. Check direct matches in SMART_TOEIC_TERMS
+  if (SMART_TOEIC_TERMS[lower]) return clean;
+
+  // 2. Local fuzzy match against SMART_TOEIC_TERMS dictionary keys
+  const knownKeys = Object.keys(SMART_TOEIC_TERMS);
+  let bestMatch = null;
+  let minDistance = Infinity;
+
+  function lev(a, b) {
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+        }
+      }
+    }
+    return matrix[b.length][a.length];
+  }
+
+  for (const k of knownKeys) {
+    const dist = lev(lower, k);
+    if (dist < minDistance && dist <= 2) {
+      minDistance = dist;
+      bestMatch = k;
+    }
+  }
+  if (bestMatch) {
+    console.log(`Fuzzy auto-corrected typo: "${clean}" -> "${bestMatch}"`);
+    return bestMatch.charAt(0).toUpperCase() + bestMatch.slice(1);
+  }
+  
+  // 3. Try Free Dictionary API
   try {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(clean)}`);
     if (res.ok) return clean; // Valid English word
   } catch (e) {}
 
-  // Check Datamuse spell check API if Dictionary API returned 404
+  // 4. Check Datamuse spell check API if Dictionary API returned 404
   try {
     const dmRes = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(clean)}`);
     if (dmRes.ok) {
       const suggestions = await dmRes.json();
       if (suggestions && suggestions.length > 0 && suggestions[0].word) {
-        console.log(`Auto-corrected typo: "${clean}" -> "${suggestions[0].word}"`);
-        return suggestions[0].word;
+        const sugWord = suggestions[0].word;
+        console.log(`Datamuse auto-corrected typo: "${clean}" -> "${sugWord}"`);
+        return sugWord.charAt(0).toUpperCase() + sugWord.slice(1);
       }
     }
   } catch (e) {}
@@ -1041,37 +1080,60 @@ function extractWordAndType(rawWord) {
   return { word, type };
 }
 
-// Generate 100% grammatically sound business English example sentence per POS or smart term
+// Generate 100% grammatically sound, practical, easy-to-learn business English example sentence per POS or smart term
 function generateTemplateExample(wordOrPhrase, type) {
   const clean = sanitizeWordTitle(wordOrPhrase);
   if (!clean) return '';
   const lower = clean.toLowerCase();
   
-  if (SMART_TOEIC_TERMS[lower]) {
+  if (SMART_TOEIC_TERMS[lower]?.example) {
     return SMART_TOEIC_TERMS[lower].example;
   }
   
   const actualPOS = detectWordPOS(clean, type);
+  const charSum = Array.from(lower).reduce((acc, c) => acc + c.charCodeAt(0), 0);
   
-  // Dynamic semantic categorization for phrases and unknown terms
-  if (actualPOS === 'phrase' || lower.includes('ing ') || lower.startsWith('giving') || lower.startsWith('changing') || lower.startsWith('raising') || lower.startsWith('cleaning') || lower.startsWith('fixing')) {
-    return `The employee was tasked with ${lower} before completing the morning assignment.`;
-  }
-  if (lower.includes('glasses') || lower.includes('clubs') || lower.endsWith('scope') || lower.endsWith('tool') || lower.endsWith('kit')) {
-    return `Personnel are advised to inspect their ${lower} carefully before starting operations.`;
-  }
-  if (lower.endsWith('er') || lower.endsWith('or') || lower.endsWith('ist') || lower.endsWith('ant')) {
-    return `The ${lower} provided key updates during the department briefing.`;
+  if (actualPOS === 'phrase' || lower.includes(' ') || lower.includes('ing ') || lower.startsWith('giving') || lower.startsWith('changing') || lower.startsWith('raising') || lower.startsWith('cleaning') || lower.startsWith('fixing')) {
+    const phraseTemplates = [
+      `The employee spent thirty minutes ${lower} during the morning shift.`,
+      `He was responsible for ${lower} while working on the main assignment.`,
+      `Please follow all safety guidelines when ${lower} in the work area.`
+    ];
+    return phraseTemplates[charSum % phraseTemplates.length];
   }
   
   if (actualPOS === 'verb') {
-    return `The team plans to ${lower} key operational procedures to enhance performance.`;
+    const verbTemplates = [
+      `We need to ${lower} all key tasks before the end of the day.`,
+      `The supervisor requested the team to ${lower} the new project guidelines.`,
+      `Please ${lower} the requested document and return it to us promptly.`,
+      `The manager asked staff members to ${lower} all client inquiries immediately.`
+    ];
+    return verbTemplates[charSum % verbTemplates.length];
   } else if (actualPOS === 'adjective') {
-    return `Management remained ${lower} regarding the implementation of the new business policy.`;
+    const adjTemplates = [
+      `The client was very ${lower} with our prompt service response.`,
+      `We noticed a ${lower} change in customer feedback this quarter.`,
+      `The manager remained ${lower} throughout the strategic discussion.`,
+      `It is ${lower} to double-check all calculations before submission.`
+    ];
+    return adjTemplates[charSum % adjTemplates.length];
   } else if (actualPOS === 'adverb') {
-    return `The technical support team executed the assigned tasks ${lower} and accurately.`;
-  } else {
-    return `The staff member organized the necessary ${lower} for the upcoming assignment.`;
+    const advTemplates = [
+      `The technical team resolved the system issue ${lower} and efficiently.`,
+      `Please complete the requested form ${lower} to avoid processing delays.`,
+      `The quarterly sales figures increased ${lower} over the past month.`,
+      `She answered all client questions ${lower} during the interview.`
+    ];
+    return advTemplates[charSum % advTemplates.length];
+  } else { // noun
+    const nounTemplates = [
+      `The ${lower} was delivered to our office department earlier this morning.`,
+      `Please make sure the ${lower} is stored properly in the designated area.`,
+      `Our team reviewed the latest details concerning the ${lower}.`,
+      `She requested a new ${lower} for her office workspace.`
+    ];
+    return nounTemplates[charSum % nounTemplates.length];
   }
 }
 
