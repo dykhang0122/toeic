@@ -742,46 +742,56 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
     if (dictResponse.ok) {
       const dictData = await dictResponse.json();
-      const entry = dictData[0];
-      result.pronunciation = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
       
-      if (entry.meanings && entry.meanings.length > 0) {
-        // For each meaning group (part of speech), extract a definition block
-        for (let i = 0; i < entry.meanings.length; i++) {
-          const mGroup = entry.meanings[i];
-          const mType = mGroup.partOfSpeech || defaultType;
-          const firstDef = mGroup.definitions[0];
-          const defText = firstDef?.definition || '';
-          let exText = mGroup.definitions.find(d => d.example)?.example || '';
-          
-          if (!exText) {
-            exText = generateTemplateExample(word, mType);
-          }
-
-          // Try to get translation specific to the part of speech
-          let viMeaning = await translateWordByPOS(word, mType);
-          
-          // Fallback to general translation or definition translation if empty
-          if (!viMeaning) {
-            if (i === 0 && translatedMeaning) {
-              viMeaning = translatedMeaning;
-            } else if (defText) {
-              const defTrans = await translateExampleText(defText);
-              viMeaning = defTrans || translatedMeaning || 'Chưa cập nhật';
-            } else {
-              viMeaning = translatedMeaning || 'Chưa cập nhật';
+      // Grab pronunciation from first available entry
+      const firstEntry = dictData[0];
+      result.pronunciation = firstEntry.phonetic || (firstEntry.phonetics && firstEntry.phonetics.find(p => p.text)?.text) || '';
+      
+      const uniqueKeys = new Set();
+      
+      for (const entry of dictData) {
+        if (entry.meanings && entry.meanings.length > 0) {
+          for (let i = 0; i < entry.meanings.length; i++) {
+            const mGroup = entry.meanings[i];
+            const mType = mGroup.partOfSpeech || defaultType;
+            const firstDef = mGroup.definitions[0];
+            const defText = firstDef?.definition || '';
+            
+            // Deduplicate meanings
+            const key = `${mType}_${defText}`.trim().toLowerCase();
+            if (uniqueKeys.has(key)) continue;
+            uniqueKeys.add(key);
+            
+            let exText = mGroup.definitions.find(d => d.example)?.example || '';
+            if (!exText) {
+              exText = generateTemplateExample(word, mType);
             }
+
+            // Try to get translation specific to the part of speech
+            let viMeaning = await translateWordByPOS(word, mType);
+            
+            // Fallback to general translation or definition translation if empty
+            if (!viMeaning) {
+              if (i === 0 && translatedMeaning) {
+                viMeaning = translatedMeaning;
+              } else if (defText) {
+                const defTrans = await translateExampleText(defText);
+                viMeaning = defTrans || translatedMeaning || 'Chưa cập nhật';
+              } else {
+                viMeaning = translatedMeaning || 'Chưa cập nhật';
+              }
+            }
+
+            const exTrans = exText ? await translateExampleText(exText) : '';
+
+            result.meanings.push({
+              type: mType,
+              meaning: viMeaning,
+              definition: defText,
+              example: exText,
+              exampleMeaning: exTrans
+            });
           }
-
-          const exTrans = exText ? await translateExampleText(exText) : '';
-
-          result.meanings.push({
-            type: mType,
-            meaning: viMeaning,
-            definition: defText,
-            example: exText,
-            exampleMeaning: exTrans
-          });
         }
       }
     }
