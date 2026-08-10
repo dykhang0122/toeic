@@ -771,6 +771,83 @@ function sanitizeWordTitle(raw) {
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'boring': {
+    pos: 'adjective',
+    pronunciation: '/ˈbɔː.rɪŋ/',
+    meaning: 'nhàm chán, tẻ nhạt',
+    example: 'The presentation was so boring that several attendees fell asleep.',
+    exampleMeaning: 'Bài thuyết trình nhàm chán đến mức vài người tham dự đã ngủ gật.'
+  },
+  'purchasing': {
+    pos: 'noun',
+    pronunciation: '/ˈpɜː.tʃəs.ɪŋ/',
+    meaning: 'hoạt động mua sắm / bộ phận thu mua',
+    example: 'The purchasing department is negotiating better terms with suppliers.',
+    exampleMeaning: 'Bộ phận thu mua đang đàm phán các điều khoản tốt hơn với nhà cung cấp.'
+  },
+  'wage': {
+    pos: 'noun',
+    pronunciation: '/weɪdʒ/',
+    meaning: 'tiền lương, tiền công (tính theo giờ/tuần)',
+    example: 'The company agreed to raise the minimum hourly wage for factory workers.',
+    exampleMeaning: 'Công ty đã đồng ý tăng mức lương tối thiểu theo giờ cho công nhân nhà máy.'
+  },
+  'manual': {
+    pos: 'adjective',
+    pronunciation: '/ˈmæn.ju.əl/',
+    meaning: 'thủ công, bằng tay (adj) / sách hướng dẫn (n)',
+    example: 'Please read the instruction manual carefully before operating the machine.',
+    exampleMeaning: 'Vui lòng đọc kỹ sách hướng dẫn sử dụng trước khi vận hành máy.'
+  },
+  'associate': {
+    pos: 'noun',
+    pronunciation: '/əˈsəʊ.si.ət/',
+    meaning: 'đồng nghiệp, đối tác',
+    example: 'The senior associate welcomed the new team members to the department.',
+    exampleMeaning: 'Đối tác cấp cao đã chào mừng các thành viên mới đến với bộ phận.'
+  },
+  'prioritize': {
+    pos: 'verb',
+    pronunciation: '/praɪˈɒr.ə.taɪz/',
+    meaning: 'ưu tiên',
+    example: 'Project managers should prioritize urgent client requests to ensure satisfaction.',
+    exampleMeaning: 'Các quản lý dự án nên ưu tiên những yêu cầu khẩn cấp của khách hàng để đảm bảo sự hài lòng.'
+  },
+  'bankrupt': {
+    pos: 'adjective',
+    pronunciation: '/ˈbæŋk.rʌpt/',
+    meaning: 'phá sản',
+    example: 'The company was declared bankrupt after years of financial losses.',
+    exampleMeaning: 'Công ty đã tuyên bố phá sản sau nhiều năm thua lỗ tài chính.'
+  },
+  'hesitant': {
+    pos: 'adjective',
+    pronunciation: '/ˈhez.ɪ.tənt/',
+    meaning: 'ngập ngừng, do dự',
+    example: 'The board members were hesitant about approving the risky overseas investment.',
+    exampleMeaning: 'Các thành viên hội đồng quản trị đã do dự về việc phê duyệt khoản đầu tư mạo hiểm ra nước ngoài.'
+  },
+  'enthusiast': {
+    pos: 'noun',
+    pronunciation: '/ɪnˈθjuː.zi.æst/',
+    meaning: 'người nhiệt huyết, người đam mê',
+    example: 'As a dedicated tech enthusiast, he tests all software updates immediately.',
+    exampleMeaning: 'Là một người đam mê công nghệ tâm huyết, anh ấy thử nghiệm tất cả bản cập nhật phần mềm ngay lập tức.'
+  },
+  'hanger': {
+    pos: 'noun',
+    pronunciation: '/ˈhæŋ.ər/',
+    meaning: 'móc treo quần áo',
+    example: 'Please put your coat on a hanger in the closet.',
+    exampleMeaning: 'Vui lòng treo áo khoác của bạn lên móc treo trong tủ đồ.'
+  },
+  'fringe': {
+    pos: 'adjective',
+    pronunciation: '/frɪndʒ/',
+    meaning: 'phụ, bổ sung',
+    example: 'Fringe benefits include health insurance and paid vacation.',
+    exampleMeaning: 'Các phúc lợi phụ bao gồm bảo hiểm y tế và kỳ nghỉ có lương.'
+  },
   'giving a presentation': {
     pos: 'phrase',
     pronunciation: '/ˈɡɪvɪŋ ə ˌprezənˈteɪʃən/',
@@ -870,48 +947,6 @@ const SMART_TOEIC_TERMS = {
     meaning: 'chi nhánh',
     example: 'The commercial bank opened a new regional branch in the financial district.',
     exampleMeaning: 'Ngân hàng thương mại đã mở một chi nhánh khu vực mới tại khu tài chính.'
-  },
-  'prioritize': {
-    pos: 'verb',
-    meaning: 'ưu tiên',
-    example: 'Project managers should prioritize urgent client requests to ensure satisfaction.',
-    exampleMeaning: 'Các quản lý dự án nên ưu tiên những yêu cầu khẩn cấp của khách hàng để đảm bảo sự hài lòng.'
-  },
-  'jealous': {
-    pos: 'adjective',
-    meaning: 'ganh tị, thèm muốn',
-    example: 'Competing firms were jealous of the startup\'s rapid market expansion.',
-    exampleMeaning: 'Các công ty đối thủ đã rất ganh tị với sự mở rộng thị trường nhanh chóng của công ty khởi nghiệp.'
-  },
-  'hesitant': {
-    pos: 'adjective',
-    meaning: 'ngập ngừng, do dự',
-    example: 'The board members were hesitant about approving the risky overseas investment.',
-    exampleMeaning: 'Các thành viên hội đồng quản trị đã do dự về việc phê duyệt khoản đầu tư mạo hiểm ra nước ngoài.'
-  },
-  'principal': {
-    pos: 'adjective',
-    meaning: 'chủ yếu, chính',
-    example: 'Minimizing operational expenses is the principal objective of our new strategy.',
-    exampleMeaning: 'Giảm thiểu chi phí vận hành là mục tiêu chính của chiến lược mới của chúng tôi.'
-  },
-  'associate': {
-    pos: 'noun',
-    meaning: 'đồng nghiệp, đối tác',
-    example: 'The senior associate welcomed the new team members to the department.',
-    exampleMeaning: 'Đối tác cấp cao đã chào mừng các thành viên mới đến với bộ phận.'
-  },
-  'conduct': {
-    pos: 'verb',
-    meaning: 'thực hiện, tiến hành',
-    example: 'The audit committee will conduct a thorough review of the financial records next week.',
-    exampleMeaning: 'Ủy ban kiểm toán sẽ tiến hành xem xét kỹ lưỡng các hồ sơ tài chính vào tuần tới.'
-  },
-  'enthusiast': {
-    pos: 'noun',
-    meaning: 'người nhiệt huyết, người đam mê',
-    example: 'As a dedicated tech enthusiast, he tests all software updates immediately.',
-    exampleMeaning: 'Là một người đam mê công nghệ tâm huyết, anh ấy thử nghiệm tất cả bản cập nhật phần mềm ngay lập tức.'
   },
   'statistics': {
     pos: 'noun',
