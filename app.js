@@ -641,9 +641,29 @@ function generateTemplateExample(wordOrPhrase, type) {
   }
 }
 
-// Fetch translation for example sentences
+// Fetch translation for text (tries Google Translate first, MyMemory as fallback)
 async function translateExampleText(text) {
   if (!text) return '';
+  
+  // Try Google Translate (unofficial free API) first
+  try {
+    const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(text)}`;
+    const gRes = await fetch(googleUrl);
+    if (gRes.ok) {
+      const gData = await gRes.json();
+      if (gData && gData[0]) {
+        let translated = '';
+        for (const segment of gData[0]) {
+          if (segment[0]) translated += segment[0];
+        }
+        if (translated) return translated.trim();
+      }
+    }
+  } catch (e) {
+    console.warn("Google Translate error:", e);
+  }
+  
+  // Fallback to MyMemory
   try {
     const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|vi`);
     if (res.ok) {
@@ -654,7 +674,7 @@ async function translateExampleText(text) {
       }
     }
   } catch (e) {
-    console.warn("Example translation error:", e);
+    console.warn("MyMemory translation error:", e);
   }
   return '';
 }
@@ -669,22 +689,39 @@ async function translateWordByPOS(word, pos) {
   } else if (pos === 'adjective') {
     query = `is ${word}`;
   } else if (pos === 'adverb') {
-    query = `is ${word}`;
+    query = `do it ${word}`;
   }
   
+  // Try Google Translate first
+  try {
+    const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(query)}`;
+    const gRes = await fetch(googleUrl);
+    if (gRes.ok) {
+      const gData = await gRes.json();
+      if (gData && gData[0] && gData[0][0] && gData[0][0][0]) {
+        let trans = gData[0][0][0];
+        // Clean up helper prefixes
+        trans = trans.replace(/^(a |an |to |be |is |do it |một |cái |chiếc |cuốn |quyển |để |được |bị |làm cho |ở |đang |là |làm điều đó |hãy làm điều đó )/i, '').trim();
+        if (trans) return trans;
+      }
+    }
+  } catch (e) {
+    console.warn("Google POS translation error:", e);
+  }
+  
+  // Fallback to MyMemory
   try {
     const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=en|vi`);
     if (res.ok) {
       const data = await res.json();
       let trans = data.responseData.translatedText || '';
       if (trans && !trans.toLowerCase().includes('mymemory')) {
-        // Clean up common English prefixes/helper words translated directly
         trans = trans.replace(/^(a|an|to|be|is|một|cái|chiếc|cuốn|quyển|để|được|bị|làm cho|ở|đang|là)\s+/i, '').trim();
         return trans;
       }
     }
   } catch (e) {
-    console.warn("POS translation error:", e);
+    console.warn("MyMemory POS translation error:", e);
   }
   return '';
 }
@@ -738,55 +775,79 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     if (dictResponse.ok) {
       const dictData = await dictResponse.json();
       
-      // Grab pronunciation from first available entry
+      // Grab pronunciation from first available entry, clean up parenthetical junk
       const firstEntry = dictData[0];
-      result.pronunciation = firstEntry.phonetic || (firstEntry.phonetics && firstEntry.phonetics.find(p => p.text)?.text) || '';
+      let rawPhonetic = firstEntry.phonetic || '';
+      if (!rawPhonetic && firstEntry.phonetics) {
+        const found = firstEntry.phonetics.find(p => p.text && p.text.startsWith('/'));
+        rawPhonetic = found ? found.text : '';
+      }
+      // Clean pronunciation: remove stray parentheses, trim whitespace
+      rawPhonetic = rawPhonetic.replace(/[()]/g, '').replace(/\s+/g, '').trim();
+      if (rawPhonetic && !rawPhonetic.startsWith('/')) rawPhonetic = '/' + rawPhonetic;
+      if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
+      result.pronunciation = rawPhonetic;
+
+      // Clean the word name itself (remove parenthetical suffixes like "enthusiast (")
+      result.word = firstEntry.word ? firstEntry.word.replace(/\s*\(.*$/, '').trim() : word;
       
-      const uniqueKeys = new Set();
+      // Collect ALL meanings grouped by POS, then pick the BEST one per POS
+      const posMeanings = {}; // { noun: [...], verb: [...], adjective: [...] }
       
       for (const entry of dictData) {
-        if (entry.meanings && entry.meanings.length > 0) {
-          for (let i = 0; i < entry.meanings.length; i++) {
-            const mGroup = entry.meanings[i];
-            const mType = mGroup.partOfSpeech || defaultType;
-            const firstDef = mGroup.definitions[0];
-            const defText = firstDef?.definition || '';
-            
-            // Deduplicate meanings
-            const key = `${mType}_${defText}`.trim().toLowerCase();
-            if (uniqueKeys.has(key)) continue;
-            uniqueKeys.add(key);
-            
-            let exText = mGroup.definitions.find(d => d.example)?.example || '';
-            if (!exText) {
-              exText = generateTemplateExample(word, mType);
-            }
-
-            // Get translation specific to the part of speech (Only 1 API call per POS)
-            let viMeaning = await translateWordByPOS(word, mType);
-            if (!viMeaning) {
-              // Fallback: translate the definition text (cheaper than translating whole word repeatedly)
-              viMeaning = await translateExampleText(defText);
-            }
-            if (!viMeaning) {
-              viMeaning = 'Chưa cập nhật';
-            }
-
-            // Translate example sentence only for the first two meanings to avoid rate limiting
-            let exTrans = '';
-            if (i < 2 && exText) {
-              exTrans = await translateExampleText(exText);
-            }
-
-            result.meanings.push({
-              type: mType,
-              meaning: viMeaning,
-              definition: defText,
-              example: exText,
-              exampleMeaning: exTrans
+        if (!entry.meanings) continue;
+        for (const mGroup of entry.meanings) {
+          const mType = mGroup.partOfSpeech || defaultType;
+          if (!posMeanings[mType]) posMeanings[mType] = [];
+          
+          for (const def of mGroup.definitions) {
+            posMeanings[mType].push({
+              definition: def.definition || '',
+              example: def.example || ''
             });
           }
         }
+      }
+      
+      // For each POS, pick the best definition (prefer one with an example)
+      for (const [posType, defs] of Object.entries(posMeanings)) {
+        // Pick the definition that has a real example, or fall back to the first one
+        const bestDef = defs.find(d => d.example) || defs[0];
+        if (!bestDef) continue;
+        
+        const defText = bestDef.definition;
+        let exText = bestDef.example;
+        if (!exText) {
+          exText = generateTemplateExample(word, posType);
+        }
+
+        // Translate the ENGLISH DEFINITION to get accurate Vietnamese meaning
+        // This is far more accurate than translating the raw word
+        let viMeaning = '';
+        if (defText) {
+          viMeaning = await translateExampleText(defText);
+        }
+        // Fallback to POS-based word translation if definition translation failed
+        if (!viMeaning) {
+          viMeaning = await translateWordByPOS(word, posType);
+        }
+        if (!viMeaning) {
+          viMeaning = 'Chưa cập nhật';
+        }
+
+        // Translate example sentence
+        let exTrans = '';
+        if (exText) {
+          exTrans = await translateExampleText(exText);
+        }
+
+        result.meanings.push({
+          type: posType,
+          meaning: viMeaning,
+          definition: defText,
+          example: exText,
+          exampleMeaning: exTrans
+        });
       }
     }
   } catch (error) {
