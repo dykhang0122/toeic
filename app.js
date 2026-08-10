@@ -116,19 +116,67 @@ function loadState() {
   if (!state.toeicGoal) state.toeicGoal = 800;
   if (!state.streak) state.streak = 0;
 
-  // Normalize loaded vocab items
+  // Normalize and clean up loaded vocab items
   let needsSave = false;
+  
+  // Filter out non-vocab note headers like "Reading part 6 + 7 thầy dũng"
+  const initialLength = state.vocab.length;
+  state.vocab = state.vocab.filter(w => {
+    if (!w.word) return false;
+    const clean = sanitizeWordTitle(w.word);
+    // Reject lines that are notes/headers
+    if (!clean || clean.length < 2) return false;
+    if (w.word.toLowerCase().includes('reading part') || w.word.toLowerCase().includes('thầy dũng') || w.word.toLowerCase().includes('bài tập ngày')) {
+      return false;
+    }
+    return true;
+  });
+  if (state.vocab.length !== initialLength) needsSave = true;
+
+  // Clean title, auto-correct typos, fix POS tags and clean up template examples
   state.vocab.forEach(localWord => {
-    if (!localWord.meanings || localWord.meanings.length === 0) {
-      localWord.meanings = [{
-        type: localWord.type || 'noun',
-        meaning: localWord.meaning || '',
-        definition: localWord.definition || '',
-        example: localWord.example || '',
-        exampleMeaning: localWord.exampleMeaning || ''
-      }];
-      // Keep legacy properties just in case, but rely primarily on meanings array
+    let cleanTitle = sanitizeWordTitle(localWord.word);
+    if (cleanTitle.toLowerCase() === 'pricipal') cleanTitle = 'Principal';
+    if (cleanTitle.toLowerCase() === 'priorizre') cleanTitle = 'Prioritize';
+    
+    if (cleanTitle && cleanTitle !== localWord.word) {
+      localWord.word = cleanTitle;
       needsSave = true;
+    }
+
+    if (localWord.pronunciation) {
+      const cleanPron = localWord.pronunciation.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '').replace(/[()]/g, '').trim();
+      if (cleanPron !== localWord.pronunciation) {
+        localWord.pronunciation = cleanPron;
+        needsSave = true;
+      }
+    }
+
+    if (!localWord.meanings || localWord.meanings.length === 0) {
+      const detectedPOS = detectWordPOS(localWord.word, localWord.type || 'noun');
+      localWord.meanings = [{
+        type: detectedPOS,
+        meaning: localWord.meaning || 'Chưa cập nhật',
+        definition: localWord.definition || '',
+        example: generateTemplateExample(localWord.word, detectedPOS),
+        exampleMeaning: ''
+      }];
+      needsSave = true;
+    } else {
+      localWord.meanings.forEach(m => {
+        const correctPOS = detectWordPOS(localWord.word, m.type);
+        if (correctPOS !== m.type) {
+          m.type = correctPOS;
+          needsSave = true;
+        }
+        
+        // Regenerate example if it contains stray POS tags or dirty text
+        if (!m.example || m.example.includes('(adj') || m.example.includes('(v') || m.example.includes('(n') || m.example.includes(' ; ') || m.example.includes('  ')) {
+          m.example = generateTemplateExample(localWord.word, m.type);
+          m.exampleMeaning = '';
+          needsSave = true;
+        }
+      });
     }
   });
 
@@ -553,89 +601,133 @@ function playWordTTS(word, event) {
   window.speechSynthesis.speak(utterance);
 }
 
-// Single Word Add
-// Clean suffix from word and extract correct type (e.g., "Strenuous (adj)" -> word: "Strenuous", type: "adjective")
-// Clean suffix from word and extract correct type (e.g., "Strenuous (adj)" -> word: "Strenuous", type: "adjective")
-function extractWordAndType(rawWord) {
-  let word = rawWord.trim();
-  let type = 'noun'; // default
-
-  // Look for suffixes like (adj), (v), (n), (adv), adj, v, n, adv at the end
-  const typeRegex = /(?:\s+|^|\()((?:adj|adjective|v|verb|n|noun|adv|adverb))\)?\s*$/i;
-  const match = word.match(typeRegex);
-  if (match) {
-    const rawType = match[1].toLowerCase();
-    if (rawType.startsWith('adj')) {
-      type = 'adjective';
-    } else if (rawType.startsWith('v')) {
-      type = 'verb';
-    } else if (rawType.startsWith('adv')) {
-      type = 'adverb';
-    } else if (rawType.startsWith('n')) {
-      type = 'noun';
-    }
-    word = word.replace(typeRegex, '').trim();
+// Clean word title: strip trailing POS notes, colons, Vietnamese text, stray symbols
+function sanitizeWordTitle(raw) {
+  if (!raw) return '';
+  let clean = raw.trim();
+  
+  // Cut off everything after colon, semicolon, equal sign, or parenthesis
+  clean = clean.replace(/[:;=\(\)].*$/, '').trim();
+  
+  // Split into tokens
+  const tokens = clean.split(/\s+/);
+  const validTokens = [];
+  const posKeywords = new Set(['n', 'v', 'adj', 'adv', 'noun', 'verb', 'adjective', 'adverb']);
+  
+  for (const t of tokens) {
+    const lowerT = t.toLowerCase().replace(/[^a-z]/g, '');
+    if (posKeywords.has(lowerT)) break; // Stop at POS keyword
+    if (/[^a-zA-Z'-]/.test(t)) break; // Stop at non-English token
+    if (t.length > 0) validTokens.push(t);
   }
+  
+  return validTokens.join(' ').trim();
+}
+
+// Smart POS Detection to prevent assigning 'noun' to adjectives/verbs
+function detectWordPOS(cleanWord, fallbackType = 'noun') {
+  if (!cleanWord) return fallbackType || 'noun';
+  const w = cleanWord.toLowerCase().trim();
+  
+  // High-precision overrides for common TOEIC vocabulary
+  const adjSet = new Set([
+    'jealous', 'hesitant', 'bankrupt', 'optimistic', 'strenuous', 'secure', 
+    'manual', 'determined', 'vast', 'principal', 'objective', 'fringe',
+    'reluctant', 'diligent', 'eligible', 'proficient', 'subsequent', 'tentative'
+  ]);
+  const verbSet = new Set([
+    'prioritize', 'reveal', 'conduct', 'secure', 'record', 'associate', 
+    'wage', 'implement', 'consolidate', 'authorize', 'subsidize', 'facilitate'
+  ]);
+  const advSet = new Set([
+    'objectively', 'promptly', 'approximately', 'substantially', 'considerably'
+  ]);
+  
+  if (adjSet.has(w)) return 'adjective';
+  if (verbSet.has(w)) return 'verb';
+  if (advSet.has(w)) return 'adverb';
+  
+  if (w.endsWith('ly')) return 'adverb';
+  if (w.endsWith('ize') || w.endsWith('ise') || w.endsWith('fy')) return 'verb';
+  if (w.endsWith('ous') || w.endsWith('ive') || w.endsWith('ful') || w.endsWith('less') || w.endsWith('able') || w.endsWith('ible')) return 'adjective';
+  
+  return fallbackType || 'noun';
+}
+
+// Auto-correct spell check for typos like "Priorizre" -> "Prioritize" or "Pricipal" -> "Principal"
+async function autoCorrectWordTypo(word) {
+  const clean = sanitizeWordTitle(word);
+  if (!clean || clean.length < 3) return clean;
+  
+  // Try Free Dictionary API first
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(clean)}`);
+    if (res.ok) return clean; // Valid English word
+  } catch (e) {}
+
+  // Check Datamuse spell check API if Dictionary API returned 404
+  try {
+    const dmRes = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(clean)}`);
+    if (dmRes.ok) {
+      const suggestions = await dmRes.json();
+      if (suggestions && suggestions.length > 0 && suggestions[0].word) {
+        console.log(`Auto-corrected typo: "${clean}" -> "${suggestions[0].word}"`);
+        return suggestions[0].word;
+      }
+    }
+  } catch (e) {}
+
+  return clean;
+}
+
+function extractWordAndType(rawWord) {
+  let word = sanitizeWordTitle(rawWord);
+  let type = detectWordPOS(word);
   return { word, type };
 }
 
-// Generate template natural English example sentence if dictionary API has none
+// Generate 100% grammatically sound business English example sentence per POS
 function generateTemplateExample(wordOrPhrase, type) {
-  const clean = wordOrPhrase.trim();
+  const clean = sanitizeWordTitle(wordOrPhrase);
+  if (!clean) return '';
   const lower = clean.toLowerCase();
+  const actualPOS = detectWordPOS(clean, type);
   
-  // Calculate a deterministic index based on the word character codes
   let charSum = 0;
   for (let i = 0; i < clean.length; i++) {
     charSum += clean.charCodeAt(i);
   }
 
-  if (type === 'verb') {
+  if (actualPOS === 'verb') {
     const templates = [
-      `The executive committee plans to ${lower} the new project guidelines during tomorrow's corporate meeting.`,
-      `The department supervisor requested all staff members to ${lower} the operational procedures as soon as possible.`,
-      `We had to ${lower} the scheduled presentation due to unexpected changes in the manager's itinerary.`,
-      `To improve workplace efficiency, the team decided to ${lower} the current business strategy.`,
-      `The technical team will ${lower} the office database systems during the scheduled server maintenance.`,
-      `Our regional director strives to ${lower} overall customer satisfaction by offering premium support.`,
-      `Please do not hesitate to ${lower} our client relations department if you have any questions.`,
-      `The board of directors authorized the firm to ${lower} the corporate contract next month.`
+      `The management decided to ${lower} the operational procedures during tomorrow's meeting.`,
+      `To improve overall efficiency, the supervisor requested the staff to ${lower} all project guidelines.`,
+      `The board of directors authorized the executive team to ${lower} the new corporate strategy.`,
+      `Please ensure that all team members ${lower} their assigned responsibilities before the audit.`
     ];
     return templates[charSum % templates.length];
-  } else if (type === 'adjective') {
+  } else if (actualPOS === 'adjective') {
     const templates = [
-      `The newly launched marketing campaign proved highly ${lower}, leading to a substantial increase in quarterly sales.`,
-      `All staff members are eligible for ${lower} training programs organized by the human resources department.`,
-      `The executive auditor provided a ${lower} report regarding the company's current financial status.`,
-      `The manager expressed his appreciation for the team's ${lower} contributions to the development project.`,
-      `Please ensure that you have all the ${lower} documents ready before meeting the foreign delegation.`,
-      `The supervisor was pleased with the ${lower} feedback received from our regular corporate clients.`,
-      `The board is seeking a ${lower} candidate who possesses excellent communication and negotiation skills.`,
-      `Due to the ${lower} nature of the contract, all details must remain strictly confidential.`
+      `The management remained ${lower} regarding the implementation of the new business policy.`,
+      `All staff members were extremely ${lower} about achieving their quarterly performance targets.`,
+      `The executive board expressed appreciation for the team's ${lower} efforts during the project.`,
+      `Due to ${lower} market conditions, the company decided to adjust its operational budget.`
     ];
     return templates[charSum % templates.length];
-  } else if (type === 'adverb') {
+  } else if (actualPOS === 'adverb') {
     const templates = [
-      `The administrative assistant handled the client's complicated billing inquiries ${lower} and professionally.`,
-      `The corporate guidelines will be revised ${lower} to comply with new international trade regulations.`,
-      `Our technical support team resolved the server connection issues ${lower} during the lunch break.`,
-      `The new production facility operates ${lower}, resulting in significantly reduced manufacturing costs.`,
-      `The market analyst predicted that the company's stock value would rise ${lower} next quarter.`,
-      `Please read the instructions ${lower} before operating the printing machinery.`,
-      `The marketing team ${lower} completed the promotional flyer design for the upcoming summer sale.`,
-      `We must plan our budget ${lower} to avoid any financial deficits in the next fiscal year.`
+      `The administrative assistant handled the client's complex inquiries ${lower} and efficiently.`,
+      `The corporate guidelines were revised ${lower} to comply with international regulations.`,
+      `Our technical support team resolved the server connection issues ${lower} during the break.`,
+      `The financial analyst evaluated the quarterly budget report ${lower} and accurately.`
     ];
     return templates[charSum % templates.length];
-  } else { // noun or default
+  } else { // noun
     const templates = [
-      `The management emphasized the extreme importance of the new ${lower} in our department.`,
-      `We need to clarify all specific details regarding the ${lower} before the project begins.`,
-      `The project team prepared a comprehensive report about the ${lower} for the executive board.`,
-      `Our current business strategy focuses on optimizing the ${lower} in this fiscal year.`,
-      `The company announced a strict policy concerning the usage of the office ${lower}.`,
-      `Please review the attached documents to confirm your scheduled time for the ${lower}.`,
-      `All qualified candidates must submit their paperwork to be considered for the ${lower}.`,
-      `The director announced a new policy regarding the coordination of the corporate ${lower}.`
+      `The executive committee prepared a comprehensive report on the ${lower} for the board.`,
+      `The department head emphasized the importance of optimizing the current ${lower}.`,
+      `Please review the attached documentation regarding the upcoming ${lower} schedule.`,
+      `The company established a clear policy to monitor and evaluate the ${lower} effectively.`
     ];
     return templates[charSum % templates.length];
   }
@@ -1141,61 +1233,21 @@ function parseBatchLine(line) {
   line = line.trim();
   if (!line) return null;
   
-  // Normalize POS markers: (n), (v), (adj), (adv), (N), (V), etc.
-  // Also handle standalone "adv", "adj" without parentheses (e.g., "Objectively adv :")
-  const posRegex = /\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi;
-  const standalonePosBefore = /^([A-Za-z][A-Za-z\s'-]*?)\s+(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]/i;
-  
-  // Step 1: Extract the clean English word
-  // The word is the leading English text before the first POS marker, colon, semicolon, or Vietnamese character
-  let cleanWord = '';
-  
-  // Check if line has POS markers
-  const firstPosMatch = line.match(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/i);
-  const firstColonIdx = line.search(/[:;]/);
-  const firstVietnameseIdx = line.search(/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i);
-  
-  if (firstPosMatch) {
-    // Word is everything before the first POS marker
-    cleanWord = line.substring(0, firstPosMatch.index).trim();
-  } else if (firstColonIdx > 0) {
-    // No POS marker, word is everything before the first colon/semicolon
-    const beforeColon = line.substring(0, firstColonIdx).trim();
-    // Check for standalone POS like "Objectively adv"
-    const standMatch = beforeColon.match(/^([A-Za-z][A-Za-z\s'-]*?)\s+(n|v|adj|adv|noun|verb|adjective|adverb)$/i);
-    if (standMatch) {
-      cleanWord = standMatch[1].trim();
-    } else {
-      cleanWord = beforeColon;
-    }
-  } else {
-    cleanWord = line;
+  // Reject lines that are notes, headers, or don't contain a valid vocabulary entry
+  if (line.toLowerCase().includes('reading part') || line.toLowerCase().includes('thầy dũng') || line.toLowerCase().includes('bài tập ngày')) {
+    return null;
   }
   
-  // Remove trailing colons/semicolons/spaces from word
-  cleanWord = cleanWord.replace(/[\s:;]+$/, '').trim();
-  if (!cleanWord) return null;
+  // Step 1: Extract the clean English word using sanitizeWordTitle
+  let cleanWord = sanitizeWordTitle(line);
+  if (!cleanWord || cleanWord.length < 2) return null;
   
-  // Step 2: Parse meanings by splitting on POS markers
-  // Remove the word from the beginning of the line
-  let remainder = line.substring(cleanWord.length).trim();
-  // Remove leading colons/semicolons
-  remainder = remainder.replace(/^[\s:;]+/, '').trim();
-  
-  const meanings = [];
-  
-  // Find all POS markers and their positions in the remainder
+  // Step 2: Parse meanings by splitting on POS markers in the original line
+  const posRegex = /\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi;
   const posMatches = [];
   let posMatch;
-  const posRe = /\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi;
-  while ((posMatch = posRe.exec(remainder)) !== null) {
+  while ((posMatch = posRegex.exec(line)) !== null) {
     posMatches.push({ index: posMatch.index, end: posMatch.index + posMatch[0].length, type: posMatch[1] });
-  }
-  
-  // Also check for standalone POS at the very beginning (e.g., "adv : khách quan")
-  const standAloneMatch = remainder.match(/^(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]?\s*/i);
-  if (standAloneMatch && posMatches.length === 0) {
-    posMatches.push({ index: 0, end: standAloneMatch[0].length, type: standAloneMatch[1] });
   }
   
   function normalizePOS(raw) {
@@ -1204,39 +1256,27 @@ function parseBatchLine(line) {
     if (r === 'v' || r === 'verb') return 'verb';
     if (r === 'adj' || r === 'adjective') return 'adjective';
     if (r === 'adv' || r === 'adverb') return 'adverb';
-    return 'noun';
+    return detectWordPOS(cleanWord);
   }
   
+  const meanings = [];
   if (posMatches.length > 0) {
-    // Extract text between consecutive POS markers
     for (let i = 0; i < posMatches.length; i++) {
       const posType = normalizePOS(posMatches[i].type);
       const startIdx = posMatches[i].end;
-      const endIdx = i + 1 < posMatches.length ? posMatches[i + 1].index : remainder.length;
-      let meaningText = remainder.substring(startIdx, endIdx).replace(/^[\s:;]+/, '').replace(/[\s:;]+$/, '').trim();
+      const endIdx = i + 1 < posMatches.length ? posMatches[i + 1].index : line.length;
+      let meaningText = line.substring(startIdx, endIdx).replace(/^[\s:;]+/, '').replace(/[\s:;]+$/, '').trim();
       
-      if (meaningText) {
-        meanings.push({ type: posType, meaning: meaningText });
-      } else {
-        meanings.push({ type: posType, meaning: '' });
-      }
+      meanings.push({ type: posType, meaning: meaningText });
     }
-  }
-  
-  // If no POS markers were found, check if there's text after the word (could be a simple "word : meaning" format)
-  if (meanings.length === 0 && remainder) {
-    // Check for standalone POS before colon like "Objectively adv : khách quan"
-    const standMatch2 = remainder.match(/^(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]?\s*(.*)/i);
-    if (standMatch2) {
-      meanings.push({ type: normalizePOS(standMatch2[1]), meaning: standMatch2[2].trim() });
-    } else {
-      meanings.push({ type: 'noun', meaning: remainder });
-    }
-  }
-  
-  // If still no meanings, default
-  if (meanings.length === 0) {
-    meanings.push({ type: 'noun', meaning: '' });
+  } else {
+    // No explicit POS marker in line
+    let remainder = line.substring(cleanWord.length).replace(/^[\s:;]+/, '').trim();
+    // Check if remainder starts with standalone POS like "adv : khách quan"
+    const standMatch = remainder.match(/^(n|v|adj|adv|noun|verb|adjective|adverb)\s*[:;]?\s*(.*)/i);
+    const posType = standMatch ? normalizePOS(standMatch[1]) : detectWordPOS(cleanWord);
+    const meaningText = standMatch ? standMatch[2].trim() : remainder;
+    meanings.push({ type: posType, meaning: meaningText });
   }
   
   return { word: cleanWord, meanings };
@@ -1252,6 +1292,7 @@ async function importBatchWords() {
   
   const lines = text.split('\n');
   let importedCount = 0;
+  let autoCorrectedCount = 0;
   
   const importBtn = document.querySelector('button[onclick="importBatchWords()"]');
   const originalText = importBtn.textContent;
@@ -1262,7 +1303,12 @@ async function importBatchWords() {
     const parsed = parseBatchLine(line);
     if (!parsed || !parsed.word) continue;
     
-    const cleanWord = parsed.word;
+    // Auto-correct spell check typos like "Priorizre" -> "Prioritize" or "Pricipal" -> "Principal"
+    const originalClean = parsed.word;
+    const cleanWord = await autoCorrectWordTypo(originalClean);
+    if (cleanWord.toLowerCase() !== originalClean.toLowerCase()) {
+      autoCorrectedCount++;
+    }
     
     // Skip if already exists
     if (state.vocab.some(w => w.word.toLowerCase() === cleanWord.toLowerCase())) continue;
@@ -1283,7 +1329,7 @@ async function importBatchWords() {
           const found = firstEntry.phonetics.find(p => p.text && p.text.startsWith('/'));
           rawPhonetic = found ? found.text : '';
         }
-        rawPhonetic = rawPhonetic.replace(/[()]/g, '').replace(/\s+/g, '').trim();
+        rawPhonetic = rawPhonetic.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '').replace(/[()]/g, '').replace(/\s+/g, '').trim();
         if (rawPhonetic && !rawPhonetic.startsWith('/')) rawPhonetic = '/' + rawPhonetic;
         if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
         pronunciation = rawPhonetic;
@@ -1306,7 +1352,7 @@ async function importBatchWords() {
         
         // For each user-provided meaning, find matching dictionary example
         for (const userMeaning of parsed.meanings) {
-          const posKey = userMeaning.type;
+          const posKey = detectWordPOS(cleanWord, userMeaning.type);
           const dictDefs = dictByPOS[posKey] || [];
           // Pick the best dictionary entry (prefer one with an example)
           const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
@@ -1336,13 +1382,14 @@ async function importBatchWords() {
       console.warn("Batch lookup error for " + cleanWord + ":", e);
     }
     
-    // If lookup failed, use user-provided meanings directly
+    // If lookup failed, use user-provided meanings directly with smart template sentence
     if (lookupMeanings.length === 0) {
       for (const userMeaning of parsed.meanings) {
-        const exText = generateTemplateExample(cleanWord, userMeaning.type);
+        const posKey = detectWordPOS(cleanWord, userMeaning.type);
+        const exText = generateTemplateExample(cleanWord, posKey);
         const exTrans = exText ? await translateExampleText(exText) : '';
         lookupMeanings.push({
-          type: userMeaning.type,
+          type: posKey,
           meaning: userMeaning.meaning || 'Chưa cập nhật',
           definition: '',
           example: exText,
@@ -1371,7 +1418,12 @@ async function importBatchWords() {
   textarea.value = '';
   importBtn.disabled = false;
   importBtn.textContent = originalText;
-  alert(`Đã nhập thành công ${importedCount} từ. Hệ thống đã tự động tra cứu phiên âm và ví dụ cho từng từ!`);
+  
+  let msg = `Đã nhập thành công ${importedCount} từ vựng!`;
+  if (autoCorrectedCount > 0) {
+    msg += ` (Hệ thống đã tự động sửa ${autoCorrectedCount} lỗi chính tả tiếng Anh)`;
+  }
+  alert(msg);
   switchVocabTab('vocab-list');
 }
 
