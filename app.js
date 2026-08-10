@@ -326,6 +326,14 @@ document.addEventListener('DOMContentLoaded', () => {
         lookupWordDetails();
       }
     });
+    
+    // Prevent Enter key from submitting the form, trigger blur/lookup instead
+    vocabWordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        vocabWordInput.blur();
+      }
+    });
   }
 });
 
