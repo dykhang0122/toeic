@@ -640,6 +640,34 @@ async function translateExampleText(text) {
   return '';
 }
 
+// Translate word specific to its Part of Speech (POS)
+async function translateWordByPOS(word, pos) {
+  let query = word;
+  if (pos === 'verb') {
+    query = `to ${word}`;
+  } else if (pos === 'noun') {
+    query = `a ${word}`;
+  } else if (pos === 'adjective') {
+    query = `be ${word}`;
+  }
+  
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=en|vi`);
+    if (res.ok) {
+      const data = await res.json();
+      let trans = data.responseData.translatedText || '';
+      if (trans && !trans.toLowerCase().includes('mymemory')) {
+        // Clean up common English prefixes/helper words translated directly
+        trans = trans.replace(/^(một|cái|để|được|bị|làm cho|ở|đang)\s+/i, '').trim();
+        return trans;
+      }
+    }
+  } catch (e) {
+    console.warn("POS translation error:", e);
+  }
+  return '';
+}
+
 // Lookup details for a single English word
 async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
   let result = {
@@ -719,15 +747,19 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
             exText = generateTemplateExample(word, mType);
           }
 
-          // Translate definition to get meaning in Vietnamese (especially for secondary meanings)
-          let viMeaning = '';
-          if (i === 0 && translatedMeaning) {
-            viMeaning = translatedMeaning;
-          } else if (defText) {
-            const defTrans = await translateExampleText(defText);
-            viMeaning = defTrans || translatedMeaning || 'Chưa cập nhật';
-          } else {
-            viMeaning = translatedMeaning || 'Chưa cập nhật';
+          // Try to get translation specific to the part of speech
+          let viMeaning = await translateWordByPOS(word, mType);
+          
+          // Fallback to general translation or definition translation if empty
+          if (!viMeaning) {
+            if (i === 0 && translatedMeaning) {
+              viMeaning = translatedMeaning;
+            } else if (defText) {
+              const defTrans = await translateExampleText(defText);
+              viMeaning = defTrans || translatedMeaning || 'Chưa cập nhật';
+            } else {
+              viMeaning = translatedMeaning || 'Chưa cập nhật';
+            }
           }
 
           const exTrans = exText ? await translateExampleText(exText) : '';
