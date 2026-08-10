@@ -184,8 +184,14 @@ function loadState() {
         // Regenerate example if it contains boilerplate templates or stray POS tags
         const isBoilerplate = m.example && (
           m.example.includes('prepared a comprehensive report on the') ||
+          m.example.includes('established a clear policy to monitor and evaluate') ||
+          m.example.includes('emphasized the importance of optimizing the current') ||
+          m.example.includes('review the attached documentation regarding the upcoming') ||
           m.example.includes('upcoming ') && m.example.includes('schedule') ||
           m.example.includes('team members ') && m.example.includes('their assigned') ||
+          m.example.includes('decided to ') && m.example.includes('operational procedures') ||
+          m.example.includes('requested the staff to ') && m.example.includes('project guidelines') ||
+          m.example.includes('authorized the executive team to ') && m.example.includes('corporate strategy') ||
           m.example.includes('(adj') || m.example.includes('(v') || m.example.includes('(n')
         );
 
@@ -718,6 +724,36 @@ function sanitizeWordTitle(raw) {
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'giving a presentation': {
+    pos: 'phrase',
+    meaning: 'thuyết trình, trình bày',
+    example: 'The marketing manager spent thirty minutes giving a presentation to the executive board.',
+    exampleMeaning: 'Quản lý marketing đã dành 30 phút để thuyết trình trước hội đồng quản trị.'
+  },
+  'changing the tire': {
+    pos: 'phrase',
+    meaning: 'thay lốp xe',
+    example: 'The technician spent twenty minutes changing the tire on the roadside.',
+    exampleMeaning: 'Kỹ thuật viên đã dành 20 phút để thay lốp xe bên đường.'
+  },
+  'raising her hand': {
+    pos: 'phrase',
+    meaning: 'giơ tay lên',
+    example: 'She caught the instructor\'s attention by raising her hand during the seminar.',
+    exampleMeaning: 'Cô ấy đã thu hút sự chú ý của giảng viên bằng cách giơ tay trong buổi thảo luận.'
+  },
+  'raise hand': {
+    pos: 'phrase',
+    meaning: 'giơ tay',
+    example: 'Please raise hand if you have any questions regarding the new company policy.',
+    exampleMeaning: 'Vui lòng giơ tay nếu bạn có bất kỳ câu hỏi nào về chính sách mới của công ty.'
+  },
+  'loading area': {
+    pos: 'noun',
+    meaning: 'khu vực bốc dỡ hàng',
+    example: 'All delivery vehicles must park inside the designated loading area to unload cargo.',
+    exampleMeaning: 'Tất cả các xe giao hàng phải đỗ bên trong khu vực bốc dỡ hàng quy định để dỡ hàng hóa.'
+  },
   'bacteria': {
     pos: 'noun',
     meaning: 'vi khuẩn',
@@ -741,24 +777,6 @@ const SMART_TOEIC_TERMS = {
     meaning: 'người thuyết trình, diễn giả',
     example: 'The key presenter delivered a clear overview of the strategic project goals.',
     exampleMeaning: 'Diễn giả chính đã trình bày tổng quan rõ ràng về các mục tiêu chiến lược của dự án.'
-  },
-  'raising her hand': {
-    pos: 'verb',
-    meaning: 'giơ tay lên',
-    example: 'She caught the instructor\'s attention by raising her hand during the seminar.',
-    exampleMeaning: 'Cô ấy đã thu hút sự chú ý của giảng viên bằng cách giơ tay trong buổi thảo luận.'
-  },
-  'raise hand': {
-    pos: 'verb',
-    meaning: 'giơ tay',
-    example: 'Please raise hand if you have any questions regarding the new company policy.',
-    exampleMeaning: 'Vui lòng giơ tay nếu bạn có bất kỳ câu hỏi nào về chính sách mới của công ty.'
-  },
-  'changing the tire': {
-    pos: 'verb',
-    meaning: 'thay lốp xe',
-    example: 'The technician spent twenty minutes changing the tire on the roadside.',
-    exampleMeaning: 'Kỹ thuật viên đã dành 20 phút để thay lốp xe bên đường.'
   },
   'microscope': {
     pos: 'noun',
@@ -858,13 +876,20 @@ const SMART_TOEIC_TERMS = {
   }
 };
 
-// Smart POS Detection to prevent assigning 'noun' to adjectives/verbs
+// Smart POS Detection to prevent assigning 'noun' to adjectives/verbs/phrases
 function detectWordPOS(cleanWord, fallbackType = 'noun') {
   if (!cleanWord) return fallbackType || 'noun';
   const w = cleanWord.toLowerCase().trim();
   
   if (SMART_TOEIC_TERMS[w]) {
     return SMART_TOEIC_TERMS[w].pos;
+  }
+
+  // Detect phrases (multi-word terms, gerund action phrases)
+  if (w.includes(' ') || w.startsWith('giving') || w.startsWith('changing') || w.startsWith('raising') || w.startsWith('taking') || w.startsWith('cleaning') || w.startsWith('fixing')) {
+    if (!w.endsWith('area') && !w.endsWith('room') && !w.endsWith('clubs') || w.includes('giving') || w.includes('changing') || w.includes('raising')) {
+      return 'phrase';
+    }
   }
   
   // High-precision overrides for common TOEIC vocabulary
@@ -936,9 +961,9 @@ function generateTemplateExample(wordOrPhrase, type) {
   
   const actualPOS = detectWordPOS(clean, type);
   
-  // Dynamic semantic categorization for unknown terms
-  if (lower.includes('ing ') || lower.startsWith('changing') || lower.startsWith('raising') || lower.startsWith('cleaning') || lower.startsWith('fixing')) {
-    return `The employee was tasked with ${lower} before the inspection team arrived.`;
+  // Dynamic semantic categorization for phrases and unknown terms
+  if (actualPOS === 'phrase' || lower.includes('ing ') || lower.startsWith('giving') || lower.startsWith('changing') || lower.startsWith('raising') || lower.startsWith('cleaning') || lower.startsWith('fixing')) {
+    return `The employee was tasked with ${lower} before completing the morning assignment.`;
   }
   if (lower.includes('glasses') || lower.includes('clubs') || lower.endsWith('scope') || lower.endsWith('tool') || lower.endsWith('kit')) {
     return `Personnel are advised to inspect their ${lower} carefully before starting operations.`;
