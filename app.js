@@ -667,7 +667,9 @@ async function translateWordByPOS(word, pos) {
   } else if (pos === 'noun') {
     query = `a ${word}`;
   } else if (pos === 'adjective') {
-    query = `be ${word}`;
+    query = `is ${word}`;
+  } else if (pos === 'adverb') {
+    query = `is ${word}`;
   }
   
   try {
@@ -677,7 +679,7 @@ async function translateWordByPOS(word, pos) {
       let trans = data.responseData.translatedText || '';
       if (trans && !trans.toLowerCase().includes('mymemory')) {
         // Clean up common English prefixes/helper words translated directly
-        trans = trans.replace(/^(một|cái|để|được|bị|làm cho|ở|đang)\s+/i, '').trim();
+        trans = trans.replace(/^(a|an|to|be|is|một|cái|chiếc|cuốn|quyển|để|được|bị|làm cho|ở|đang|là)\s+/i, '').trim();
         return trans;
       }
     }
