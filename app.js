@@ -133,7 +133,7 @@ function loadState() {
   });
   if (state.vocab.length !== initialLength) needsSave = true;
 
-  // Clean title, auto-correct typos, fix POS tags and clean up template examples
+  // Clean title, auto-correct typos, fix POS tags, apply SMART_TOEIC_TERMS and clean up template examples
   state.vocab.forEach(localWord => {
     let cleanTitle = sanitizeWordTitle(localWord.word);
     if (cleanTitle.toLowerCase() === 'pricipal') cleanTitle = 'Principal';
@@ -152,7 +152,18 @@ function loadState() {
       }
     }
 
-    if (!localWord.meanings || localWord.meanings.length === 0) {
+    const key = localWord.word.toLowerCase().trim();
+    if (SMART_TOEIC_TERMS[key]) {
+      const smart = SMART_TOEIC_TERMS[key];
+      localWord.meanings = [{
+        type: smart.pos,
+        meaning: smart.meaning,
+        definition: '',
+        example: smart.example,
+        exampleMeaning: smart.exampleMeaning
+      }];
+      needsSave = true;
+    } else if (!localWord.meanings || localWord.meanings.length === 0) {
       const detectedPOS = detectWordPOS(localWord.word, localWord.type || 'noun');
       localWord.meanings = [{
         type: detectedPOS,
@@ -170,11 +181,33 @@ function loadState() {
           needsSave = true;
         }
         
-        // Regenerate example if it contains stray POS tags or dirty text
-        if (!m.example || m.example.includes('(adj') || m.example.includes('(v') || m.example.includes('(n') || m.example.includes(' ; ') || m.example.includes('  ')) {
+        // Regenerate example if it contains boilerplate templates or stray POS tags
+        const isBoilerplate = m.example && (
+          m.example.includes('prepared a comprehensive report on the') ||
+          m.example.includes('upcoming ') && m.example.includes('schedule') ||
+          m.example.includes('team members ') && m.example.includes('their assigned') ||
+          m.example.includes('(adj') || m.example.includes('(v') || m.example.includes('(n')
+        );
+
+        if (!m.example || isBoilerplate) {
           m.example = generateTemplateExample(localWord.word, m.type);
           m.exampleMeaning = '';
           needsSave = true;
+        }
+        
+        if (m.exampleMeaning) {
+          const cleanEx = cleanVietnameseTranslation(m.exampleMeaning);
+          if (cleanEx !== m.exampleMeaning) {
+            m.exampleMeaning = cleanEx;
+            needsSave = true;
+          }
+        }
+        if (m.meaning) {
+          const cleanM = cleanVietnameseTranslation(m.meaning);
+          if (cleanM !== m.meaning) {
+            m.meaning = cleanM;
+            needsSave = true;
+          }
         }
       });
     }
@@ -624,10 +657,156 @@ function sanitizeWordTitle(raw) {
   return validTokens.join(' ').trim();
 }
 
+// Smart Dictionary Override for Common TOEIC Terms & Problem Terms
+const SMART_TOEIC_TERMS = {
+  'bacteria': {
+    pos: 'noun',
+    meaning: 'vi khuẩn',
+    example: 'The laboratory analysis revealed no harmful bacteria in the drinking water.',
+    exampleMeaning: 'Phân tích phòng thí nghiệm cho thấy không có vi khuẩn có hại trong nước uống.'
+  },
+  'kind of': {
+    pos: 'adverb',
+    meaning: 'hơi, khá, một loại',
+    example: 'The management team was kind of surprised by the sudden increase in quarterly sales.',
+    exampleMeaning: 'Ban quản lý có vẻ hơi ngạc nhiên trước sự gia tăng đột ngột của doanh số hàng quý.'
+  },
+  'golf clubs': {
+    pos: 'noun',
+    meaning: 'bộ gậy golf, gậy đánh golf',
+    example: 'He packed his new golf clubs for the weekend corporate tournament.',
+    exampleMeaning: 'Anh ấy mang theo bộ gậy golf mới cho giải đấu cuối tuần của công ty.'
+  },
+  'presenter': {
+    pos: 'noun',
+    meaning: 'người thuyết trình, diễn giả',
+    example: 'The key presenter delivered a clear overview of the strategic project goals.',
+    exampleMeaning: 'Diễn giả chính đã trình bày tổng quan rõ ràng về các mục tiêu chiến lược của dự án.'
+  },
+  'raising her hand': {
+    pos: 'verb',
+    meaning: 'giơ tay lên',
+    example: 'She caught the instructor\'s attention by raising her hand during the seminar.',
+    exampleMeaning: 'Cô ấy đã thu hút sự chú ý của giảng viên bằng cách giơ tay trong buổi thảo luận.'
+  },
+  'raise hand': {
+    pos: 'verb',
+    meaning: 'giơ tay',
+    example: 'Please raise hand if you have any questions regarding the new company policy.',
+    exampleMeaning: 'Vui lòng giơ tay nếu bạn có bất kỳ câu hỏi nào về chính sách mới của công ty.'
+  },
+  'changing the tire': {
+    pos: 'verb',
+    meaning: 'thay lốp xe',
+    example: 'The technician spent twenty minutes changing the tire on the roadside.',
+    exampleMeaning: 'Kỹ thuật viên đã dành 20 phút để thay lốp xe bên đường.'
+  },
+  'microscope': {
+    pos: 'noun',
+    meaning: 'kính hiển vi',
+    example: 'The researcher examined the biological tissue sample carefully under a microscope.',
+    exampleMeaning: 'Nhà nghiên cứu đã kiểm tra kỹ mẫu mô sinh học dưới kính hiển vi.'
+  },
+  'shoes': {
+    pos: 'noun',
+    meaning: 'giày, đôi giày',
+    example: 'All warehouse staff are required to wear sturdy safety shoes on duty.',
+    exampleMeaning: 'Tất cả nhân viên kho hàng đều phải đeo giày bảo hộ chắc chắn khi làm nhiệm vụ.'
+  },
+  'safety glasses': {
+    pos: 'noun',
+    meaning: 'kính bảo hộ',
+    example: 'Technicians must wear safety glasses inside the chemical processing facility.',
+    exampleMeaning: 'Kỹ thuật viên phải đeo kính bảo hộ bên trong cơ sở xử lý hóa chất.'
+  },
+  'sock': {
+    pos: 'noun',
+    meaning: 'tất, vớ',
+    example: 'He packed several pairs of comfortable socks for his upcoming business trip.',
+    exampleMeaning: 'Anh ấy đã đóng gói vài đôi tất thoải mái cho chuyến công tác sắp tới.'
+  },
+  'vast wealth': {
+    pos: 'noun',
+    meaning: 'khối tài sản kế xù, sự giàu có lớn',
+    example: 'The entrepreneur accumulated vast wealth through successful real estate investments.',
+    exampleMeaning: 'Doanh nhân đã tích lũy khối tài sản kế xù thông qua các khoản đầu tư bất động sản thành công.'
+  },
+  'branch': {
+    pos: 'noun',
+    meaning: 'chi nhánh',
+    example: 'The commercial bank opened a new regional branch in the financial district.',
+    exampleMeaning: 'Ngân hàng thương mại đã mở một chi nhánh khu vực mới tại khu tài chính.'
+  },
+  'prioritize': {
+    pos: 'verb',
+    meaning: 'ưu tiên',
+    example: 'Project managers should prioritize urgent client requests to ensure satisfaction.',
+    exampleMeaning: 'Các quản lý dự án nên ưu tiên những yêu cầu khẩn cấp của khách hàng để đảm bảo sự hài lòng.'
+  },
+  'jealous': {
+    pos: 'adjective',
+    meaning: 'ganh tị, thèm muốn',
+    example: 'Competing firms were jealous of the startup\'s rapid market expansion.',
+    exampleMeaning: 'Các công ty đối thủ đã rất ganh tị với sự mở rộng thị trường nhanh chóng của công ty khởi nghiệp.'
+  },
+  'hesitant': {
+    pos: 'adjective',
+    meaning: 'ngập ngừng, do dự',
+    example: 'The board members were hesitant about approving the risky overseas investment.',
+    exampleMeaning: 'Các thành viên hội đồng quản trị đã do dự về việc phê duyệt khoản đầu tư mạo hiểm ra nước ngoài.'
+  },
+  'principal': {
+    pos: 'adjective',
+    meaning: 'chủ yếu, chính',
+    example: 'Minimizing operational expenses is the principal objective of our new strategy.',
+    exampleMeaning: 'Giảm thiểu chi phí vận hành là mục tiêu chính của chiến lược mới của chúng tôi.'
+  },
+  'associate': {
+    pos: 'noun',
+    meaning: 'đồng nghiệp, đối tác',
+    example: 'The senior associate welcomed the new team members to the department.',
+    exampleMeaning: 'Đối tác cấp cao đã chào mừng các thành viên mới đến với bộ phận.'
+  },
+  'conduct': {
+    pos: 'verb',
+    meaning: 'thực hiện, tiến hành',
+    example: 'The audit committee will conduct a thorough review of the financial records next week.',
+    exampleMeaning: 'Ủy ban kiểm toán sẽ tiến hành xem xét kỹ lưỡng các hồ sơ tài chính vào tuần tới.'
+  },
+  'enthusiast': {
+    pos: 'noun',
+    meaning: 'người nhiệt huyết, người đam mê',
+    example: 'As a dedicated tech enthusiast, he tests all software updates immediately.',
+    exampleMeaning: 'Là một người đam mê công nghệ tâm huyết, anh ấy thử nghiệm tất cả bản cập nhật phần mềm ngay lập tức.'
+  },
+  'statistics': {
+    pos: 'noun',
+    meaning: 'thống kê, con số thống kê',
+    example: 'The latest quarterly statistics demonstrate a continuous growth in overall sales.',
+    exampleMeaning: 'Số liệu thống kê hàng quý mới nhất cho thấy sự tăng trưởng liên tục về tổng doanh số.'
+  },
+  'conglomerate': {
+    pos: 'noun',
+    meaning: 'tập đoàn đa ngành',
+    example: 'The global conglomerate acquired two regional logistics firms this quarter.',
+    exampleMeaning: 'Tập đoàn toàn cầu đã mua lại hai công ty logistics khu vực trong quý này.'
+  },
+  'objectively': {
+    pos: 'adverb',
+    meaning: 'khách quan',
+    example: 'The external auditor evaluated the financial compliance reports objectively.',
+    exampleMeaning: 'Kiểm toán viên bên ngoài đã đánh giá các báo cáo tuân thủ tài chính một cách khách quan.'
+  }
+};
+
 // Smart POS Detection to prevent assigning 'noun' to adjectives/verbs
 function detectWordPOS(cleanWord, fallbackType = 'noun') {
   if (!cleanWord) return fallbackType || 'noun';
   const w = cleanWord.toLowerCase().trim();
+  
+  if (SMART_TOEIC_TERMS[w]) {
+    return SMART_TOEIC_TERMS[w].pos;
+  }
   
   // High-precision overrides for common TOEIC vocabulary
   const adjSet = new Set([
@@ -686,51 +865,51 @@ function extractWordAndType(rawWord) {
   return { word, type };
 }
 
-// Generate 100% grammatically sound business English example sentence per POS
+// Generate 100% grammatically sound business English example sentence per POS or smart term
 function generateTemplateExample(wordOrPhrase, type) {
   const clean = sanitizeWordTitle(wordOrPhrase);
   if (!clean) return '';
   const lower = clean.toLowerCase();
+  
+  if (SMART_TOEIC_TERMS[lower]) {
+    return SMART_TOEIC_TERMS[lower].example;
+  }
+  
   const actualPOS = detectWordPOS(clean, type);
   
-  let charSum = 0;
-  for (let i = 0; i < clean.length; i++) {
-    charSum += clean.charCodeAt(i);
+  // Dynamic semantic categorization for unknown terms
+  if (lower.includes('ing ') || lower.startsWith('changing') || lower.startsWith('raising') || lower.startsWith('cleaning') || lower.startsWith('fixing')) {
+    return `The employee was tasked with ${lower} before the inspection team arrived.`;
   }
-
+  if (lower.includes('glasses') || lower.includes('clubs') || lower.endsWith('scope') || lower.endsWith('tool') || lower.endsWith('kit')) {
+    return `Personnel are advised to inspect their ${lower} carefully before starting operations.`;
+  }
+  if (lower.endsWith('er') || lower.endsWith('or') || lower.endsWith('ist') || lower.endsWith('ant')) {
+    return `The ${lower} provided key updates during the department briefing.`;
+  }
+  
   if (actualPOS === 'verb') {
-    const templates = [
-      `The management decided to ${lower} the operational procedures during tomorrow's meeting.`,
-      `To improve overall efficiency, the supervisor requested the staff to ${lower} all project guidelines.`,
-      `The board of directors authorized the executive team to ${lower} the new corporate strategy.`,
-      `Please ensure that all team members ${lower} their assigned responsibilities before the audit.`
-    ];
-    return templates[charSum % templates.length];
+    return `The team plans to ${lower} key operational procedures to enhance performance.`;
   } else if (actualPOS === 'adjective') {
-    const templates = [
-      `The management remained ${lower} regarding the implementation of the new business policy.`,
-      `All staff members were extremely ${lower} about achieving their quarterly performance targets.`,
-      `The executive board expressed appreciation for the team's ${lower} efforts during the project.`,
-      `Due to ${lower} market conditions, the company decided to adjust its operational budget.`
-    ];
-    return templates[charSum % templates.length];
+    return `Management remained ${lower} regarding the implementation of the new business policy.`;
   } else if (actualPOS === 'adverb') {
-    const templates = [
-      `The administrative assistant handled the client's complex inquiries ${lower} and efficiently.`,
-      `The corporate guidelines were revised ${lower} to comply with international regulations.`,
-      `Our technical support team resolved the server connection issues ${lower} during the break.`,
-      `The financial analyst evaluated the quarterly budget report ${lower} and accurately.`
-    ];
-    return templates[charSum % templates.length];
-  } else { // noun
-    const templates = [
-      `The executive committee prepared a comprehensive report on the ${lower} for the board.`,
-      `The department head emphasized the importance of optimizing the current ${lower}.`,
-      `Please review the attached documentation regarding the upcoming ${lower} schedule.`,
-      `The company established a clear policy to monitor and evaluate the ${lower} effectively.`
-    ];
-    return templates[charSum % templates.length];
+    return `The technical support team executed the assigned tasks ${lower} and accurately.`;
+  } else {
+    return `The staff member organized the necessary ${lower} for the upcoming assignment.`;
   }
+}
+
+function cleanVietnameseTranslation(raw) {
+  if (!raw) return '';
+  let trans = raw.trim();
+  // Safe prefix stripping with word boundaries (\b) so "người" or "vi khuẩn" is NEVER stripped
+  trans = trans.replace(/^\b(a|an|to|be|is|do it|một|cái|chiếc|cuốn|quyển|để|được|bị|làm cho|ở|đang|là)\b\s*/i, '').trim();
+  // Fix known typos in translation text
+  trans = trans.replace(/\bgofl\b/gi, 'golf');
+  trans = trans.replace(/\bi khuẩn\b/gi, 'vi khuẩn');
+  trans = trans.replace(/\bgười thuyết trình\b/gi, 'người thuyết trình');
+  trans = trans.replace(/\bgười phụ nữ\b/gi, 'người phụ nữ');
+  return trans;
 }
 
 // Fetch translation for text (tries Google Translate first, MyMemory as fallback)
@@ -748,7 +927,7 @@ async function translateExampleText(text) {
         for (const segment of gData[0]) {
           if (segment[0]) translated += segment[0];
         }
-        if (translated) return translated.trim();
+        if (translated) return cleanVietnameseTranslation(translated.trim());
       }
     }
   } catch (e) {
@@ -762,7 +941,7 @@ async function translateExampleText(text) {
       const data = await res.json();
       let transText = data.responseData.translatedText || '';
       if (transText && !transText.toLowerCase().includes('mymemory')) {
-        return transText;
+        return cleanVietnameseTranslation(transText);
       }
     }
   } catch (e) {
@@ -773,6 +952,11 @@ async function translateExampleText(text) {
 
 // Translate word specific to its Part of Speech (POS)
 async function translateWordByPOS(word, pos) {
+  const wKey = word.toLowerCase().trim();
+  if (SMART_TOEIC_TERMS[wKey]) {
+    return SMART_TOEIC_TERMS[wKey].meaning;
+  }
+
   let query = word;
   if (pos === 'verb') {
     query = `to ${word}`;
@@ -791,9 +975,7 @@ async function translateWordByPOS(word, pos) {
     if (gRes.ok) {
       const gData = await gRes.json();
       if (gData && gData[0] && gData[0][0] && gData[0][0][0]) {
-        let trans = gData[0][0][0];
-        // Clean up helper prefixes
-        trans = trans.replace(/^(a |an |to |be |is |do it |một |cái |chiếc |cuốn |quyển |để |được |bị |làm cho |ở |đang |là |làm điều đó |hãy làm điều đó )/i, '').trim();
+        let trans = cleanVietnameseTranslation(gData[0][0][0]);
         if (trans) return trans;
       }
     }
@@ -808,7 +990,7 @@ async function translateWordByPOS(word, pos) {
       const data = await res.json();
       let trans = data.responseData.translatedText || '';
       if (trans && !trans.toLowerCase().includes('mymemory')) {
-        trans = trans.replace(/^(a|an|to|be|is|một|cái|chiếc|cuốn|quyển|để|được|bị|làm cho|ở|đang|là)\s+/i, '').trim();
+        trans = cleanVietnameseTranslation(trans);
         return trans;
       }
     }
