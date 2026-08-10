@@ -143,33 +143,19 @@
               <span id="lookup-status" style="font-size: 0.8rem; display: none; margin-top: 0.2rem; color: var(--accent-warning);"></span>
             </div>
             <div class="form-group">
-              <label>Từ loại</label>
-              <select id="add-vocab-type" class="form-control">
-                <option value="noun">Danh từ (noun)</option>
-                <option value="verb">Động từ (verb)</option>
-                <option value="adjective">Tính từ (adjective)</option>
-                <option value="adverb">Trạng từ (adverb)</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
               <label>Phát âm (Phonetic)</label>
               <input type="text" id="add-vocab-pronunciation" class="form-control" placeholder="e.g. /ˈæp.lɪ.kənt/">
             </div>
-            <div class="form-group">
-              <label>Ý nghĩa / Dịch thuật *</label>
-              <input type="text" id="add-vocab-meaning" class="form-control" placeholder="e.g. ứng viên, người ứng tuyển" required>
+          </div>
+
+          <div style="margin-top: 1rem; margin-bottom: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <label style="font-weight: 700; color: var(--accent-primary); display: block; margin-bottom: 0.8rem;">Định nghĩa & loại từ:</label>
+            <div id="add-vocab-meanings-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <!-- Dynamic meaning blocks rendered by JS -->
             </div>
+            <button type="button" class="btn-primary" style="margin-top: 1rem; background: var(--bg-tertiary); border: 1px dashed var(--border-color); width: 100%; color: var(--text-primary);" onclick="addMeaningBlock()">➕ Thêm nghĩa & loại từ khác</button>
           </div>
-          <div class="form-group">
-            <label>Câu ví dụ (English)</label>
-            <input type="text" id="add-vocab-example" class="form-control" placeholder="e.g. There were over 50 applicants for the job.">
-          </div>
-          <div class="form-group">
-            <label>Dịch nghĩa câu ví dụ (Vietnamese)</label>
-            <input type="text" id="add-vocab-example-meaning" class="form-control" placeholder="e.g. Có hơn 50 ứng viên nộp hồ sơ xin việc.">
-          </div>
+
           <div class="form-group">
             <label>Chủ đề / Nguồn gom</label>
             <select id="add-vocab-topic-select" class="form-control" onchange="toggleCustomTopicInput()">
@@ -186,7 +172,7 @@
             </select>
             <input type="text" id="add-vocab-topic" class="form-control" placeholder="Nhập chủ đề tùy chỉnh..." style="margin-top: 0.5rem; display: none;">
           </div>
-          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Lưu vào kho từ</button>
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1.5rem;">Lưu vào kho từ</button>
         </form>
       </div>
 

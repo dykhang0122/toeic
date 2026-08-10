@@ -17,16 +17,20 @@ function seedInitialData() {
       topicData.words.forEach(w => {
         state.vocab.push({
           word: w.word,
-          type: w.type || 'noun',
           pronunciation: w.pronunciation || '',
-          meaning: w.meaning,
-          definition: w.definition || '',
-          example: w.example || '',
-          exampleMeaning: w.exampleMeaning || '',
           topic: topicData.title,
           status: 'new', // new, reviewing, learning, mastered
           lastReviewed: null,
-          reviewCount: 0
+          reviewCount: 0,
+          meanings: [
+            {
+              type: w.type || 'noun',
+              meaning: w.meaning,
+              definition: w.definition || '',
+              example: w.example || '',
+              exampleMeaning: w.exampleMeaning || ''
+            }
+          ]
         });
       });
     });
@@ -39,8 +43,21 @@ function seedInitialData() {
       Object.keys(toeicVocabulary).forEach(topicKey => {
         const match = toeicVocabulary[topicKey].words.find(w => w.word.toLowerCase() === localWord.word.toLowerCase());
         if (match) {
-          if (!localWord.exampleMeaning && match.exampleMeaning) {
-            localWord.exampleMeaning = match.exampleMeaning;
+          // Normalize if not done yet
+          if (!localWord.meanings || localWord.meanings.length === 0) {
+            localWord.meanings = [{
+              type: localWord.type || match.type || 'noun',
+              meaning: localWord.meaning || match.meaning || '',
+              definition: localWord.definition || match.definition || '',
+              example: localWord.example || match.example || '',
+              exampleMeaning: localWord.exampleMeaning || match.exampleMeaning || ''
+            }];
+            updated = true;
+          }
+          
+          const primaryMeaning = localWord.meanings[0];
+          if (!primaryMeaning.exampleMeaning && match.exampleMeaning) {
+            primaryMeaning.exampleMeaning = match.exampleMeaning;
             updated = true;
           }
           if (!localWord.pronunciation && match.pronunciation) {
@@ -59,16 +76,20 @@ function seedInitialData() {
         if (!exists) {
           state.vocab.push({
             word: w.word,
-            type: w.type || 'noun',
             pronunciation: w.pronunciation || '',
-            meaning: w.meaning,
-            definition: w.definition || '',
-            example: w.example || '',
-            exampleMeaning: w.exampleMeaning || '',
             topic: topicData.title,
             status: 'new',
             lastReviewed: null,
-            reviewCount: 0
+            reviewCount: 0,
+            meanings: [
+              {
+                type: w.type || 'noun',
+                meaning: w.meaning,
+                definition: w.definition || '',
+                example: w.example || '',
+                exampleMeaning: w.exampleMeaning || ''
+              }
+            ]
           });
           updated = true;
         }
@@ -94,6 +115,26 @@ function loadState() {
   if (!state.tests) state.tests = [];
   if (!state.toeicGoal) state.toeicGoal = 800;
   if (!state.streak) state.streak = 0;
+
+  // Normalize loaded vocab items
+  let needsSave = false;
+  state.vocab.forEach(localWord => {
+    if (!localWord.meanings || localWord.meanings.length === 0) {
+      localWord.meanings = [{
+        type: localWord.type || 'noun',
+        meaning: localWord.meaning || '',
+        definition: localWord.definition || '',
+        example: localWord.example || '',
+        exampleMeaning: localWord.exampleMeaning || ''
+      }];
+      // Keep legacy properties just in case, but rely primarily on meanings array
+      needsSave = true;
+    }
+  });
+
+  if (needsSave) {
+    localStorage.setItem('toeic_personal_notebook_state', JSON.stringify(state));
+  }
   
   seedInitialData();
   checkStreak();
@@ -297,6 +338,14 @@ function switchVocabTab(tabId) {
   
   if (tabId === 'vocab-list') {
     renderVocabBank();
+  } else if (tabId === 'vocab-add' && activeEditIndex === null) {
+    const form = document.getElementById('add-word-form');
+    if (form) form.reset();
+    const container = document.getElementById('add-vocab-meanings-container');
+    if (container) {
+      container.innerHTML = '';
+      addMeaningBlock();
+    }
   } else if (tabId === 'vocab-review') {
     startSpacedReviewSession();
   } else if (tabId === 'vocab-match') {
@@ -304,6 +353,76 @@ function switchVocabTab(tabId) {
   } else if (tabId === 'vocab-spell') {
     initSpellMode();
   }
+}
+
+// Helper to add meaning block dynamically to form
+function addMeaningBlock(data = null) {
+  const container = document.getElementById('add-vocab-meanings-container');
+  if (!container) return;
+  
+  const div = document.createElement('div');
+  div.className = 'meaning-block glass-card';
+  div.style.padding = '1.2rem';
+  div.style.position = 'relative';
+  div.style.marginTop = '0.5rem';
+  div.style.border = '1px solid var(--border-color)';
+  
+  div.innerHTML = `
+    <button type="button" class="btn-danger" style="position: absolute; top: 0.5rem; right: 0.5rem; padding: 2px 8px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.15); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 4px; cursor: pointer;" onclick="removeMeaningBlock(this)">Xóa</button>
+    <div class="form-row" style="margin-top: 1rem;">
+      <div class="form-group">
+        <label style="font-size: 0.85rem; color: var(--text-secondary);">Từ loại</label>
+        <select class="form-control vocab-type-input">
+          <option value="noun" ${data?.type === 'noun' ? 'selected' : ''}>Danh từ (noun)</option>
+          <option value="verb" ${data?.type === 'verb' ? 'selected' : ''}>Động từ (verb)</option>
+          <option value="adjective" ${data?.type === 'adjective' ? 'selected' : ''}>Tính từ (adjective)</option>
+          <option value="adverb" ${data?.type === 'adverb' ? 'selected' : ''}>Trạng từ (adverb)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label style="font-size: 0.85rem; color: var(--text-secondary);">Ý nghĩa / Dịch thuật *</label>
+        <input type="text" class="form-control vocab-meaning-input" placeholder="e.g. trì hoãn, chậm trễ" value="${data?.meaning || ''}" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label style="font-size: 0.85rem; color: var(--text-secondary);">Định nghĩa bằng tiếng Anh</label>
+      <input type="text" class="form-control vocab-definition-input" placeholder="e.g. Make someone or something late" value="${data?.definition || ''}">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label style="font-size: 0.85rem; color: var(--text-secondary);">Câu ví dụ (English)</label>
+        <input type="text" class="form-control vocab-example-input" placeholder="e.g. Our flight was delayed" value="${data?.example || ''}">
+      </div>
+      <div class="form-group">
+        <label style="font-size: 0.85rem; color: var(--text-secondary);">Dịch nghĩa ví dụ (Vietnamese)</label>
+        <input type="text" class="form-control vocab-example-meaning-input" placeholder="e.g. Chuyến bay bị hoãn" value="${data?.exampleMeaning || ''}">
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  
+  // Hide the delete button if there's only 1 block
+  updateDeleteButtonsVisibility();
+}
+
+function removeMeaningBlock(btn) {
+  const block = btn.closest('.meaning-block');
+  if (block) {
+    block.remove();
+    updateDeleteButtonsVisibility();
+  }
+}
+
+function updateDeleteButtonsVisibility() {
+  const container = document.getElementById('add-vocab-meanings-container');
+  if (!container) return;
+  const blocks = container.querySelectorAll('.meaning-block');
+  blocks.forEach(block => {
+    const delBtn = block.querySelector('.btn-danger');
+    if (delBtn) {
+      delBtn.style.display = blocks.length > 1 ? 'block' : 'none';
+    }
+  });
 }
 
 // Render word bank list
@@ -327,9 +446,11 @@ function renderVocabBank() {
   }
 
   state.vocab.forEach((wordData, index) => {
-    if (searchVal && 
-        !wordData.word.toLowerCase().includes(searchVal) && 
-        !wordData.meaning.toLowerCase().includes(searchVal)) {
+    const matchSearch = !searchVal || 
+        wordData.word.toLowerCase().includes(searchVal) ||
+        (wordData.meanings && wordData.meanings.some(m => m.meaning.toLowerCase().includes(searchVal) || (m.definition && m.definition.toLowerCase().includes(searchVal))));
+        
+    if (!matchSearch) {
       return;
     }
     
@@ -354,13 +475,38 @@ function renderVocabBank() {
       statusText = 'Đang nhớ';
     }
     
+    let meaningsHtml = '';
+    if (wordData.meanings && wordData.meanings.length > 0) {
+      wordData.meanings.forEach((m, idx) => {
+        meaningsHtml += `
+          <div style="margin-top: 0.6rem; padding-top: 0.6rem; ${idx > 0 ? 'border-top: 1px dashed var(--border-color);' : ''}">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem; flex-wrap: wrap;">
+              <span class="status-badge" style="background: rgba(255,255,255,0.08); color: var(--text-secondary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.type}</span>
+              <span style="font-weight: 600; color: var(--accent-success);">${m.meaning}</span>
+            </div>
+            ${m.definition ? `<div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.2rem;">${m.definition}</div>` : ''}
+            ${m.example ? `<div style="font-style: italic; color: var(--text-primary); font-size: 0.8rem;">e.g. ${m.example}</div>` : ''}
+            ${m.exampleMeaning ? `<div style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.1rem;">Dịch: ${m.exampleMeaning}</div>` : ''}
+          </div>
+        `;
+      });
+    } else {
+      meaningsHtml = `
+        <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 0.8rem;">${wordData.meaning}</div>
+        <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
+          <div style="color: var(--text-secondary); margin-bottom: 0.2rem;">${wordData.definition}</div>
+          <div style="font-style: italic; color: var(--text-primary);">e.g. ${wordData.example}</div>
+          ${wordData.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.3rem;">Dịch: ${wordData.exampleMeaning}</div>` : ''}
+        </div>
+      `;
+    }
+
     const card = document.createElement('div');
     card.className = 'glass-card word-library-card';
     card.innerHTML = `
       <div class="word-library-header">
         <div>
           <span class="word-library-title">${wordData.word}</span>
-          <span style="font-size: 0.8rem; color: var(--text-secondary);">(${wordData.type})</span>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem;" onclick="event.stopPropagation();">
           <button onclick="editVocabWord(${index}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 2px;" title="Sửa từ">✏️</button>
@@ -372,11 +518,8 @@ function renderVocabBank() {
         <span>${wordData.pronunciation}</span>
         <button onclick="playWordTTS('${wordData.word}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);">🔊</button>
       </div>
-      <div style="font-weight: 600; color: var(--accent-success); margin-bottom: 0.8rem;">${wordData.meaning}</div>
-      <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
-        <div style="color: var(--text-secondary); margin-bottom: 0.2rem;">${wordData.definition}</div>
-        <div style="font-style: italic; color: var(--text-primary);">e.g. ${wordData.example}</div>
-        ${wordData.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.3rem;">Dịch: ${wordData.exampleMeaning}</div>` : ''}
+      <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.4rem;">
+        ${meaningsHtml}
       </div>
     `;
     grid.appendChild(card);
@@ -501,12 +644,9 @@ async function translateExampleText(text) {
 async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
   let result = {
     word: word,
-    type: defaultType,
     pronunciation: '',
-    meaning: '',
-    example: '',
-    exampleMeaning: '',
-    topic: 'Cá nhân'
+    topic: 'Cá nhân',
+    meanings: []
   };
 
   // Step 1: Check offline seed database
@@ -514,20 +654,37 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     for (const catKey of Object.keys(toeicVocabulary)) {
       const matchWord = toeicVocabulary[catKey].words.find(w => w.word.toLowerCase() === word.toLowerCase());
       if (matchWord) {
-        result.type = matchWord.type || defaultType;
-        result.pronunciation = matchWord.pronunciation || '';
-        result.meaning = matchWord.meaning || '';
-        result.example = matchWord.example || '';
-        result.exampleMeaning = matchWord.exampleMeaning || '';
-        result.topic = toeicVocabulary[catKey].title || 'Cá nhân';
-        return result;
+        // Find if we have normalized local word already
+        const local = state.vocab.find(w => w.word.toLowerCase() === word.toLowerCase());
+        if (local && local.meanings && local.meanings.length > 0) {
+          return {
+            word: local.word,
+            pronunciation: local.pronunciation || matchWord.pronunciation || '',
+            topic: local.topic || toeicVocabulary[catKey].title || 'Cá nhân',
+            meanings: local.meanings
+          };
+        }
+        return {
+          word: matchWord.word,
+          pronunciation: matchWord.pronunciation || '',
+          topic: toeicVocabulary[catKey].title || 'Cá nhân',
+          meanings: [
+            {
+              type: matchWord.type || defaultType,
+              meaning: matchWord.meaning || '',
+              definition: matchWord.definition || '',
+              example: matchWord.example || '',
+              exampleMeaning: matchWord.exampleMeaning || ''
+            }
+          ]
+        };
       }
     }
   }
 
   // Step 2: Call online APIs
   try {
-    // Fetch translation first to help align part of speech
+    // Fetch translation first to get a main translation for the word
     let translatedMeaning = '';
     try {
       const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
@@ -541,7 +698,6 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     } catch (e) {
       console.warn("MyMemory translation error:", e);
     }
-    result.meaning = translatedMeaning;
 
     // Fetch dictionary details
     const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
@@ -551,40 +707,38 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
       result.pronunciation = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
       
       if (entry.meanings && entry.meanings.length > 0) {
-        // Simple helper to detect action keywords in Vietnamese meaning
-        const detectVietnamesePOS = (text) => {
-          if (!text) return null;
-          const lower = text.toLowerCase();
-          const verbKeywords = [
-            'cầm', 'nắm', 'giữ', 'lấy', 'làm', 'chạy', 'tạo', 'đi', 'đến', 'hợp tác', 'giao', 'hoãn',
-            'sáp nhập', 'trang trí', 'thi hành', 'thực hiện', 'phê duyệt', 'đàm phán', 'thương lượng',
-            'tăng', 'giảm', 'hoàn tiền', 'mua', 'bán', 'chấm dứt', 'hủy', 'đăng ký', 'yêu cầu', 'kiểm tra',
-            'đi dạo', 'lát', 'xếp', 'điều chỉnh', 'tìm', 'kiếm', 'theo đuổi', 'đáp ứng', 'giúp', 'hỗ trợ',
-            'gửi', 'nhận', 'trả', 'đặt', 'ký', 'kí', 'nhập', 'xuất', 'báo cáo', 'thông báo', 'quản lý',
-            'tổ chức', 'vận hành', 'hoạt động', 'áp dụng', 'sử dụng', 'dùng', 'thu', 'chi', 'đạt',
-            'đòi', 'hỏi', 'yêu', 'ghét', 'thích', 'mong', 'muốn', 'cần', 'đầu tư', 'sản xuất', 'bảo đảm',
-            'cam kết', 'bảo hành', 'đổi', 'học', 'đọc', 'viết', 'nghe', 'nói', 'phát triển', 'xây', 'gây'
-          ];
-          for (const kw of verbKeywords) {
-            if (lower.includes(kw)) return 'verb';
+        // For each meaning group (part of speech), extract a definition block
+        for (let i = 0; i < entry.meanings.length; i++) {
+          const mGroup = entry.meanings[i];
+          const mType = mGroup.partOfSpeech || defaultType;
+          const firstDef = mGroup.definitions[0];
+          const defText = firstDef?.definition || '';
+          let exText = mGroup.definitions.find(d => d.example)?.example || '';
+          
+          if (!exText) {
+            exText = generateTemplateExample(word, mType);
           }
-          return null;
-        };
 
-        const detectedPos = detectVietnamesePOS(translatedMeaning);
-        let selectedMeaning = entry.meanings[0];
-
-        // If Vietnamese translation points to a verb and a verb definition exists, use it!
-        if (detectedPos) {
-          const matchMeaning = entry.meanings.find(m => m.partOfSpeech === detectedPos);
-          if (matchMeaning) {
-            selectedMeaning = matchMeaning;
+          // Translate definition to get meaning in Vietnamese (especially for secondary meanings)
+          let viMeaning = '';
+          if (i === 0 && translatedMeaning) {
+            viMeaning = translatedMeaning;
+          } else if (defText) {
+            const defTrans = await translateExampleText(defText);
+            viMeaning = defTrans || translatedMeaning || 'Chưa cập nhật';
+          } else {
+            viMeaning = translatedMeaning || 'Chưa cập nhật';
           }
-        }
 
-        result.type = selectedMeaning.partOfSpeech || defaultType;
-        if (selectedMeaning.definitions && selectedMeaning.definitions.length > 0) {
-          result.example = selectedMeaning.definitions.find(d => d.example)?.example || '';
+          const exTrans = exText ? await translateExampleText(exText) : '';
+
+          result.meanings.push({
+            type: mType,
+            meaning: viMeaning,
+            definition: defText,
+            example: exText,
+            exampleMeaning: exTrans
+          });
         }
       }
     }
@@ -592,17 +746,21 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
     console.error("Auto lookup error for word " + word + ":", error);
   }
 
-  // Fallback example & pronunciation if not resolved
-  if (!result.example) {
-    result.example = generateTemplateExample(word, result.type);
-  }
-  if (!result.pronunciation) {
-    result.pronunciation = '/' + word.toLowerCase() + '/';
+  // Fallback if no meanings resolved
+  if (result.meanings.length === 0) {
+    const fallbackExample = generateTemplateExample(word, defaultType);
+    const fallbackExMeaning = fallbackExample ? await translateExampleText(fallbackExample) : '';
+    result.meanings.push({
+      type: defaultType,
+      meaning: '', // user will fill
+      definition: '',
+      example: fallbackExample,
+      exampleMeaning: fallbackExMeaning
+    });
   }
 
-  // Auto translate example sentence
-  if (result.example) {
-    result.exampleMeaning = await translateExampleText(result.example);
+  if (!result.pronunciation) {
+    result.pronunciation = '/' + word.toLowerCase() + '/';
   }
 
   return result;
@@ -611,18 +769,16 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
 // Master resolver: handles single words and multi-word phrases (e.g. "Golf clubs", "Giving a presentation")
 async function getWordDetailsAuto(rawWord) {
   const { word, type } = extractWordAndType(rawWord);
-  let result = {
-    word: word,
-    type: type,
-    pronunciation: '',
-    meaning: '',
-    example: '',
-    exampleMeaning: '',
-    topic: 'Cá nhân'
-  };
-
+  
   const subWords = word.split(/\s+/).filter(w => w.length > 0);
   if (subWords.length > 1) {
+    let result = {
+      word: word,
+      pronunciation: '',
+      topic: 'Cá nhân',
+      meanings: []
+    };
+
     // Resolve phrase details word-by-word for phonetics
     const phoneticsList = [];
     for (const sub of subWords) {
@@ -636,21 +792,31 @@ async function getWordDetailsAuto(rawWord) {
     result.pronunciation = '/' + phoneticsList.join(' ') + '/';
     
     // Auto translate the whole phrase
+    let phraseMeaning = '';
     try {
       const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|vi`);
       if (translateResponse.ok) {
         const translateData = await translateResponse.json();
-        let translatedMeaning = translateData.responseData.translatedText || '';
-        if (translatedMeaning && !translatedMeaning.toLowerCase().includes('mymemory')) {
-          result.meaning = translatedMeaning;
+        phraseMeaning = translateData.responseData.translatedText || '';
+        if (phraseMeaning.toLowerCase().includes('mymemory')) {
+          phraseMeaning = '';
         }
       }
     } catch (e) {
       console.warn(e);
     }
     
-    result.example = generateTemplateExample(word, type);
-    result.exampleMeaning = await translateExampleText(result.example);
+    const exText = generateTemplateExample(word, type);
+    const exTrans = exText ? await translateExampleText(exText) : '';
+    
+    result.meanings.push({
+      type: type,
+      meaning: phraseMeaning || 'Chưa cập nhật',
+      definition: '',
+      example: exText,
+      exampleMeaning: exTrans
+    });
+    
     return result;
   } else {
     // Single word
@@ -694,11 +860,25 @@ function editVocabWord(index, event) {
   
   // Pre-fill fields
   document.getElementById('add-vocab-word').value = wordData.word;
-  document.getElementById('add-vocab-meaning').value = wordData.meaning;
-  document.getElementById('add-vocab-type').value = wordData.type;
   document.getElementById('add-vocab-pronunciation').value = wordData.pronunciation || '';
-  document.getElementById('add-vocab-example').value = wordData.example || '';
-  document.getElementById('add-vocab-example-meaning').value = wordData.exampleMeaning || '';
+  
+  // Dynamic meaning blocks
+  const container = document.getElementById('add-vocab-meanings-container');
+  if (container) {
+    container.innerHTML = '';
+    if (wordData.meanings && wordData.meanings.length > 0) {
+      wordData.meanings.forEach(m => addMeaningBlock(m));
+    } else {
+      // Fallback if legacy word
+      addMeaningBlock({
+        type: wordData.type || 'noun',
+        meaning: wordData.meaning || '',
+        definition: wordData.definition || '',
+        example: wordData.example || '',
+        exampleMeaning: wordData.exampleMeaning || ''
+      });
+    }
+  }
   
   const topicSelect = document.getElementById('add-vocab-topic-select');
   const topicInput = document.getElementById('add-vocab-topic');
@@ -730,13 +910,9 @@ function deleteVocabWord(index, event) {
 async function saveSingleWord(event) {
   event.preventDefault();
   const rawWordInput = document.getElementById('add-vocab-word').value.trim();
-  const { word: wordInput, type: autoType } = extractWordAndType(rawWordInput);
+  const { word: wordInput } = extractWordAndType(rawWordInput);
   
-  let meaningInput = document.getElementById('add-vocab-meaning').value.trim();
-  let typeInput = document.getElementById('add-vocab-type').value;
   let pronunciationInput = document.getElementById('add-vocab-pronunciation').value.trim();
-  let exampleInput = document.getElementById('add-vocab-example').value.trim();
-  let exampleMeaningInput = document.getElementById('add-vocab-example-meaning').value.trim();
   
   const topicSelect = document.getElementById('add-vocab-topic-select').value;
   let topicInput = topicSelect === 'custom' ? document.getElementById('add-vocab-topic').value.trim() : topicSelect;
@@ -747,37 +923,56 @@ async function saveSingleWord(event) {
     return;
   }
 
-  // If user left type as default 'noun' but we auto-detected another type, use auto-detected
-  if (typeInput === 'noun' && autoType !== 'noun') {
-    typeInput = autoType;
-  }
-
+  const container = document.getElementById('add-vocab-meanings-container');
+  if (!container) return;
+  const blocks = container.querySelectorAll('.meaning-block');
+  
   const saveBtn = event.target.querySelector('button[type="submit"]');
   const originalText = saveBtn.textContent;
   saveBtn.disabled = true;
   saveBtn.textContent = '🔄 Đang lưu dữ liệu...';
 
-  // Auto lookup if fields are empty
-  if (!pronunciationInput || !meaningInput || !exampleInput || topicInput === 'Cá nhân') {
-    const info = await getWordDetailsAuto(wordInput);
-    if (!pronunciationInput) pronunciationInput = info.pronunciation;
-    if (!meaningInput) meaningInput = info.meaning || meaningInput;
-    if (!exampleInput) exampleInput = info.example;
-    if (!exampleMeaningInput) exampleMeaningInput = info.exampleMeaning || '';
-    if (topicInput === 'Cá nhân' && info.topic !== 'Cá nhân') topicInput = info.topic;
-    if (typeInput === 'noun' && info.type !== 'noun') typeInput = info.type;
+  // Extract all meaning blocks
+  const meanings = [];
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    const type = block.querySelector('.vocab-type-input').value;
+    const meaning = block.querySelector('.vocab-meaning-input').value.trim();
+    const definition = block.querySelector('.vocab-definition-input').value.trim();
+    let example = block.querySelector('.vocab-example-input').value.trim();
+    let exampleMeaning = block.querySelector('.vocab-example-meaning-input').value.trim();
+
+    if (!meaning) {
+      continue;
+    }
+
+    if (example && !exampleMeaning) {
+      exampleMeaning = await translateExampleText(example);
+    }
+
+    meanings.push({
+      type,
+      meaning,
+      definition,
+      example,
+      exampleMeaning
+    });
   }
 
-  // Always enforce translation for example if present
-  if (exampleInput && !exampleMeaningInput) {
-    exampleMeaningInput = await translateExampleText(exampleInput);
-  }
-
-  if (!meaningInput) {
+  if (meanings.length === 0) {
     saveBtn.disabled = false;
     saveBtn.textContent = originalText;
-    alert("Vui lòng nhập nghĩa dịch (Hệ thống không tự tra cứu được nghĩa cho từ này)!");
+    alert("Vui lòng nhập ít nhất một ý nghĩa cho từ vựng!");
     return;
+  }
+
+  // Fallback pronunciation lookup if empty
+  if (!pronunciationInput) {
+    const info = await getWordDetailsAuto(wordInput);
+    pronunciationInput = info.pronunciation;
+  }
+  if (!pronunciationInput) {
+    pronunciationInput = '/' + wordInput.toLowerCase() + '/';
   }
   
   if (activeEditIndex !== null) {
@@ -785,28 +980,21 @@ async function saveSingleWord(event) {
     state.vocab[activeEditIndex] = {
       ...state.vocab[activeEditIndex],
       word: wordInput,
-      type: typeInput,
       pronunciation: pronunciationInput,
-      meaning: meaningInput,
-      example: exampleInput,
-      exampleMeaning: exampleMeaningInput,
-      topic: topicInput
+      topic: topicInput,
+      meanings: meanings
     };
     alert(`Đã cập nhật từ "${wordInput}" thành công!`);
   } else {
     // Add new vocab item
     state.vocab.unshift({
       word: wordInput,
-      type: typeInput,
       pronunciation: pronunciationInput,
-      meaning: meaningInput,
-      definition: '',
-      example: exampleInput,
-      exampleMeaning: exampleMeaningInput,
       topic: topicInput,
       status: 'new',
       lastReviewed: null,
-      reviewCount: 0
+      reviewCount: 0,
+      meanings: meanings
     });
     alert(`Đã thêm từ "${wordInput}" vào kho từ cá nhân!`);
   }
@@ -859,20 +1047,28 @@ async function importBatchWords() {
       
       if (word && !state.vocab.some(w => w.word.toLowerCase() === word.toLowerCase())) {
         const info = await getWordDetailsAuto(word);
-        const finalMeaning = meaning || info.meaning || 'Chưa cập nhật';
+        if (info.meanings && info.meanings.length > 0) {
+          if (meaning) {
+            info.meanings[0].meaning = meaning;
+          }
+        } else {
+          info.meanings = [{
+            type: type,
+            meaning: meaning || 'Chưa cập nhật',
+            definition: '',
+            example: '',
+            exampleMeaning: ''
+          }];
+        }
         
         state.vocab.unshift({
           word: word,
-          type: type !== 'noun' ? type : (info.type || 'noun'),
           pronunciation: info.pronunciation || '',
-          meaning: finalMeaning,
-          definition: '',
-          example: info.example || '',
-          exampleMeaning: '',
           topic: info.topic !== 'Cá nhân' ? info.topic : 'Nhập lô',
           status: 'new',
           lastReviewed: null,
-          reviewCount: 0
+          reviewCount: 0,
+          meanings: info.meanings
         });
         importedCount++;
       }
@@ -932,25 +1128,38 @@ function showReviewCard(index) {
   cardElement.classList.remove('is-flipped');
   
   // Front
+  const allTypes = wordData.meanings && wordData.meanings.length > 0
+    ? Array.from(new Set(wordData.meanings.map(m => m.type))).join(' / ')
+    : (wordData.type || 'noun');
   document.getElementById('rv-front-word').textContent = wordData.word;
-  document.getElementById('rv-front-type').textContent = wordData.type;
+  document.getElementById('rv-front-type').textContent = allTypes;
   document.getElementById('rv-front-phonetic').textContent = wordData.pronunciation || '/.../';
   
   const resultDiv = document.getElementById('speech-grading-result');
   if (resultDiv) resultDiv.textContent = '';
   
   // Back
-  document.getElementById('rv-back-meaning').textContent = wordData.meaning;
-  document.getElementById('rv-back-example').textContent = wordData.example || 'Chưa có ví dụ';
-  
-  const exMeanEl = document.getElementById('rv-back-example-meaning');
-  if (exMeanEl) {
-    if (wordData.exampleMeaning) {
-      exMeanEl.textContent = wordData.exampleMeaning;
-      exMeanEl.style.display = 'block';
-    } else {
-      exMeanEl.style.display = 'none';
+  const backCenterInfo = cardElement.querySelector('.oq-card-back .oq-center-info');
+  if (backCenterInfo) {
+    let meaningsHtml = '';
+    if (wordData.meanings && wordData.meanings.length > 0) {
+      wordData.meanings.forEach((m, idx) => {
+        meaningsHtml += `
+          <div style="text-align: left; margin-bottom: 0.8rem; padding-bottom: 0.8rem; ${idx < wordData.meanings.length - 1 ? 'border-bottom: 1px dashed rgba(255,255,255,0.15);' : ''}">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="status-badge" style="background: rgba(255,255,255,0.1); color: var(--text-primary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.type}</span>
+              <span style="font-weight: 700; color: var(--accent-success); font-size: 1.1rem;">${m.meaning}</span>
+            </div>
+            ${m.definition ? `<div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem; font-weight: normal;">${m.definition}</div>` : ''}
+            ${m.example ? `<div style="font-size: 0.85rem; font-style: italic; color: var(--text-primary); margin-top: 0.4rem; font-weight: normal; border-left: 2px solid var(--accent-primary); padding-left: 0.4rem;">e.g. ${m.example}</div>` : ''}
+            ${m.exampleMeaning ? `<div style="font-size: 0.8rem; color: #a1a1aa; margin-top: 0.2rem; font-style: italic; font-weight: normal; padding-left: 0.6rem;">${m.exampleMeaning}</div>` : ''}
+          </div>
+        `;
+      });
     }
+    backCenterInfo.style.maxHeight = '280px';
+    backCenterInfo.style.overflowY = 'auto';
+    backCenterInfo.innerHTML = meaningsHtml;
   }
   
   document.getElementById('review-progress').textContent = `${index + 1}/${activeReviewList.length}`;
@@ -1348,16 +1557,20 @@ function extractWordFromHw(event) {
   
   state.vocab.unshift({
     word: wordInput,
-    type: 'noun',
     pronunciation: '',
-    meaning: meaningInput,
-    definition: '',
-    example: exampleInput,
-    exampleMeaning: '',
     topic: hw ? `Bài tập: ${hw.title} (${hw.part})` : 'Bài tập',
     status: 'new',
     lastReviewed: null,
-    reviewCount: 0
+    reviewCount: 0,
+    meanings: [
+      {
+        type: 'noun',
+        meaning: meaningInput,
+        definition: '',
+        example: exampleInput,
+        exampleMeaning: ''
+      }
+    ]
   });
   
   saveState();
@@ -1690,16 +1903,36 @@ function showSpellWord(index) {
   
   document.getElementById('spell-progress').textContent = `${index + 1}/${spellList.length}`;
   
-  let hintText = wordData.meaning;
-  if (wordData.example) {
-    // Replace case-insensitive matching word in example sentence with blank lines
+  const allMeanings = wordData.meanings && wordData.meanings.length > 0
+    ? wordData.meanings.map(m => m.meaning).join(' / ')
+    : (wordData.meaning || '');
+  const allTypes = wordData.meanings && wordData.meanings.length > 0
+    ? wordData.meanings.map(m => m.type).join(' / ')
+    : (wordData.type || '');
+
+  let hintText = allMeanings;
+  let examplesHtml = '';
+  
+  if (wordData.meanings && wordData.meanings.length > 0) {
+    wordData.meanings.forEach(m => {
+      if (m.example) {
+        const regex = new RegExp(`\\b${wordData.word}\\b`, 'gi');
+        const clozeSentence = m.example.replace(regex, '______');
+        examplesHtml += `<div style="margin-top: 0.5rem; font-size: 0.9rem; font-weight: normal; color: var(--text-secondary); font-style: italic;">Ngữ cảnh (${m.type}): "${clozeSentence}"</div>`;
+      }
+    });
+  } else if (wordData.example) {
     const regex = new RegExp(`\\b${wordData.word}\\b`, 'gi');
     const clozeSentence = wordData.example.replace(regex, '______');
-    hintText = `${wordData.meaning}<br><br><span style="font-size: 0.95rem; font-weight: normal; color: var(--text-secondary); display: block; padding-top: 0.8rem; border-top: 1px dashed var(--border-color); font-style: italic;">Ngữ cảnh: "${clozeSentence}"</span>`;
+    examplesHtml = `<div style="margin-top: 0.5rem; font-size: 0.9rem; font-weight: normal; color: var(--text-secondary); font-style: italic;">Ngữ cảnh: "${clozeSentence}"</div>`;
+  }
+  
+  if (examplesHtml) {
+    hintText = `${allMeanings}<br><span style="display: block; padding-top: 0.8rem; border-top: 1px dashed var(--border-color);">${examplesHtml}</span>`;
   }
   
   document.getElementById('spell-hint-meaning').innerHTML = hintText;
-  document.getElementById('spell-hint-type').textContent = `(${wordData.type})`;
+  document.getElementById('spell-hint-type').textContent = `(${allTypes})`;
   
   const input = document.getElementById('spell-user-input');
   input.value = '';
@@ -2569,11 +2802,17 @@ async function lookupWordDetails() {
   try {
     const info = await getWordDetailsAuto(word);
     
-    document.getElementById('add-vocab-type').value = info.type;
     document.getElementById('add-vocab-pronunciation').value = info.pronunciation || '';
-    document.getElementById('add-vocab-meaning').value = info.meaning || '';
-    document.getElementById('add-vocab-example').value = info.example || '';
-    document.getElementById('add-vocab-example-meaning').value = info.exampleMeaning || '';
+    
+    const container = document.getElementById('add-vocab-meanings-container');
+    if (container) {
+      container.innerHTML = '';
+      if (info.meanings && info.meanings.length > 0) {
+        info.meanings.forEach(m => addMeaningBlock(m));
+      } else {
+        addMeaningBlock();
+      }
+    }
     
     // Select topic in dropdown
     const topicSelect = document.getElementById('add-vocab-topic-select');
@@ -2619,3 +2858,37 @@ document.addEventListener('keydown', (event) => {
     }
   }
 });
+
+// Levenshtein distance string similarity function
+function calculateWordSimilarity(s1, s2) {
+  s1 = (s1 || '').trim().toLowerCase();
+  s2 = (s2 || '').trim().toLowerCase();
+  if (s1 === s2) return 100;
+  if (!s1 || !s2) return 0;
+  
+  const m = s1.length;
+  const n = s2.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (s1[i - 1] === s2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,    // Deletion
+          dp[i][j - 1] + 1,    // Insertion
+          dp[i - 1][j - 1] + 1 // Substitution
+        );
+      }
+    }
+  }
+  
+  const distance = dp[m][n];
+  const maxLength = Math.max(m, n);
+  return Math.round((1 - distance / maxLength) * 100);
+}
+
