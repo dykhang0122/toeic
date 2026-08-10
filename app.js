@@ -151,6 +151,10 @@ function loadState() {
         needsSave = true;
       }
     }
+    if (isFakeIPA(localWord.word, localWord.pronunciation)) {
+      localWord.pronunciation = '';
+      needsSave = true;
+    }
 
     const key = localWord.word.toLowerCase().trim();
     if (SMART_TOEIC_TERMS[key]) {
@@ -158,10 +162,15 @@ function loadState() {
       localWord.meanings = [{
         type: smart.pos,
         meaning: smart.meaning,
-        definition: '',
+        definition: smart.definition || '',
         example: smart.example,
         exampleMeaning: smart.exampleMeaning
       }];
+      if (smart.pronunciation) {
+        localWord.pronunciation = sanitizeIPA(smart.pronunciation);
+      } else if (isFakeIPA(localWord.word, localWord.pronunciation)) {
+        localWord.pronunciation = '';
+      }
       needsSave = true;
     } else if (!localWord.meanings || localWord.meanings.length === 0) {
       const detectedPOS = detectWordPOS(localWord.word, localWord.type || 'noun');
@@ -397,6 +406,7 @@ function showView(viewId) {
 // Navigation Initialization
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
+  repairVocabIPA();
   
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -556,10 +566,45 @@ function sanitizeIPA(rawIPA) {
   return clean;
 }
 
+function isFakeIPA(word, ipa) {
+  if (!ipa || !word) return true;
+  const inner = sanitizeIPA(ipa).replace(/\//g, '').trim().toLowerCase();
+  const normalizedWord = word.trim().toLowerCase();
+  if (inner === normalizedWord) return true;
+  const hasIPASymbols = /[əɪʊæɑɔɛʌɜˈˌɒθʃʒŋ]/i.test(inner);
+  if (!hasIPASymbols) {
+    const ipaTokens = inner.split(/\s+/);
+    const wordTokens = normalizedWord.split(/\s+/);
+    if (ipaTokens.length === wordTokens.length &&
+        ipaTokens.every((t, i) => t.replace(/[^a-z']/g, '') === wordTokens[i].replace(/[^a-z']/g, ''))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const FUNCTION_WORD_IPA = {
+  'a': 'ə',
+  'an': 'æn',
+  'the': 'ðə',
+  'of': 'əv',
+  'to': 'tuː',
+  'in': 'ɪn',
+  'on': 'ɒn',
+  'at': 'æt',
+  'for': 'fɔːr',
+  'and': 'ænd',
+  'or': 'ɔːr',
+  'her': 'hɜːr',
+  'his': 'hɪz',
+  'their': 'ðer'
+};
+
 function sanitizeVocabEntry(raw) {
   if (!raw) return null;
   const word = sanitizeWordTitle(raw.word || '');
-  const ipa = sanitizeIPA(raw.ipa || raw.pronunciation || '');
+  let ipa = sanitizeIPA(raw.ipa || raw.pronunciation || '');
+  if (isFakeIPA(word, ipa)) ipa = '';
   
   const rawMeanings = (raw.meanings && raw.meanings.length > 0)
     ? raw.meanings
@@ -670,7 +715,7 @@ function renderVocabBank() {
     card.className = 'glass-card word-library-card';
     card.innerHTML = `
       <div class="word-library-header">
-        <div>
+        <div class="word-library-title-wrap">
           <span class="word-library-title">${wordData.word}</span>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem;" onclick="event.stopPropagation();">
@@ -679,9 +724,11 @@ function renderVocabBank() {
           <span class="status-badge ${statusClass}">${statusText}</span>
         </div>
       </div>
-      <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-        ${wordData.ipa ? `<span class="ipa-text" style="font-family: monospace;">${wordData.ipa}</span>` : ''}
-        <button onclick="playWordTTS('${wordData.word}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);" title="Phát âm">🔊</button>
+      <div class="word-library-ipa-row">
+        ${wordData.ipa
+          ? `<span class="ipa-text">${wordData.ipa}</span>`
+          : `<span class="ipa-text ipa-missing">Chưa có IPA</span>`}
+        <button onclick="playWordTTS('${wordData.word.replace(/'/g, "\\'")}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);" title="Phát âm">🔊</button>
       </div>
       <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.4rem;">
         ${meaningsHtml}
@@ -726,30 +773,35 @@ function sanitizeWordTitle(raw) {
 const SMART_TOEIC_TERMS = {
   'giving a presentation': {
     pos: 'phrase',
+    pronunciation: '/ˈɡɪvɪŋ ə ˌprezənˈteɪʃən/',
     meaning: 'thuyết trình, trình bày',
     example: 'The marketing manager spent thirty minutes giving a presentation to the executive board.',
     exampleMeaning: 'Quản lý marketing đã dành 30 phút để thuyết trình trước hội đồng quản trị.'
   },
   'changing the tire': {
     pos: 'phrase',
+    pronunciation: '/ˈtʃeɪndʒɪŋ ðə ˈtaɪər/',
     meaning: 'thay lốp xe',
     example: 'The technician spent twenty minutes changing the tire on the roadside.',
     exampleMeaning: 'Kỹ thuật viên đã dành 20 phút để thay lốp xe bên đường.'
   },
   'raising her hand': {
     pos: 'phrase',
+    pronunciation: '/ˈreɪzɪŋ hɜːr hænd/',
     meaning: 'giơ tay lên',
     example: 'She caught the instructor\'s attention by raising her hand during the seminar.',
     exampleMeaning: 'Cô ấy đã thu hút sự chú ý của giảng viên bằng cách giơ tay trong buổi thảo luận.'
   },
   'raise hand': {
     pos: 'phrase',
+    pronunciation: '/reɪz hænd/',
     meaning: 'giơ tay',
     example: 'Please raise hand if you have any questions regarding the new company policy.',
     exampleMeaning: 'Vui lòng giơ tay nếu bạn có bất kỳ câu hỏi nào về chính sách mới của công ty.'
   },
   'loading area': {
     pos: 'noun',
+    pronunciation: '/ˈloʊdɪŋ ˈeriə/',
     meaning: 'khu vực bốc dỡ hàng',
     example: 'All delivery vehicles must park inside the designated loading area to unload cargo.',
     exampleMeaning: 'Tất cả các xe giao hàng phải đỗ bên trong khu vực bốc dỡ hàng quy định để dỡ hàng hóa.'
@@ -762,12 +814,14 @@ const SMART_TOEIC_TERMS = {
   },
   'kind of': {
     pos: 'adverb',
+    pronunciation: '/kaɪnd əv/',
     meaning: 'hơi, khá, một loại',
     example: 'The management team was kind of surprised by the sudden increase in quarterly sales.',
     exampleMeaning: 'Ban quản lý có vẻ hơi ngạc nhiên trước sự gia tăng đột ngột của doanh số hàng quý.'
   },
   'golf clubs': {
     pos: 'noun',
+    pronunciation: '/ɡɒlf klʌbz/',
     meaning: 'bộ gậy golf, gậy đánh golf',
     example: 'He packed his new golf clubs for the weekend corporate tournament.',
     exampleMeaning: 'Anh ấy mang theo bộ gậy golf mới cho giải đấu cuối tuần của công ty.'
@@ -792,18 +846,21 @@ const SMART_TOEIC_TERMS = {
   },
   'safety glasses': {
     pos: 'noun',
+    pronunciation: '/ˈseɪfti ˈɡlæsɪz/',
     meaning: 'kính bảo hộ',
     example: 'Technicians must wear safety glasses inside the chemical processing facility.',
     exampleMeaning: 'Kỹ thuật viên phải đeo kính bảo hộ bên trong cơ sở xử lý hóa chất.'
   },
   'sock': {
     pos: 'noun',
+    pronunciation: '/sɒk/',
     meaning: 'tất, vớ',
     example: 'He packed several pairs of comfortable socks for his upcoming business trip.',
     exampleMeaning: 'Anh ấy đã đóng gói vài đôi tất thoải mái cho chuyến công tác sắp tới.'
   },
   'vast wealth': {
     pos: 'noun',
+    pronunciation: '/væst welθ/',
     meaning: 'khối tài sản kế xù, sự giàu có lớn',
     example: 'The entrepreneur accumulated vast wealth through successful real estate investments.',
     exampleMeaning: 'Doanh nhân đã tích lũy khối tài sản kế xù thông qua các khoản đầu tư bất động sản thành công.'
@@ -1226,15 +1283,97 @@ async function getSingleWordDetailsAuto(word, defaultType = 'noun') {
   }
 
   if (!result.pronunciation) {
-    result.pronunciation = '/' + word.toLowerCase() + '/';
+    result.pronunciation = '';
   }
 
   return result;
 }
 
+async function resolvePhraseIPA(word) {
+  const key = word.toLowerCase().trim();
+  if (SMART_TOEIC_TERMS[key]?.pronunciation) {
+    return sanitizeIPA(SMART_TOEIC_TERMS[key].pronunciation);
+  }
+
+  const subWords = word.split(/\s+/).filter(w => w.length > 0);
+  if (subWords.length <= 1) return '';
+
+  const phoneticsList = [];
+  for (const sub of subWords) {
+    const lower = sub.toLowerCase();
+    if (FUNCTION_WORD_IPA[lower]) {
+      phoneticsList.push(FUNCTION_WORD_IPA[lower]);
+      continue;
+    }
+    const subInfo = await getSingleWordDetailsAuto(sub);
+    const subIPA = subInfo.pronunciation ? sanitizeIPA(subInfo.pronunciation) : '';
+    if (subIPA && !isFakeIPA(sub, subIPA)) {
+      phoneticsList.push(subIPA.replace(/\//g, ''));
+    }
+  }
+
+  if (phoneticsList.length === 0) return '';
+  return '/' + phoneticsList.join(' ') + '/';
+}
+
+async function repairVocabIPA() {
+  let repaired = false;
+  for (const entry of state.vocab) {
+    if (!entry.word) continue;
+    if (entry.pronunciation && !isFakeIPA(entry.word, entry.pronunciation)) continue;
+
+    const smart = SMART_TOEIC_TERMS[entry.word.toLowerCase().trim()];
+    if (smart?.pronunciation) {
+      entry.pronunciation = sanitizeIPA(smart.pronunciation);
+      repaired = true;
+      continue;
+    }
+
+    const resolved = entry.word.includes(' ')
+      ? await resolvePhraseIPA(entry.word)
+      : (await getSingleWordDetailsAuto(entry.word)).pronunciation || '';
+
+    const cleanResolved = sanitizeIPA(resolved);
+    if (cleanResolved && !isFakeIPA(entry.word, cleanResolved)) {
+      entry.pronunciation = cleanResolved;
+      repaired = true;
+    } else if (isFakeIPA(entry.word, entry.pronunciation)) {
+      entry.pronunciation = '';
+      repaired = true;
+    }
+  }
+  if (repaired) {
+    saveState();
+    if (document.getElementById('vocab-list')?.classList.contains('active')) {
+      renderVocabBank();
+    }
+  }
+}
+
 // Master resolver: handles single words and multi-word phrases (e.g. "Golf clubs", "Giving a presentation")
 async function getWordDetailsAuto(rawWord) {
   const { word, type } = extractWordAndType(rawWord);
+  const key = word.toLowerCase().trim();
+
+  if (SMART_TOEIC_TERMS[key]) {
+    const smart = SMART_TOEIC_TERMS[key];
+    let pronunciation = sanitizeIPA(smart.pronunciation || '');
+    if (!pronunciation && word.includes(' ')) {
+      pronunciation = await resolvePhraseIPA(word);
+    }
+    return {
+      word: word,
+      pronunciation: pronunciation,
+      topic: 'Cá nhân',
+      meanings: [{
+        type: smart.pos,
+        meaning: smart.meaning,
+        definition: smart.definition || '',
+        example: smart.example,
+        exampleMeaning: smart.exampleMeaning
+      }]
+    };
+  }
   
   const subWords = word.split(/\s+/).filter(w => w.length > 0);
   if (subWords.length > 1) {
@@ -1245,17 +1384,7 @@ async function getWordDetailsAuto(rawWord) {
       meanings: []
     };
 
-    // Resolve phrase details word-by-word for phonetics
-    const phoneticsList = [];
-    for (const sub of subWords) {
-      const subInfo = await getSingleWordDetailsAuto(sub);
-      if (subInfo.pronunciation) {
-        phoneticsList.push(subInfo.pronunciation.replace(/[\/\[\]]/g, ''));
-      } else {
-        phoneticsList.push(sub);
-      }
-    }
-    result.pronunciation = '/' + phoneticsList.join(' ') + '/';
+    result.pronunciation = await resolvePhraseIPA(word);
     
     // Auto translate the whole phrase
     let phraseMeaning = '';
@@ -1435,10 +1564,8 @@ async function saveSingleWord(event) {
   // Fallback pronunciation lookup if empty
   if (!pronunciationInput) {
     const info = await getWordDetailsAuto(wordInput);
-    pronunciationInput = info.pronunciation;
-  }
-  if (!pronunciationInput) {
-    pronunciationInput = '/' + wordInput.toLowerCase() + '/';
+    pronunciationInput = info.pronunciation || '';
+    if (isFakeIPA(wordInput, pronunciationInput)) pronunciationInput = '';
   }
   
   if (activeEditIndex !== null) {
@@ -1650,22 +1777,45 @@ async function importBatchWords() {
     
     // If lookup failed, use user-provided meanings directly with smart template sentence
     if (lookupMeanings.length === 0) {
-      for (const userMeaning of parsed.meanings) {
-        const posKey = detectWordPOS(cleanWord, userMeaning.type);
-        const exText = generateTemplateExample(cleanWord, posKey);
-        const exTrans = exText ? await translateExampleText(exText) : '';
+      const smartTerm = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
+      if (smartTerm) {
         lookupMeanings.push({
-          type: posKey,
-          meaning: userMeaning.meaning || 'Chưa cập nhật',
-          definition: '',
-          example: exText,
-          exampleMeaning: exTrans
+          type: smartTerm.pos,
+          meaning: parsed.meanings[0]?.meaning || smartTerm.meaning,
+          definition: smartTerm.definition || '',
+          example: smartTerm.example,
+          exampleMeaning: smartTerm.exampleMeaning
         });
+      } else {
+        for (const userMeaning of parsed.meanings) {
+          const posKey = detectWordPOS(cleanWord, userMeaning.type);
+          const exText = generateTemplateExample(cleanWord, posKey);
+          const exTrans = exText ? await translateExampleText(exText) : '';
+          lookupMeanings.push({
+            type: posKey,
+            meaning: userMeaning.meaning || 'Chưa cập nhật',
+            definition: '',
+            example: exText,
+            exampleMeaning: exTrans
+          });
+        }
       }
     }
-    
-    if (!pronunciation) {
-      pronunciation = '/' + cleanWord.toLowerCase() + '/';
+
+    if (!pronunciation || isFakeIPA(cleanWord, pronunciation)) {
+      const smartTerm = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
+      if (smartTerm?.pronunciation) {
+        pronunciation = sanitizeIPA(smartTerm.pronunciation);
+      } else {
+        try {
+          pronunciation = cleanWord.includes(' ')
+            ? await resolvePhraseIPA(cleanWord)
+            : ((await getSingleWordDetailsAuto(cleanWord)).pronunciation || '');
+          if (isFakeIPA(cleanWord, pronunciation)) pronunciation = '';
+        } catch (e) {
+          pronunciation = '';
+        }
+      }
     }
     
     state.vocab.unshift({
