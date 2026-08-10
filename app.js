@@ -316,6 +316,17 @@ document.addEventListener('DOMContentLoaded', () => {
       showView(btn.getAttribute('data-view'));
     });
   });
+
+  // Automatically trigger online lookup when user finishes typing and clicks away
+  const vocabWordInput = document.getElementById('add-vocab-word');
+  if (vocabWordInput) {
+    vocabWordInput.addEventListener('blur', () => {
+      const val = vocabWordInput.value.trim();
+      if (val && activeEditIndex === null) {
+        lookupWordDetails();
+      }
+    });
+  }
 });
 
 // ==========================================
