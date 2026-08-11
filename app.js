@@ -496,6 +496,9 @@ function addMeaningBlock(data = null) {
   div.style.marginTop = '0.5rem';
   div.style.border = '1px solid var(--border-color)';
   
+  const synonymsVal = data?.synonyms ? (Array.isArray(data.synonyms) ? data.synonyms.join(', ') : data.synonyms) : '';
+  const antonymsVal = data?.antonyms ? (Array.isArray(data.antonyms) ? data.antonyms.join(', ') : data.antonyms) : '';
+
   div.innerHTML = `
     <button type="button" class="btn-danger" style="position: absolute; top: 0.5rem; right: 0.5rem; padding: 2px 8px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.15); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 4px; cursor: pointer;" onclick="removeMeaningBlock(this)">Xóa</button>
     <div class="form-row" style="margin-top: 1rem;">
@@ -527,11 +530,81 @@ function addMeaningBlock(data = null) {
         <input type="text" class="form-control vocab-example-meaning-input" placeholder="e.g. Chuyến bay bị hoãn" value="${data?.exampleMeaning || ''}">
       </div>
     </div>
+    <div class="form-row" style="margin-top: 0.4rem;">
+      <div class="form-group">
+        <label style="font-size: 0.85rem; color: #a5b4fc; font-weight: 600;">⚡ Từ đồng nghĩa (Synonyms - Thesaurus.com)</label>
+        <input type="text" class="form-control vocab-synonyms-input" placeholder="e.g. cooperate, join forces, work together" value="${synonymsVal}">
+      </div>
+      <div class="form-group">
+        <label style="font-size: 0.85rem; color: #f87171; font-weight: 600;">🚫 Từ trái nghĩa (Antonyms)</label>
+        <input type="text" class="form-control vocab-antonyms-input" placeholder="e.g. oppose, compete" value="${antonymsVal}">
+      </div>
+    </div>
   `;
   container.appendChild(div);
   
   // Hide the delete button if there's only 1 block
   updateDeleteButtonsVisibility();
+}
+
+// Master lookup triggered by button 🔍 Tự động tra
+async function lookupWordDetails() {
+  const wordInput = document.getElementById('add-vocab-word').value.trim();
+  const statusElem = document.getElementById('lookup-status');
+  if (!wordInput) {
+    if (statusElem) {
+      statusElem.textContent = '⚠️ Vui lòng nhập từ vựng trước khi tra!';
+      statusElem.style.display = 'block';
+      statusElem.style.color = 'var(--accent-warning)';
+    }
+    return;
+  }
+
+  if (statusElem) {
+    statusElem.textContent = '🔄 Đang tự động tra phiên âm, loại từ, nghĩa & Thesaurus đồng nghĩa...';
+    statusElem.style.display = 'block';
+    statusElem.style.color = 'var(--accent-warning)';
+  }
+
+  try {
+    const details = await lookupWordAllDetails(wordInput);
+    if (!details) {
+      if (statusElem) statusElem.textContent = '❌ Không tìm thấy thông tin từ vựng!';
+      return;
+    }
+
+    if (details.cleanWord) {
+      document.getElementById('add-vocab-word').value = details.cleanWord;
+    }
+    if (details.pronunciation) {
+      document.getElementById('add-vocab-pronunciation').value = details.pronunciation;
+    }
+
+    const container = document.getElementById('add-vocab-meanings-container');
+    if (container && details.meanings && details.meanings.length > 0) {
+      container.innerHTML = '';
+      details.meanings.forEach(m => {
+        addMeaningBlock({
+          type: m.type,
+          meaning: m.meaning,
+          definition: m.definition,
+          example: m.example,
+          exampleMeaning: m.exampleMeaning,
+          synonyms: details.synonyms,
+          antonyms: details.antonyms
+        });
+      });
+    }
+
+    if (statusElem) {
+      const synText = details.synonyms && details.synonyms.length > 0 ? details.synonyms.join(', ') : 'Không có';
+      statusElem.textContent = `✨ Đã tự động tra thành công! (Từ đồng nghĩa: ${synText})`;
+      statusElem.style.color = 'var(--accent-success)';
+    }
+  } catch (e) {
+    console.error('lookupWordDetails error:', e);
+    if (statusElem) statusElem.textContent = '❌ Có lỗi khi tra cứu!';
+  }
 }
 
 function removeMeaningBlock(btn) {
@@ -3833,12 +3906,19 @@ async function saveSingleWord(event) {
       exampleMeaning = await translateExampleText(example);
     }
 
+    const synStr = block.querySelector('.vocab-synonyms-input')?.value.trim() || '';
+    const antStr = block.querySelector('.vocab-antonyms-input')?.value.trim() || '';
+    const synonyms = synStr ? synStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const antonyms = antStr ? antStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+
     meanings.push({
       type,
       meaning,
       definition,
       example,
-      exampleMeaning
+      exampleMeaning,
+      synonyms,
+      antonyms
     });
   }
 
