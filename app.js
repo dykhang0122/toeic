@@ -670,46 +670,74 @@ function renderVocabBank() {
         wordData.word.toLowerCase().includes(searchVal) ||
         (wordData.meanings && wordData.meanings.some(m => m.meaning.toLowerCase().includes(searchVal) || (m.definition && m.definition.toLowerCase().includes(searchVal))));
         
-    if (!matchSearch) {
-      return;
-    }
+    if (!matchSearch) return;
+    if (filterStatus !== 'all' && rawWordData.status !== filterStatus) return;
+    if (filterTopic !== 'all' && (rawWordData.topic || 'Cá nhân') !== filterTopic) return;
     
-    if (filterStatus !== 'all' && rawWordData.status !== filterStatus) {
-      return;
-    }
+    let statusClass = 'new', statusText = 'Mới';
+    if (rawWordData.status === 'mastered')      { statusClass = 'mastered';  statusText = 'Đã thuộc'; }
+    else if (rawWordData.status === 'reviewing') { statusClass = 'reviewing'; statusText = 'Hay quên'; }
+    else if (rawWordData.status === 'learning')  { statusClass = 'learning';  statusText = 'Đang nhớ'; }
 
-    if (filterTopic !== 'all' && (rawWordData.topic || 'Cá nhân') !== filterTopic) {
-      return;
-    }
-    
-    let statusClass = 'new';
-    let statusText = 'Mới';
-    if (rawWordData.status === 'mastered') {
-      statusClass = 'mastered';
-      statusText = 'Đã thuộc';
-    } else if (rawWordData.status === 'reviewing') {
-      statusClass = 'reviewing';
-      statusText = 'Hay quên';
-    } else if (rawWordData.status === 'learning') {
-      statusClass = 'learning';
-      statusText = 'Đang nhớ';
-    }
-    
+    // POS color map
+    const posColors = {
+      noun:      { bg: 'rgba(99,102,241,0.15)', border: 'rgba(99,102,241,0.5)', badge: '#818cf8', label: 'NOUN' },
+      verb:      { bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.4)',  badge: '#4ade80', label: 'VERB' },
+      adjective: { bg: 'rgba(251,146,60,0.12)', border: 'rgba(251,146,60,0.4)', badge: '#fb923c', label: 'ADJ' },
+      adverb:    { bg: 'rgba(232,121,249,0.12)',border: 'rgba(232,121,249,0.4)',badge: '#e879f9', label: 'ADV' },
+      phrase:    { bg: 'rgba(56,189,248,0.12)', border: 'rgba(56,189,248,0.4)', badge: '#38bdf8', label: 'PHRASE' },
+    };
+
+    // Build meanings HTML — one styled block per POS
     let meaningsHtml = '';
-    wordData.meanings.forEach((m, idx) => {
-      const hasValidPOS = Boolean(m.pos);
+    const meanings = wordData.meanings || [];
+    const hasManyMeanings = meanings.length > 1;
+
+    meanings.forEach((m, idx) => {
+      const posKey = (m.pos || m.type || 'noun').toLowerCase();
+      const col = posColors[posKey] || { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)', badge: '#94a3b8', label: (posKey || 'WORD').toUpperCase() };
+
+      // Detect synonym note in meaning text (added by parseBatchLine)
+      let mainMeaning = m.meaning || '';
+      let synonymNote = '';
+      const synIdx = mainMeaning.indexOf('| Đồng nghĩa:');
+      if (synIdx !== -1) {
+        synonymNote = mainMeaning.substring(synIdx + 2).trim();
+        mainMeaning = mainMeaning.substring(0, synIdx).trim();
+      }
+
       meaningsHtml += `
-        <div style="margin-top: 0.6rem; padding-top: 0.6rem; ${idx > 0 ? 'border-top: 1px dashed var(--border-color);' : ''}">
-          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem; flex-wrap: wrap;">
-            ${hasValidPOS ? `<span class="status-badge pos-badge-${m.pos.toLowerCase()}" style="background: rgba(255,255,255,0.08); color: var(--text-secondary); font-size: 0.75rem; padding: 1px 5px; text-transform: uppercase;">${m.pos}</span>` : ''}
-            <span style="font-weight: 600; color: var(--accent-success);">${m.meaning}</span>
+        <div style="
+          margin-top: ${idx > 0 ? '0.6rem' : '0'};
+          padding: 0.65rem 0.8rem;
+          background: ${col.bg};
+          border-left: 3px solid ${col.border};
+          border-radius: 0 8px 8px 0;
+        ">
+          <div style="display:flex;align-items:center;gap:0.45rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+            <span style="
+              background:${col.badge};color:#0f172a;
+              font-size:0.68rem;font-weight:800;padding:1px 7px;
+              border-radius:99px;letter-spacing:0.5px;
+            ">${col.label}</span>
+            <span style="font-weight:700;color:#f1f5f9;font-size:0.92rem;">${mainMeaning}</span>
           </div>
-          ${m.definition ? `<div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.2rem;">${m.definition}</div>` : ''}
-          ${m.example ? `<div style="font-style: italic; color: var(--text-primary); font-size: 0.8rem;">e.g. ${m.example}</div>` : ''}
-          ${m.exampleMeaning ? `<div style="font-size: 0.75rem; color: #a1a1aa; margin-top: 0.1rem;">Dịch: ${m.exampleMeaning}</div>` : ''}
+          ${m.definition ? `<div style="color:#94a3b8;font-size:0.78rem;margin-bottom:0.3rem;font-style:italic;">${m.definition}</div>` : ''}
+          ${m.example ? `
+          <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:0.4rem 0.6rem;margin-top:0.3rem;">
+            <div style="color:#e2e8f0;font-size:0.8rem;font-style:italic;">
+              <span style="color:${col.badge};font-weight:700;margin-right:4px;">e.g.</span>${m.example}
+            </div>
+            ${m.exampleMeaning ? `<div style="color:#64748b;font-size:0.75rem;margin-top:0.15rem;">↳ ${m.exampleMeaning}</div>` : ''}
+          </div>` : ''}
+          ${synonymNote ? `<div style="margin-top:0.35rem;font-size:0.75rem;color:#fbbf24;">🔗 ${synonymNote}</div>` : ''}
         </div>
       `;
     });
+
+    const topicTag = rawWordData.topic && rawWordData.topic !== 'Cá nhân' 
+      ? `<span style="font-size:0.68rem;font-weight:700;color:#64748b;background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:6px;">${rawWordData.topic}</span>` 
+      : '';
 
     const card = document.createElement('div');
     card.className = 'glass-card word-library-card';
@@ -717,10 +745,11 @@ function renderVocabBank() {
       <div class="word-library-header">
         <div class="word-library-title-wrap">
           <span class="word-library-title">${wordData.word}</span>
+          ${hasManyMeanings ? `<span style="font-size:0.68rem;font-weight:800;color:#818cf8;background:rgba(99,102,241,0.15);padding:2px 7px;border-radius:99px;margin-left:6px;">${meanings.length} nghĩa</span>` : ''}
         </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem;" onclick="event.stopPropagation();">
-          <button onclick="editVocabWord(${index}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 2px;" title="Sửa từ">✏️</button>
-          <button onclick="deleteVocabWord(${index}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 2px;" title="Xóa từ">❌</button>
+        <div style="display:flex;align-items:center;gap:0.5rem;" onclick="event.stopPropagation();">
+          <button onclick="editVocabWord(${index}, event)" style="background:none;border:none;cursor:pointer;font-size:0.95rem;padding:2px;" title="Sửa từ">✏️</button>
+          <button onclick="deleteVocabWord(${index}, event)" style="background:none;border:none;cursor:pointer;font-size:0.95rem;padding:2px;" title="Xóa từ">❌</button>
           <span class="status-badge ${statusClass}">${statusText}</span>
         </div>
       </div>
@@ -728,15 +757,19 @@ function renderVocabBank() {
         ${wordData.ipa
           ? `<span class="ipa-text">${wordData.ipa}</span>`
           : `<span class="ipa-text ipa-missing">Chưa có IPA</span>`}
-        <button onclick="playWordTTS('${wordData.word.replace(/'/g, "\\'")}', event)" style="background: none; border: none; cursor: pointer; color: var(--accent-primary);" title="Phát âm">🔊</button>
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          ${topicTag}
+          <button onclick="playWordTTS('${wordData.word.replace(/'/g, "\\'")}', event)" style="background:none;border:none;cursor:pointer;color:var(--accent-primary);" title="Phát âm">🔊</button>
+        </div>
       </div>
-      <div style="font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 0.4rem;">
+      <div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.4rem;">
         ${meaningsHtml}
       </div>
     `;
     grid.appendChild(card);
   });
 }
+
 
 function playWordTTS(word, event) {
   if (event) event.stopPropagation();
@@ -965,6 +998,134 @@ const SMART_TOEIC_TERMS = {
     meaning: 'khách quan',
     example: 'The external auditor evaluated the financial compliance reports objectively.',
     exampleMeaning: 'Kiểm toán viên bên ngoài đã đánh giá các báo cáo tuân thủ tài chính một cách khách quan.'
+  },
+  'researcher': {
+    pos: 'noun',
+    pronunciation: '/rɪˈsɜː.tʃər/',
+    meaning: 'Nhà nghiên cứu',
+    definition: 'A person who carries out academic or scientific research.',
+    example: 'The researcher published her findings in a leading medical journal.',
+    exampleMeaning: 'Nhà nghiên cứu đã công bố phát hiện của mình trên một tạp chí y khoa hàng đầu.'
+  },
+  'senior': {
+    pos: 'adjective',
+    pronunciation: '/ˈsiː.ni.ər/',
+    meaning: 'Cấp cao, thâm niên',
+    definition: 'Higher in rank or length of service.',
+    example: 'She was promoted to a senior management position after five years.',
+    exampleMeaning: 'Cô ấy được thăng chức lên vị trí quản lý cấp cao sau năm năm.'
+  },
+  'junior': {
+    pos: 'adjective',
+    pronunciation: '/ˈdʒuː.ni.ər/',
+    meaning: 'Cấp thấp hơn, mới vào nghề',
+    definition: 'Lower in rank or having less experience.',
+    example: 'The junior analyst prepared a summary report for the team meeting.',
+    exampleMeaning: 'Chuyên viên phân tích cấp thấp đã chuẩn bị báo cáo tóm tắt cho cuộc họp nhóm.'
+  },
+  'institute': {
+    pos: 'noun',
+    pronunciation: '/ˈɪn.stɪ.tjuːt/',
+    meaning: 'Viện, học viện',
+    definition: 'An organization founded for a particular purpose.',
+    example: 'She completed her MBA at a prestigious business institute.',
+    exampleMeaning: 'Cô ấy đã hoàn thành chương trình MBA tại một học viện kinh doanh danh tiếng.'
+  },
+  'feature': {
+    pos: 'noun',
+    pronunciation: '/ˈfiː.tʃər/',
+    meaning: 'Tính năng, đặc điểm (n) | Bao gồm, nêu bật (v) | Nổi bật (adj)',
+    definition: 'A distinctive attribute or aspect of something; also to include as a special attraction.',
+    example: 'The new app features an intelligent study planner that adapts to your schedule.',
+    exampleMeaning: 'Ứng dụng mới có tính năng lập kế hoạch học tập thông minh, thích nghi với lịch của bạn.'
+  },
+  'comply with': {
+    pos: 'phrase',
+    pronunciation: '/kəmˈplaɪ wɪð/',
+    meaning: 'Tuân thủ, chấp hành',
+    definition: 'To act in accordance with a rule, wish, or command.',
+    example: 'All employees must comply with the company\'s health and safety regulations.',
+    exampleMeaning: 'Tất cả nhân viên phải tuân thủ các quy định về sức khỏe và an toàn của công ty.'
+  },
+  'abide by': {
+    pos: 'phrase',
+    pronunciation: '/əˈbaɪd baɪ/',
+    meaning: 'Tuân thủ, tuân theo',
+    definition: 'To accept or follow a rule, decision, or recommendation.',
+    example: 'The contractor agreed to abide by all terms stated in the agreement.',
+    exampleMeaning: 'Nhà thầu đồng ý tuân thủ tất cả các điều khoản được nêu trong hợp đồng.'
+  },
+  'adhere to': {
+    pos: 'phrase',
+    pronunciation: '/ədˈhɪər tuː/',
+    meaning: 'Tuân thủ, gắn bó với',
+    definition: 'To continue to behave according to a rule or principle.',
+    example: 'The team must adhere to the project timeline approved by management.',
+    exampleMeaning: 'Nhóm phải tuân thủ tiến độ dự án đã được ban lãnh đạo phê duyệt.'
+  },
+  'conform to': {
+    pos: 'phrase',
+    pronunciation: '/kənˈfɔːm tuː/',
+    meaning: 'Tuân thủ, phù hợp với',
+    definition: 'To behave according to generally accepted standards.',
+    example: 'The new packaging must conform to international shipping standards.',
+    exampleMeaning: 'Bao bì mới phải phù hợp với các tiêu chuẩn vận chuyển quốc tế.'
+  },
+  'observe': {
+    pos: 'verb',
+    pronunciation: '/əbˈzɜːv/',
+    meaning: 'Tuân thủ, tuân theo (quy tắc); quan sát',
+    definition: 'To comply with or follow a rule, law, or custom.',
+    example: 'Staff are required to observe the company\'s code of conduct at all times.',
+    exampleMeaning: 'Nhân viên phải tuân thủ quy tắc ứng xử của công ty mọi lúc.'
+  },
+  'verify': {
+    pos: 'verb',
+    pronunciation: '/ˈver.ɪ.faɪ/',
+    meaning: 'Xác minh, kiểm chứng',
+    definition: 'To make sure or demonstrate that something is true or accurate.',
+    example: 'Please verify your email address to complete the registration process.',
+    exampleMeaning: 'Vui lòng xác minh địa chỉ email của bạn để hoàn tất quá trình đăng ký.'
+  },
+  'finalize': {
+    pos: 'verb',
+    pronunciation: '/ˈfaɪ.nə.laɪz/',
+    meaning: 'Hoàn thiện, hoàn tất',
+    definition: 'To complete the last part of a plan, trip, or agreement.',
+    example: 'We need to finalize the contract details before the end of the quarter.',
+    exampleMeaning: 'Chúng tôi cần hoàn thiện các chi tiết hợp đồng trước cuối quý.'
+  },
+  'accomplish': {
+    pos: 'verb',
+    pronunciation: '/əˈkʌm.plɪʃ/',
+    meaning: 'Hoàn thành, đạt được (mục tiêu)',
+    definition: 'To succeed in doing or achieving something.',
+    example: 'The sales team accomplished all of their quarterly targets ahead of schedule.',
+    exampleMeaning: 'Nhóm bán hàng đã hoàn thành tất cả các mục tiêu quý trước thời hạn.'
+  },
+  'office supplies': {
+    pos: 'phrase',
+    pronunciation: '/ˈɒf.ɪs səˈplaɪz/',
+    meaning: 'Văn phòng phẩm, đồ dùng văn phòng',
+    definition: 'Materials and equipment used in an office environment.',
+    example: 'Please submit your request for office supplies to the administration team.',
+    exampleMeaning: 'Vui lòng gửi yêu cầu văn phòng phẩm của bạn cho nhóm hành chính.'
+  },
+  'consist of': {
+    pos: 'phrase',
+    pronunciation: '/kənˈsɪst ɒv/',
+    meaning: 'Bao gồm, cấu thành từ',
+    definition: 'To be made up of; to be composed of.',
+    example: 'The executive team consists of five senior directors across three departments.',
+    exampleMeaning: 'Ban điều hành bao gồm năm giám đốc cấp cao từ ba phòng ban.'
+  },
+  'comprise': {
+    pos: 'verb',
+    pronunciation: '/kəmˈpraɪz/',
+    meaning: 'Bao gồm, cấu thành',
+    definition: 'To consist of; to be made up of.',
+    example: 'The report comprises three sections: analysis, findings, and recommendations.',
+    exampleMeaning: 'Báo cáo bao gồm ba phần: phân tích, phát hiện và khuyến nghị.'
   }
 };
 
@@ -1711,12 +1872,13 @@ async function saveSingleWord(event) {
 }
 
 // Batch Import Parser with fully automatic dictionary lookups
-// Parse a single batch line into { word, meanings: [{type, meaning}] }
+// Parse a single batch line into { word, meanings: [{type, meaning}], synonymGroup }
 // Handles formats like:
 //   "Branch (n) : chi nhánh"
 //   "Conduct (v) thực hiện (n) : hành vi , cách ứng sử"
-//   "Record : (n) hồ sơ (v) ghi chép , thu âm"
-//   "Associate (n) đồng nghiệp (v) liên kết (adj) thuộc cấp phó"
+//   "Feature (n): tính năng | (v): bao gồm | (adj): nổi bật"   ← pipe separator
+//   "Abide by = comply with = conform to : tuân thủ"           ← synonym group
+//   "Hoàn thành = finalize / finish / complete : hoàn thành"   ← slash synonyms
 //   "Objectively adv : khách quan"
 //   "Priorizre (V) ; ưu tiên"
 function parseBatchLine(line) {
@@ -1727,8 +1889,91 @@ function parseBatchLine(line) {
   if (line.toLowerCase().includes('reading part') || line.toLowerCase().includes('thầy dũng') || line.toLowerCase().includes('bài tập ngày')) {
     return null;
   }
+
+  // ── SYNONYM GROUP detection: "abide by = comply with = conform to : tuân thủ"
+  // or "finalize / finish / complete : hoàn thành"
+  // These lines contain multiple English words separated by = or /
+  // We parse them as a synonym group and return the FIRST word as primary
+  const synonymSepRegex = /[=]/g;
+  const hasSynonymGroup = (line.match(synonymSepRegex) || []).length >= 1;
+  if (hasSynonymGroup) {
+    // Split by = to get all synonym entries; last segment may contain : Vietnamese meaning
+    const parts = line.split('=').map(s => s.trim());
+    // Vietnamese meaning is in the last part, after :
+    const lastPart = parts[parts.length - 1];
+    const colonIdx = lastPart.lastIndexOf(':');
+    const dashIdx = lastPart.lastIndexOf(' - ');
+    let viMeaning = '';
+    let lastEnPart = lastPart;
+    if (colonIdx > 0) {
+      viMeaning = lastPart.substring(colonIdx + 1).trim();
+      lastEnPart = lastPart.substring(0, colonIdx).trim();
+    } else if (dashIdx > 0) {
+      viMeaning = lastPart.substring(dashIdx + 3).trim();
+      lastEnPart = lastPart.substring(0, dashIdx).trim();
+    }
+    // Collect all English words/phrases from all segments
+    const synonymWords = [];
+    for (let i = 0; i < parts.length - 1; i++) {
+      const w = sanitizeWordTitle(parts[i]);
+      if (w && w.length > 1) synonymWords.push(w);
+    }
+    // Also parse the lastEnPart for additional slash-separated synonyms
+    const lastSlashParts = lastEnPart.split('/').map(s => s.trim()).filter(Boolean);
+    lastSlashParts.forEach(s => {
+      const w = sanitizeWordTitle(s);
+      if (w && w.length > 1) synonymWords.push(w);
+    });
+    if (synonymWords.length === 0) return null;
+    // Primary word is the first synonym; annotate with synonyms list
+    const primaryWord = synonymWords[0];
+    const posKey = detectWordPOS(primaryWord);
+    const fullMeaning = viMeaning || 'Xem nhóm đồng nghĩa';
+    const synonymNote = synonymWords.length > 1
+      ? `${fullMeaning} | Đồng nghĩa: ${synonymWords.slice(1).join(' = ')}`
+      : fullMeaning;
+    return { word: primaryWord, meanings: [{ type: posKey, meaning: synonymNote }], synonymGroup: synonymWords };
+  }
+
+  // ── PIPE SEPARATOR: "Feature (n): tính năng | (v): bao gồm | (adj): nổi bật"
+  const pipeSegments = line.split('|');
+  if (pipeSegments.length > 1) {
+    // First segment contains the word; subsequent segments are extra meanings
+    const firstSeg = pipeSegments[0].trim();
+    let cleanWord = sanitizeWordTitle(firstSeg);
+    if (!cleanWord || cleanWord.length < 2) return null;
+    const meanings = [];
+    const posRegexPipe = /\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi;
+    function normPOS(raw) {
+      const r = raw.toLowerCase().trim();
+      if (r === 'n' || r === 'noun') return 'noun';
+      if (r === 'v' || r === 'verb') return 'verb';
+      if (r === 'adj' || r === 'adjective') return 'adjective';
+      if (r === 'adv' || r === 'adverb') return 'adverb';
+      return detectWordPOS(cleanWord);
+    }
+    for (const seg of pipeSegments) {
+      const s = seg.trim();
+      const pm = posRegexPipe.exec ? null : null;
+      posRegexPipe.lastIndex = 0;
+      const m = posRegexPipe.exec(s);
+      if (m) {
+        const posType = normPOS(m[1]);
+        const meaningText = s.substring(m.index + m[0].length).replace(/^[\s:]+/, '').trim();
+        if (meaningText) meanings.push({ type: posType, meaning: meaningText });
+      } else {
+        // No explicit POS in segment — try "word - nghĩa" or "nghĩa" from remainder
+        const remainder = s.replace(cleanWord, '').replace(/^[\s:\-]+/, '').trim();
+        if (remainder && meanings.length === 0) {
+          meanings.push({ type: detectWordPOS(cleanWord), meaning: remainder });
+        }
+      }
+    }
+    if (meanings.length === 0) meanings.push({ type: detectWordPOS(cleanWord), meaning: '' });
+    return { word: cleanWord, meanings };
+  }
   
-  // Step 1: Extract the clean English word using sanitizeWordTitle
+  // ── STANDARD single-line parsing ──
   let cleanWord = sanitizeWordTitle(line);
   if (!cleanWord || cleanWord.length < 2) return null;
   
@@ -1756,7 +2001,6 @@ function parseBatchLine(line) {
       const startIdx = posMatches[i].end;
       const endIdx = i + 1 < posMatches.length ? posMatches[i + 1].index : line.length;
       let meaningText = line.substring(startIdx, endIdx).replace(/^[\s:;]+/, '').replace(/[\s:;]+$/, '').trim();
-      
       meanings.push({ type: posType, meaning: meaningText });
     }
   } else {
@@ -1850,48 +2094,52 @@ async function importBatchWords() {
         if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
         pronunciation = rawPhonetic;
         
-        // Collect dictionary definitions grouped by POS for matching examples
+        // Collect dictionary definitions grouped by POS
         const dictByPOS = {};
+        const posOrder = []; // preserve order from dict
         for (const entry of dictData) {
           if (!entry.meanings) continue;
           for (const mGroup of entry.meanings) {
             const pos = mGroup.partOfSpeech || 'noun';
-            if (!dictByPOS[pos]) dictByPOS[pos] = [];
+            if (!dictByPOS[pos]) { dictByPOS[pos] = []; posOrder.push(pos); }
             for (const def of mGroup.definitions) {
-              dictByPOS[pos].push({
-                definition: def.definition || '',
-                example: def.example || ''
-              });
+              dictByPOS[pos].push({ definition: def.definition || '', example: def.example || '' });
             }
           }
         }
-        
-        // For each user-provided meaning, find matching dictionary example
-        for (const userMeaning of parsed.meanings) {
-          const posKey = detectWordPOS(cleanWord, userMeaning.type);
-          const dictDefs = dictByPOS[posKey] || [];
-          // Pick the best dictionary entry (prefer one with an example)
-          const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
-          
-          let exText = bestDict ? bestDict.example : '';
-          let defText = bestDict ? bestDict.definition : '';
-          if (!exText) {
-            exText = generateTemplateExample(cleanWord, posKey);
+
+        // Determine which POS to generate meanings for:
+        // If user explicitly typed multiple POS (via pipe | or (n)/(v)), use those.
+        // If user typed only ONE meaning with no explicit POS OR just a Vietnamese meaning,
+        // expand to ALL POS found in dictionary so learner sees every usage.
+        const userSpecifiedPOS = parsed.meanings.filter(m => m.type && m.type !== detectWordPOS(cleanWord));
+        const shouldExpandAllPOS = parsed.meanings.length <= 1 && userSpecifiedPOS.length === 0 && posOrder.length > 1;
+
+        if (shouldExpandAllPOS) {
+          // Generate one block per POS from dictionary
+          for (const pos of posOrder) {
+            const defs = dictByPOS[pos] || [];
+            const bestDict = defs.find(d => d.example) || defs[0] || null;
+            let exText = bestDict?.example || generateTemplateExample(cleanWord, pos);
+            let defText = bestDict?.definition || '';
+            const exTrans = exText ? await translateExampleText(exText) : '';
+            // Use user's Vietnamese meaning for the first POS, leave others with definition hint
+            const userViMeaning = parsed.meanings[0]?.meaning || '';
+            const meaning = pos === posOrder[0] && userViMeaning ? userViMeaning : (defText ? '' : 'Xem định nghĩa');
+            lookupMeanings.push({ type: pos, meaning, definition: defText, example: exText, exampleMeaning: exTrans });
           }
-          
-          // Translate example sentence
-          let exTrans = '';
-          if (exText) {
-            exTrans = await translateExampleText(exText);
+        } else {
+          // For each user-provided meaning, find matching dictionary example
+          for (const userMeaning of parsed.meanings) {
+            const posKey = detectWordPOS(cleanWord, userMeaning.type);
+            const dictDefs = dictByPOS[posKey] || [];
+            const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
+            let exText = bestDict ? bestDict.example : '';
+            let defText = bestDict ? bestDict.definition : '';
+            if (!exText) exText = generateTemplateExample(cleanWord, posKey);
+            const exTrans = exText ? await translateExampleText(exText) : '';
+            lookupMeanings.push({ type: posKey, meaning: userMeaning.meaning || 'Chưa cập nhật', definition: defText, example: exText, exampleMeaning: exTrans });
           }
-          
-          lookupMeanings.push({
-            type: posKey,
-            meaning: userMeaning.meaning || 'Chưa cập nhật',
-            definition: defText,
-            example: exText,
-            exampleMeaning: exTrans
-          });
         }
       }
     } catch (e) {
