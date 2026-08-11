@@ -4438,26 +4438,12 @@ function showReviewCard(index) {
   
   document.getElementById('rv-front-word').textContent = wordData.word;
   
-  const typeElem = document.getElementById('rv-front-type');
-  if (typeElem) {
-    if (allTypesText) {
-      typeElem.textContent = allTypesText;
-      typeElem.style.display = 'inline-block';
-    } else {
-      typeElem.textContent = '';
-      typeElem.style.display = 'none';
-    }
-  }
-  
-  const phonElem = document.getElementById('rv-front-phonetic');
-  if (phonElem) {
-    if (wordData.ipa) {
-      phonElem.textContent = wordData.ipa;
-      phonElem.style.display = 'inline-block';
-    } else {
-      phonElem.textContent = '';
-      phonElem.style.display = 'none';
-    }
+  const metaElem = document.getElementById('rv-front-meta');
+  if (metaElem) {
+    const metaParts = [];
+    if (allTypesText) metaParts.push(`<span id="rv-front-type" class="status-badge" style="background: var(--accent-primary-glow); color: var(--accent-primary); border: 1px solid rgba(99,102,241,0.35); text-transform: uppercase;">${allTypesText}</span>`);
+    if (wordData.ipa) metaParts.push(`<span id="rv-front-phonetic" style="font-family: monospace; opacity: 0.85;">${wordData.ipa}</span>`);
+    metaElem.innerHTML = metaParts.join(' &bull; ');
   }
   
   const resultDiv = document.getElementById('speech-grading-result');

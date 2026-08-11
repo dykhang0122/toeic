@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sổ Học TOEIC Cá Nhân - Học Tập Thông Minh & Tự Động</title>
   <meta name="description" content="Sổ học TOEIC cá nhân giúp quản lý từ vựng, tự động ôn tập, nộp bài tập về nhà Reading/Listening, ghi nhật ký Mock Test và thống kê tiến độ học tập chi tiết.">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -255,7 +255,7 @@
                 </div>
                 <div class="oq-center-info">
                   <span id="rv-front-word" class="oq-word">Word</span>
-                  <span class="oq-meta"><span id="rv-front-type">noun</span> - <span id="rv-front-phonetic">/phonetic/</span></span>
+                  <span class="oq-meta" id="rv-front-meta"></span>
                 </div>
                 <div class="oq-footer-tools" onclick="event.stopPropagation();">
                   <button id="btn-mic" class="oq-mic-btn" onclick="startSpeechRecognition(event)">🎤</button>
@@ -740,7 +740,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="words.js?v=5"></script>
-  <script src="app.js?v=43"></script>
+  <script src="app.js?v=44"></script>
 
   <!-- ══════ FLOATING QUICK-IMPORT BAR ══════ -->
   <div id="quick-import-bar" style="
