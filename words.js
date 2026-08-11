@@ -1,4 +1,550 @@
 const toeicVocabulary = {
+  "user_60_terms": {
+    "title": "⭐ 60 Từ vựng TOEIC bổ sung",
+    "words": [
+        {
+            "word": "Appeal",
+            "type": "noun",
+            "pronunciation": "/əˈpiːl/",
+            "meaning": "Sự hấp dẫn, lời kêu gọi",
+            "definition": "The quality of being attractive or interesting; a formal request.",
+            "example": "The new design has great appeal to young customers.",
+            "exampleMeaning": "Thiết kế mới có sức hấp dẫn lớn với khách hàng trẻ."
+        },
+        {
+            "word": "Arrive",
+            "type": "verb",
+            "pronunciation": "/əˈraɪv/",
+            "meaning": "Đến nơi, tới",
+            "definition": "To reach a destination or place at the end of a journey.",
+            "example": "We will arrive at the airport at 6 p.m.",
+            "exampleMeaning": "Chúng tôi sẽ đến sân bay lúc 6 giờ tối."
+        },
+        {
+            "word": "Compromise",
+            "type": "noun",
+            "pronunciation": "/ˈkɒm.prə.maɪz/",
+            "meaning": "Sự thỏa hiệp, sự thống nhất",
+            "definition": "An agreement reached by each side making concessions.",
+            "example": "They finally reached a compromise after hours of negotiation.",
+            "exampleMeaning": "Cuối cùng họ đã đạt được sự thỏa hiệp sau nhiều giờ đàm phán."
+        },
+        {
+            "word": "Daringly",
+            "type": "adverb",
+            "pronunciation": "/ˈdeə.rɪŋ.li/",
+            "meaning": "Một cách táo bạo, liều lĩnh",
+            "definition": "In an adventurous, bold, or courageous manner.",
+            "example": "The startup daringly launched its new product against market giants.",
+            "exampleMeaning": "Công ty khởi nghiệp đã ra mắt sản phẩm mới một cách táo bạo chống lại các gã khổng lồ."
+        },
+        {
+            "word": "Familiar",
+            "type": "adjective",
+            "pronunciation": "/fəˈmɪl.i.ər/",
+            "meaning": "Quen thuộc, thân thuộc",
+            "definition": "Well known from long or close association.",
+            "example": "Employees should become familiar with the new software system.",
+            "exampleMeaning": "Nhân viên nên làm quen với hệ thống phần mềm mới."
+        },
+        {
+            "word": "Guide",
+            "type": "noun",
+            "pronunciation": "/ɡaɪd/",
+            "meaning": "Người hướng dẫn, sách hướng dẫn",
+            "definition": "A person or book that advises or shows the way.",
+            "example": "The tour guide explained the history of the company headquarters.",
+            "exampleMeaning": "Người hướng dẫn du lịch đã giải thích lịch sử của trụ sở công ty."
+        },
+        {
+            "word": "Majority",
+            "type": "noun",
+            "pronunciation": "/məˈdʒɒr.ə.ti/",
+            "meaning": "Đa số, phần lớn",
+            "definition": "The greater number or part of something.",
+            "example": "The majority of board members voted in favor of the expansion.",
+            "exampleMeaning": "Đa số các thành viên hội đồng quản trị đã bỏ phiếu thuận cho việc mở rộng."
+        },
+        {
+            "word": "Mix",
+            "type": "verb",
+            "pronunciation": "/mɪks/",
+            "meaning": "Trộn, hòa lẫn",
+            "definition": "Combine or put together two or more substances.",
+            "example": "Mix the ingredients thoroughly before baking.",
+            "exampleMeaning": "Trộn kỹ các thành phần trước khi nướng."
+        },
+        {
+            "word": "Rely",
+            "type": "verb",
+            "pronunciation": "/rɪˈlaɪ/",
+            "meaning": "Dựa vào, tin tưởng vào (rely on)",
+            "definition": "Depend on with full trust or confidence.",
+            "example": "You can rely on our team to finish the project on time.",
+            "exampleMeaning": "Bạn có thể tin tưởng vào nhóm chúng tôi để hoàn thành dự án đúng hạn."
+        },
+        {
+            "word": "Secure",
+            "type": "adjective",
+            "pronunciation": "/sɪˈkjʊər/",
+            "meaning": "An toàn, đảm bảo",
+            "definition": "Fixed or fastened so as not to give way, associate or slip.",
+            "example": "Keep your personal data secure at all times.",
+            "exampleMeaning": "Giữ dữ liệu cá nhân của bạn an toàn mọi lúc."
+        },
+        {
+            "word": "Subjective",
+            "type": "adjective",
+            "pronunciation": "/səbˈdʒek.tɪv/",
+            "meaning": "Chủ quan",
+            "definition": "Based on or influenced by personal feelings, tastes, or opinions.",
+            "example": "Performance reviews should be based on objective facts rather than subjective opinions.",
+            "exampleMeaning": "Đánh giá hiệu suất nên dựa trên thực tế khách quan thay vì ý kiến chủ quan."
+        },
+        {
+            "word": "Suggestion",
+            "type": "noun",
+            "pronunciation": "/səˈdʒes.tʃən/",
+            "meaning": "Sự đề nghị, gợi ý",
+            "definition": "An idea or plan put forward for consideration.",
+            "example": "The manager appreciated her practical suggestion for reducing operational costs.",
+            "exampleMeaning": "Quản lý đánh giá cao lời gợi ý thực tế của cô ấy để giảm chi phí vận hành."
+        },
+        {
+            "word": "Basic",
+            "type": "adjective",
+            "pronunciation": "/ˈbeɪ.sɪk/",
+            "meaning": "Cơ bản, nền tảng",
+            "definition": "Forming an essential foundation or starting point.",
+            "example": "All applicants must have basic computer literacy skills.",
+            "exampleMeaning": "Tất cả ứng viên phải có kỹ năng tin học cơ bản."
+        },
+        {
+            "word": "Complete",
+            "type": "verb",
+            "pronunciation": "/kəmˈpliːt/",
+            "meaning": "Hoàn thành, xong",
+            "definition": "Finish making or doing something.",
+            "example": "Please complete the online survey before Friday.",
+            "exampleMeaning": "Vui lòng hoàn thành khảo sát trực tuyến trước thứ Sáu."
+        },
+        {
+            "word": "Excite",
+            "type": "verb",
+            "pronunciation": "/ɪkˈsaɪt/",
+            "meaning": "Kích thích, gây hứng thú",
+            "definition": "Cause strong feelings of enthusiasm and eagerness in someone.",
+            "example": "The announcement of the new product line excited all major investors.",
+            "exampleMeaning": "Thông báo về dòng sản phẩm mới đã gây hứng thú cho tất cả các nhà đầu tư lớn."
+        },
+        {
+            "word": "Flavor",
+            "type": "noun",
+            "pronunciation": "/ˈfleɪ.vər/",
+            "meaning": "Hương vị, mùi vị",
+            "definition": "The distinctive taste of a food or drink.",
+            "example": "The chef introduced a unique flavor to the restaurant autumn menu.",
+            "exampleMeaning": "Đầu bếp đã đưa một hương vị độc đáo vào thực đơn mùa thu của nhà hàng."
+        },
+        {
+            "word": "Forget",
+            "type": "verb",
+            "pronunciation": "/fəˈɡet/",
+            "meaning": "Quên, bỏ sót",
+            "definition": "Fail to remember or recall.",
+            "example": "Do not forget to attach your resume to the official job application.",
+            "exampleMeaning": "Đừng quên đính kèm sơ yếu lý lịch vào đơn xin việc chính thức."
+        },
+        {
+            "word": "Ingredient",
+            "type": "noun",
+            "pronunciation": "/ɪnˈɡriː.di.ənt/",
+            "meaning": "Thành phần, nguyên liệu",
+            "definition": "Any of the foods or substances that are combined to make a particular dish.",
+            "example": "Quality customer service is a key ingredient for corporate success.",
+            "exampleMeaning": "Dịch vụ khách hàng chất lượng là thành phần cốt lõi cho thành công của doanh nghiệp."
+        },
+        {
+            "word": "Judge",
+            "type": "verb",
+            "pronunciation": "/dʒʌdʒ/",
+            "meaning": "Đánh giá, thẩm định",
+            "definition": "Form an opinion or conclusion about.",
+            "example": "Candidates will be judged on their relevant work experience and interview performance.",
+            "exampleMeaning": "Ứng viên sẽ được đánh giá dựa trên kinh nghiệm làm việc liên quan và phần thể hiện phỏng vấn."
+        },
+        {
+            "word": "Mix-up",
+            "type": "noun",
+            "pronunciation": "/ˈmɪks.ʌp/",
+            "meaning": "Sự nhầm lẫn, lộn xộn",
+            "definition": "A mistake that causes confusion or delay.",
+            "example": "There was a mix-up with the delivery address for the commercial shipment.",
+            "exampleMeaning": "Đã có sự nhầm lẫn với địa chỉ giao hàng cho lô hàng thương mại."
+        },
+        {
+            "word": "Patron",
+            "type": "noun",
+            "pronunciation": "/ˈpeɪ.trən/",
+            "meaning": "Khách hàng quen, người bảo trợ",
+            "definition": "A customer, especially a regular one, of a store, restaurant, or theater.",
+            "example": "Frequent patrons enjoy special discounts at our hotel dining room.",
+            "exampleMeaning": "Khách hàng quen thường xuyên được hưởng ưu đãi đặc biệt tại phòng ăn khách sạn."
+        },
+        {
+            "word": "Predict",
+            "type": "verb",
+            "pronunciation": "/prɪˈdɪkt/",
+            "meaning": "Dự đoán, tiên đoán",
+            "definition": "Say or estimate that a specified thing will happen in the future.",
+            "example": "Financial analysts predict a strong growth in corporate profits next fiscal year.",
+            "exampleMeaning": "Các nhà phân tích tài chính dự đoán sự tăng trưởng mạnh mẽ về lợi nhuận doanh nghiệp vào năm tài chính tới."
+        },
+        {
+            "word": "Randomly",
+            "type": "adverb",
+            "pronunciation": "/ˈræn.dəm.li/",
+            "meaning": "Một cách ngẫu nhiên",
+            "definition": "Without conscious method, decision, or intention.",
+            "example": "Audit samples were selected randomly from the monthly client transactions.",
+            "exampleMeaning": "Các mẫu kiểm toán được chọn ngẫu nhiên từ các giao dịch hàng tháng của khách hàng."
+        },
+        {
+            "word": "Remind",
+            "type": "verb",
+            "pronunciation": "/rɪˈmaɪnd/",
+            "meaning": "Nhắc nhở, gợi nhớ",
+            "definition": "Cause someone to remember someone or something.",
+            "example": "Please remind the team members about the mandatory staff meeting tomorrow.",
+            "exampleMeaning": "Vui lòng nhắc nhở các thành viên trong nhóm về cuộc họp nhân viên bắt buộc vào ngày mai."
+        },
+        {
+            "word": "Burden",
+            "type": "noun",
+            "pronunciation": "/ˈbɜː.dən/",
+            "meaning": "Gánh nặng, trách nhiệm nặng",
+            "definition": "A load, typically a heavy one; a duty or responsibility.",
+            "example": "The heavy tax burden impacted small business profitability.",
+            "exampleMeaning": "Gánh nặng thuế nặng nề đã ảnh hưởng đến khả năng sinh lời của doanh nghiệp nhỏ."
+        },
+        {
+            "word": "Commonly",
+            "type": "adverb",
+            "pronunciation": "/ˈkɒm.ən.li/",
+            "meaning": "Thông thường, phổ biến",
+            "definition": "Very often; frequently.",
+            "example": "This software is commonly used in professional accounting offices nationwide.",
+            "exampleMeaning": "Phần mềm này thông thường được sử dụng trong các văn phòng kế toán chuyên nghiệp trên toàn quốc."
+        },
+        {
+            "word": "Delivery",
+            "type": "noun",
+            "pronunciation": "/dɪˈlɪv.ər.i/",
+            "meaning": "Sự giao hàng, đợt giao nhận",
+            "definition": "The action of delivering letters, packages, or ordered goods.",
+            "example": "The express delivery arrived ahead of the estimated schedule.",
+            "exampleMeaning": "Đợt giao hàng hỏa tốc đã đến trước thời gian ước tính."
+        },
+        {
+            "word": "Elegance",
+            "type": "noun",
+            "pronunciation": "/ˈel.ɪ.ɡəns/",
+            "meaning": "Sự tao nhã, thanh lịch",
+            "definition": "The quality of being graceful and stylish in appearance or manner.",
+            "example": "The newly renovated hotel lobby exudes modern elegance.",
+            "exampleMeaning": "Sảnh khách sạn mới nâng cấp toát lên vẻ tao nhã hiện đại."
+        },
+        {
+            "word": "Fall to",
+            "type": "phrase",
+            "pronunciation": "/fɔːl tuː/",
+            "meaning": "Trở thành trách nhiệm của, bắt đầu công việc",
+            "definition": "Become the responsibility or duty of someone.",
+            "example": "The duty of organizing the international conference fell to the senior marketing assistant.",
+            "exampleMeaning": "Nhiệm vụ tổ chức hội nghị quốc tế đã trở thành trách nhiệm của trợ lý tiếp thị cấp cao."
+        },
+        {
+            "word": "Impress",
+            "type": "verb",
+            "pronunciation": "/ɪmˈpres/",
+            "meaning": "Gây ấn tượng, làm cảm động",
+            "definition": "Make someone feel admiration and respect.",
+            "example": "Her thorough presentation impressed the board of directors.",
+            "exampleMeaning": "Bài thuyết trình kỹ lưỡng của cô ấy đã gây ấn tượng với ban giám đốc."
+        },
+        {
+            "word": "Individual",
+            "type": "noun",
+            "pronunciation": "/ˌɪn.dɪˈvɪdʒ.u.əl/",
+            "meaning": "Cá nhân, người",
+            "definition": "A single human being as distinct from a group or class.",
+            "example": "Each individual on the team contributed significantly to the final project report.",
+            "exampleMeaning": "Mỗi cá nhân trong nhóm đều đóng góp đáng kể vào báo cáo dự án cuối cùng."
+        },
+        {
+            "word": "List",
+            "type": "noun",
+            "pronunciation": "/lɪst/",
+            "meaning": "Danh sách",
+            "definition": "A number of connected items or names written consecutively.",
+            "example": "Please check the inventory list before placing a new purchase order.",
+            "exampleMeaning": "Vui lòng kiểm tra danh sách hàng tồn kho trước khi đặt đơn hàng mới."
+        },
+        {
+            "word": "Multiple",
+            "type": "adjective",
+            "pronunciation": "/ˈmʌl.tɪ.pəl/",
+            "meaning": "Nhiều, đa dạng",
+            "definition": "Having or involving several parts, elements, or members.",
+            "example": "The job candidate has multiple years of experience in retail management.",
+            "exampleMeaning": "Ứng viên có nhiều năm kinh nghiệm trong quản lý bán lẻ."
+        },
+        {
+            "word": "Narrow",
+            "type": "adjective",
+            "pronunciation": "/ˈnær.əʊ/",
+            "meaning": "Hẹp, chật hẹp",
+            "definition": "Of small width in relation to length.",
+            "example": "The hallway leading to the executive conference room is quite narrow.",
+            "exampleMeaning": "Hành lang dẫn đến phòng hội nghị điều hành khá hẹp."
+        },
+        {
+            "word": "Pick up",
+            "type": "phrase",
+            "pronunciation": "/pɪk ʌp/",
+            "meaning": "Đón, nhặt lên, học hỏi nhanh, phục hồi",
+            "definition": "Collect, retrieve, lift, or improve in status or condition.",
+            "example": "Quarterly sales figures began to pick up significantly after the summer promotional campaign.",
+            "exampleMeaning": "Doanh số bán hàng hàng quý bắt đầu phục hồi đáng kể sau chiến dịch khuyến mãi mùa hè."
+        },
+        {
+            "word": "Settle",
+            "type": "verb",
+            "pronunciation": "/ˈset.əl/",
+            "meaning": "Giải quyết, thanh toán, ổn định",
+            "definition": "Resolve or reach an agreement about an argument or dispute.",
+            "example": "The legal department managed to settle the contract dispute out of court.",
+            "exampleMeaning": "Bộ phận pháp lý đã giải quyết thành công tranh chấp hợp đồng ngoài tòa án."
+        },
+        {
+            "word": "Accustom to",
+            "type": "phrase",
+            "pronunciation": "/əˈkʌs.təm tuː/",
+            "meaning": "Làm quen với (be/get accustomed to)",
+            "definition": "Make someone familiar with something through use or experience.",
+            "example": "New employees quickly became accustomed to the company operational workflow.",
+            "exampleMeaning": "Nhân viên mới nhanh chóng làm quen với quy trình vận hành của công ty."
+        },
+        {
+            "word": "Apprentice",
+            "type": "noun",
+            "pronunciation": "/əˈpren.tɪs/",
+            "meaning": "Người học việc, tập sự",
+            "definition": "A person who is learning a trade from a skilled employer.",
+            "example": "The senior technician trained the new apprentice in machine maintenance.",
+            "exampleMeaning": "Kỹ thuật viên cấp cao đã đào tạo người học việc mới về bảo trì máy móc."
+        },
+        {
+            "word": "Culinary",
+            "type": "adjective",
+            "pronunciation": "/ˈkʌl.ɪ.nər.i/",
+            "meaning": "Thuộc về nấu ăn, ẩm thực",
+            "definition": "Of or relating to a kitchen or cookery.",
+            "example": "The international restaurant is famous for its outstanding culinary creations.",
+            "exampleMeaning": "Nhà hàng quốc tế nổi tiếng với các sáng tạo ẩm thực xuất sắc."
+        },
+        {
+            "word": "Demand",
+            "type": "noun",
+            "pronunciation": "/dɪˈmɑːnd/",
+            "meaning": "Nhu cầu, yêu cầu",
+            "definition": "An insistent and peremptory request, or consumer desire for goods.",
+            "example": "There is a high demand for skilled software engineers in the tech market.",
+            "exampleMeaning": "Có nhu cầu cao đối với kỹ sư phần mềm lành nghề trên thị trường công nghệ."
+        },
+        {
+            "word": "Draw",
+            "type": "verb",
+            "pronunciation": "/drɔː/",
+            "meaning": "Thu hút, lôi kéo, vẽ",
+            "definition": "Attract or pull interest towards oneself or a place.",
+            "example": "The annual international trade show draws thousands of professional visitors.",
+            "exampleMeaning": "Hội chợ thương mại quốc tế hàng năm thu hút hàng ngàn khách tham quan chuyên nghiệp."
+        },
+        {
+            "word": "Incorporate",
+            "type": "verb",
+            "pronunciation": "/ɪnˈkɔː.pər.eɪt/",
+            "meaning": "Kết hợp, sáp nhập, hợp nhất",
+            "definition": "Take in or contain something as part of a whole; include.",
+            "example": "We decided to incorporate customer feedback into the new product design.",
+            "exampleMeaning": "Chúng tôi quyết định kết hợp phản hồi của khách hàng vào thiết kế sản phẩm mới."
+        },
+        {
+            "word": "Influx",
+            "type": "noun",
+            "pronunciation": "/ˈɪn.flʌks/",
+            "meaning": "Dòng chảy tràn vào, sự đổ xô đến",
+            "definition": "An arrival or entry of large numbers of people or things.",
+            "example": "The coastal city experienced a massive influx of tourists during the summer season.",
+            "exampleMeaning": "Thành phố ven biển đã trải qua sự tràn vào ồ ạt của khách du lịch trong mùa hè."
+        },
+        {
+            "word": "Method",
+            "type": "noun",
+            "pronunciation": "/ˈmeθ.əd/",
+            "meaning": "Phương pháp, cách thức",
+            "definition": "A particular form of procedure for accomplishing something.",
+            "example": "We implemented an automated method to streamline monthly invoice processing.",
+            "exampleMeaning": "Chúng tôi đã triển khai một phương pháp tự động để tinh gọn xử lý hóa đơn hàng tháng."
+        },
+        {
+            "word": "Outlet",
+            "type": "noun",
+            "pronunciation": "/ˈaʊt.let/",
+            "meaning": "Cửa hàng tiêu thụ, đại lý outlet, lối thoát",
+            "definition": "A point from which goods are sold; a means of expression.",
+            "example": "The retail brand opened five new outlet stores in major shopping malls.",
+            "exampleMeaning": "Thương hiệu bán lẻ đã mở 5 cửa hàng đại lý outlet mới tại các trung tâm thương mại lớn."
+        },
+        {
+            "word": "Profession",
+            "type": "noun",
+            "pronunciation": "/prəˈfeʃ.ən/",
+            "meaning": "Nghề nghiệp, chuyên môn",
+            "definition": "A paid occupation, especially one that involves prolonged training and a formal qualification.",
+            "example": "Accounting is a highly respected profession in modern business.",
+            "exampleMeaning": "Kế toán là một nghề nghiệp rất được tôn trọng trong kinh doanh hiện đại."
+        },
+        {
+            "word": "Relinquish",
+            "type": "verb",
+            "pronunciation": "/rɪˈlɪŋ.kwɪʃ/",
+            "meaning": "Từ bỏ, nhượng lại",
+            "definition": "Voluntarily cease to keep or claim; give up.",
+            "example": "The founder chose to relinquish his position as chief executive officer.",
+            "exampleMeaning": "Nhà sáng lập đã chọn từ bỏ vị trí giám đốc điều hành của mình."
+        },
+        {
+            "word": "Theme",
+            "type": "noun",
+            "pronunciation": "/θiːm/",
+            "meaning": "Chủ đề, đề tài",
+            "definition": "The subject of a talk, a piece of writing, a person thoughts, or an exhibition.",
+            "example": "The central theme of the annual technology conference is artificial intelligence.",
+            "exampleMeaning": "Chủ đề trung tâm của hội nghị công nghệ hàng năm là trí tuệ nhân tạo."
+        },
+        {
+            "word": "Assist",
+            "type": "verb",
+            "pronunciation": "/əˈsɪst/",
+            "meaning": "Giúp đỡ, hỗ trợ",
+            "definition": "Help someone, typically by doing a share of the work.",
+            "example": "Administrative staff will assist visitors with event registration.",
+            "exampleMeaning": "Nhân viên hành chính sẽ hỗ trợ khách tham quan đăng ký sự kiện."
+        },
+        {
+            "word": "Coordinate",
+            "type": "verb",
+            "pronunciation": "/kəʊˈɔː.dɪ.neɪt/",
+            "meaning": "Phối hợp, sắp xếp",
+            "definition": "Bring the different elements of a complex activity or organization into a harmonious relationship.",
+            "example": "The event planner will coordinate all logistics for the corporate seminar.",
+            "exampleMeaning": "Người lập kế hoạch sự kiện sẽ phối hợp tất cả hậu cần cho buổi thảo luận doanh nghiệp."
+        },
+        {
+            "word": "Dimension",
+            "type": "noun",
+            "pronunciation": "/daɪˈmen.ʃən/",
+            "meaning": "Kích thước, chiều, khía cạnh",
+            "definition": "A measurable extent of some kind, such as length, breadth, depth, or height.",
+            "example": "Please provide the exact dimensions of the main exhibition hall.",
+            "exampleMeaning": "Vui lòng cung cấp kích thước chính xác của hội trường triển lãm chính."
+        },
+        {
+            "word": "Exact",
+            "type": "adjective",
+            "pronunciation": "/ɪɡˈzækt/",
+            "meaning": "Chính xác, chuẩn xác",
+            "definition": "Not approximated in any way; precise.",
+            "example": "The financial report contains the exact figures for third-quarter revenue.",
+            "exampleMeaning": "Báo cáo tài chính chứa các con số chính xác cho doanh thu quý ba."
+        },
+        {
+            "word": "General",
+            "type": "adjective",
+            "pronunciation": "/ˈdʒen.ər.əl/",
+            "meaning": "Chung, tổng quát",
+            "definition": "Affecting or concerning all or most people, places, or things.",
+            "example": "The general consensus was to move forward with the international product launch.",
+            "exampleMeaning": "Sự đồng thuận chung là tiếp tục tiến hành ra mắt sản phẩm quốc tế."
+        },
+        {
+            "word": "Ideally",
+            "type": "adverb",
+            "pronunciation": "/aɪˈdɪə.li/",
+            "meaning": "Lý tưởng nhất, tốt nhất",
+            "definition": "In the best possible way; perfectly.",
+            "example": "Ideally, the new job candidate should have at least three years of experience.",
+            "exampleMeaning": "Lý tưởng nhất, ứng viên công việc mới nên có ít nhất 3 năm kinh nghiệm."
+        },
+        {
+            "word": "Lead time",
+            "type": "phrase",
+            "pronunciation": "/ˈliːd taɪm/",
+            "meaning": "Thời gian thực hiện, thời gian giao hàng",
+            "definition": "The time between the initiation and completion of a process.",
+            "example": "The manufacturing supplier requires a two-week lead time for custom orders.",
+            "exampleMeaning": "Nhà cung cấp sản xuất yêu cầu thời gian giao hàng 2 tuần cho các đơn hàng tùy chỉnh."
+        },
+        {
+            "word": "Plan",
+            "type": "noun",
+            "pronunciation": "/plæn/",
+            "meaning": "Kế hoạch",
+            "definition": "A detailed proposal for doing or achieving something.",
+            "example": "The marketing plan outlines our strategy for the coming fiscal year.",
+            "exampleMeaning": "Kế hoạch tiếp thị phác thảo chiến lược của chúng tôi cho năm tài chính tới."
+        },
+        {
+            "word": "Proximity",
+            "type": "noun",
+            "pronunciation": "/prɒkˈsɪm.ə.ti/",
+            "meaning": "Sự gần gũi, vị trí lân cận",
+            "definition": "Neamess in space, time, or relationship.",
+            "example": "The hotel close proximity to the international airport is convenient for business travelers.",
+            "exampleMeaning": "Vị trí rất gần sân bay quốc tế của khách sạn rất thuận tiện cho du khách kinh doanh."
+        },
+        {
+            "word": "Regulate",
+            "type": "verb",
+            "pronunciation": "/ˈreɡ.jə.leɪt/",
+            "meaning": "Điều chỉnh, kiểm soát, quy định",
+            "definition": "Control or maintain the rate or speed of a machine or process so that it operates properly.",
+            "example": "Government regulatory bodies regulate safety standards in heavy manufacturing.",
+            "exampleMeaning": "Các cơ quan quản lý chính phủ kiểm soát các tiêu chuẩn an toàn trong sản xuất nặng."
+        },
+        {
+            "word": "Site",
+            "type": "noun",
+            "pronunciation": "/saɪt/",
+            "meaning": "Địa điểm, vị trí, công trường",
+            "definition": "An area of ground on which a town, building, or monument is constructed.",
+            "example": "Construction on the new regional office site will begin next Monday.",
+            "exampleMeaning": "Việc xây dựng tại địa điểm văn phòng khu vực mới sẽ bắt đầu vào thứ Hai tới."
+        },
+        {
+            "word": "Stage",
+            "type": "noun",
+            "pronunciation": "/steɪdʒ/",
+            "meaning": "Giai đoạn, sân khấu",
+            "definition": "A point, period, or step in a process or development.",
+            "example": "Product development is currently in its final testing stage.",
+            "exampleMeaning": "Việc phát triển sản phẩm hiện đang ở giai đoạn thử nghiệm cuối cùng."
+        }
+    ]
+},
+
   "toeic171": {
     "title": "⭐ 171 Từ vựng TOEIC cốt lõi",
     "icon": "⭐",
