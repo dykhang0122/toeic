@@ -196,11 +196,12 @@ function loadState() {
       needsSave = true;
     } else {
       localWord.meanings.forEach(m => {
-        const correctPOS = detectWordPOS(localWord.word, m.type);
-        if (correctPOS !== m.type) {
-          m.type = correctPOS;
+        const validSet = new Set(['noun', 'verb', 'adjective', 'adverb', 'phrase']);
+        if (!m.type || !validSet.has(m.type.toLowerCase().trim())) {
+          m.type = detectWordPOS(localWord.word, m.type || 'noun');
           needsSave = true;
         }
+        m.pos = normalizePOS(m.type);
         
         // Regenerate example if it contains boilerplate templates or stray POS tags
         const isBoilerplate = m.example && (
@@ -997,13 +998,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The marketing campaign raised brand awareness across the nation.",
     "exampleMeaning": "Chiến dịch tiếp thị đã nâng cao nhận thức về thương hiệu trên toàn quốc."
 },
-  'bid': {
-    "pos": "noun",
+    'bid': {
     "pronunciation": "/bɪd/",
-    "meaning": "(N) Sự đấu thầu; (V) Đấu thầu, trả giá",
-    "definition": "An offer to carry out work or supply goods at a stated price; to tender a bid.",
-    "example": "Several construction companies submitted a bid for the commercial complex contract.",
-    "exampleMeaning": "Một số công ty xây dựng đã nộp hồ sơ đấu thầu cho hợp đồng khu phức hợp thương mại."
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Sự đấu thầu, hồ sơ dự thầu",
+            "definition": "An offer of a price to provide goods or services.",
+            "example": "The construction firm submitted a competitive bid for the government project.",
+            "exampleMeaning": "Công ty xây dựng đã nộp một hồ sơ đấu thầu cạnh tranh cho dự án của chính phủ."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Đấu thầu, trả giá",
+            "definition": "Offer a certain price for something, especially at an auction or for a contract.",
+            "example": "Several vendors plan to bid on the new IT infrastructure contract.",
+            "exampleMeaning": "Một số nhà cung cấp có kế hoạch đấu thầu hợp đồng cơ sở hạ tầng IT mới."
+        }
+    ]
 },
   'breakthrough': {
     "pos": "noun",
@@ -1013,13 +1027,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The research team achieved a major medical breakthrough this year.",
     "exampleMeaning": "Nhóm nghiên cứu đã đạt được một bước đột phá y khoa lớn trong năm nay."
 },
-  'budget': {
-    "pos": "noun",
+    'budget': {
     "pronunciation": "/ˈbʌdʒ.ɪt/",
-    "meaning": "(N) Ngân sách; (V) Lên ngân sách",
-    "definition": "An estimate of income and expenditure for a set period of time.",
-    "example": "The department approved a flexible budget for digital advertising.",
-    "exampleMeaning": "Bộ phận đã phê duyệt một ngân sách linh hoạt cho quảng cáo kỹ thuật số."
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Ngân sách, quỹ tài chính",
+            "definition": "An estimate of income and expenditure for a set period of time.",
+            "example": "The department approved an increased budget for digital marketing.",
+            "exampleMeaning": "Bộ phận đã phê duyệt một ngân sách tăng thêm cho tiếp thị kỹ thuật số."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Lên ngân sách, dự trù kinh phí",
+            "definition": "Allow or provide a particular amount of money in a budget.",
+            "example": "We need to budget carefully for travel expenses next quarter.",
+            "exampleMeaning": "Chúng ta cần lên ngân sách cẩn thận cho các chi phí đi lại vào quý tới."
+        }
+    ]
 },
   'cartridge': {
     "pos": "noun",
@@ -1029,13 +1056,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Please replace the empty toner cartridge in the office printer.",
     "exampleMeaning": "Vui lòng thay hộp mực trống trong máy in văn phòng."
 },
-  'cash': {
-    "pos": "noun",
+    'cash': {
     "pronunciation": "/kæʃ/",
-    "meaning": "(N) Tiền mặt; (V) Đổi ra tiền mặt",
-    "definition": "Money in coins or notes, as distinct from checks, credit, or other forms of bargaining.",
-    "example": "Customers who pay in cash are eligible for a five percent discount.",
-    "exampleMeaning": "Khách hàng thanh toán bằng tiền mặt được giảm giá 5%."
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Tiền mặt",
+            "definition": "Money in coins or notes.",
+            "example": "Clients who pay in cash will receive a five percent discount.",
+            "exampleMeaning": "Khách hàng thanh toán bằng tiền mặt sẽ nhận được khoản giảm giá 5%."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Đổi thành tiền mặt, rút tiền",
+            "definition": "Convert a check into money.",
+            "example": "She went to the bank to cash her monthly paycheck.",
+            "exampleMeaning": "Cô ấy đã đến ngân hàng để đổi séc tiền lương hàng tháng thành tiền mặt."
+        }
+    ]
 },
   'cater': {
     "pos": "verb",
@@ -1045,13 +1085,26 @@ const SMART_TOEIC_TERMS = {
     "example": "A local restaurant will cater the company's annual anniversary dinner.",
     "exampleMeaning": "Một nhà hàng địa phương sẽ phục vụ tiệc cho bữa tối kỷ niệm hàng năm của công ty."
 },
-  'characteristic': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Đặc tính, đặc điểm; (Adj) Đặc trưng",
-    "definition": "A feature or quality belonging typically to a person, place, or thing.",
-    "example": "Punctuality is a key characteristic of a professional worker.",
-    "exampleMeaning": "Đúng giờ là một đặc tính quan trọng của một người làm việc chuyên nghiệp."
+    'characteristic': {
+    "pronunciation": "/ˌkær.ək.təˈrɪs.tɪk/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Đặc tính, đặc điểm",
+            "definition": "A feature or quality belonging typically to a person, place, or thing.",
+            "example": "Reliability is a key characteristic of our top suppliers.",
+            "exampleMeaning": "Độ tin cậy là một đặc tính quan trọng của các nhà cung cấp hàng đầu của chúng tôi."
+        },
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Đặc trưng, tiêu biểu",
+            "definition": "Typical of a particular person, place, or thing.",
+            "example": "He handled the client complaint with his characteristic professionalism.",
+            "exampleMeaning": "Anh ấy đã xử lý khiếu nại của khách hàng với sự chuyên nghiệp đặc trưng của mình."
+        }
+    ]
 },
   'chef': {
     "pos": "noun",
@@ -1101,13 +1154,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The customer service team promptly resolved the client complaint.",
     "exampleMeaning": "Nhóm dịch vụ khách hàng đã nhanh chóng giải quyết lời phàn nàn của khách hàng."
 },
-  'compliment': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Lời khen; (V) Khen ngợi",
-    "definition": "A polite expression of praise or admiration.",
-    "example": "The manager paid the team a high compliment for completing the project early.",
-    "exampleMeaning": "Quản lý đã dành cho nhóm một lời khen ngợi cao vì hoàn thành dự án sớm."
+    'compliment': {
+    "pronunciation": "/ˈkɒm.plɪ.mənt/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Lời khen, câu khen ngợi",
+            "definition": "A polite expression of praise or admiration.",
+            "example": "The manager gave the design team a high compliment for their creative layout.",
+            "exampleMeaning": "Quản lý đã dành cho nhóm thiết kế một lời khen ngợi cao về bố cục sáng tạo."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Khen ngợi, tán dương",
+            "definition": "Politely congratulate or praise someone for something.",
+            "example": "The CEO complemented all employees on exceeding their annual targets.",
+            "exampleMeaning": "CEO đã khen ngợi tất cả nhân viên vì đã vượt mục tiêu hàng năm."
+        }
+    ]
 },
   'complimentary': {
     "pos": "adjective",
@@ -1117,13 +1183,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Guests receive complimentary breakfast and Wi-Fi during their stay.",
     "exampleMeaning": "Khách hàng nhận được bữa sáng và Wi-Fi miễn phí trong suốt thời gian lưu trú."
 },
-  'concern': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Mối bận tâm, sự lo lắng; (V) Liên quan, làm lo lắng",
-    "definition": "A matter that engages a person's attention; anxiety or worry.",
-    "example": "Environmental sustainability is a primary concern for modern corporations.",
-    "exampleMeaning": "Sự bền vững môi trường là mối bận tâm hàng đầu đối với các tập đoàn hiện đại."
+    'concern': {
+    "pronunciation": "/kənˈsɜːn/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Mối bận tâm, sự lo lắng; Công ty, doanh nghiệp",
+            "definition": "A matter of interest or importance; anxiety or worry.",
+            "example": "Data privacy is a major concern for online consumers.",
+            "exampleMeaning": "Bảo mật dữ liệu là một mối bận tâm lớn đối với người tiêu dùng trực tuyến."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Liên quan đến, làm cho lo lắng",
+            "definition": "Relate to; be about; cause worry to.",
+            "example": "The new safety policy concerns all factory workers.",
+            "exampleMeaning": "Chính sách an toàn mới liên quan đến tất cả công nhân nhà máy."
+        }
+    ]
 },
   'concerned': {
     "pos": "adjective",
@@ -1229,13 +1308,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The keynote speaker will deliver an opening address tomorrow morning.",
     "exampleMeaning": "Diễn giả chính sẽ phát biểu diễn văn khai mạc vào sáng mai."
 },
-  'desire': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Mối khao khát; (V) Mong muốn, khao khát",
-    "definition": "A strong feeling of wanting to have something or wishing for something to happen.",
-    "example": "The management demonstrated a strong desire to improve workplace culture.",
-    "exampleMeaning": "Ban quản lý đã thể hiện mong muốn mạnh mẽ trong việc cải thiện văn hóa công sở."
+    'desire': {
+    "pronunciation": "/dɪˈzaɪər/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Mối khao khát, mong muốn",
+            "definition": "A strong feeling of wanting to have something.",
+            "example": "The management expressed a strong desire to expand into Asian markets.",
+            "exampleMeaning": "Ban quản lý đã thể hiện mong muốn mạnh mẽ mở rộng sang các thị trường châu Á."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Khao khát, mong mỏi",
+            "definition": "Strongly wish for or want something.",
+            "example": "We desire to build long-term partnerships with our clients.",
+            "exampleMeaning": "Chúng tôi khao khát xây dựng mối quan hệ đối tác dài hạn với khách hàng."
+        }
+    ]
 },
   'destination': {
     "pos": "noun",
@@ -1261,13 +1353,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The cancellation of the annual conference was a major disappointment.",
     "exampleMeaning": "Việc hủy bỏ hội nghị hàng năm là một sự thất vọng lớn."
 },
-  'display': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Màn hình, sự trưng bày; (V) Trưng bày, hiển thị",
-    "definition": "Put something in a prominent place so that it may readily be seen; screen.",
-    "example": "The retail store displays new electronic items near the front entrance.",
-    "exampleMeaning": "Cửa hàng bán lẻ trưng bày các mặt hàng điện tử mới gần lối vào phía trước."
+    'display': {
+    "pronunciation": "/dɪˈspleɪ/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Màn hình, sự trưng bày, triển lãm",
+            "definition": "A visual presentation of information or items.",
+            "example": "The new store features an impressive window display.",
+            "exampleMeaning": "Cửa hàng mới có một sự trưng bày cửa kính đầy ấn tượng."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Trưng bày, hiển thị",
+            "definition": "Make a prominent exhibition of something.",
+            "example": "The system will display total sales figures on the dashboard.",
+            "exampleMeaning": "Hệ thống sẽ hiển thị tổng số liệu bán hàng trên bảng điều khiển."
+        }
+    ]
 },
   'distribute': {
     "pos": "verb",
@@ -1277,13 +1382,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The assistant will distribute the meeting agenda to all participants.",
     "exampleMeaning": "Trợ lý sẽ phân phát chương trình nghị sự cuộc họp cho tất cả những người tham gia."
 },
-  'downtown': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Khu trung tâm thành phố; (Adv) Ở/về trung tâm",
-    "definition": "In or to the central part or main business area of a city.",
-    "example": "The company headquarters is located in a modern skyscraper downtown.",
-    "exampleMeaning": "Trụ sở công ty nằm trong một tòa nhà bọc kính hiện đại ở khu trung tâm thành phố."
+    'downtown': {
+    "pronunciation": "/ˌdaʊnˈtaʊn/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Khu trung tâm thành phố",
+            "definition": "The central business district of a city.",
+            "example": "Our main office is located in the heart of downtown.",
+            "exampleMeaning": "Văn phòng chính của chúng tôi nằm ở trái tim khu trung tâm thành phố."
+        },
+        {
+            "pos": "ADVERB",
+            "type": "adverb",
+            "meaning": "Ở / về trung tâm thành phố",
+            "definition": "In or to the central part of a city.",
+            "example": "The executive team relocated downtown last month.",
+            "exampleMeaning": "Ban điều hành đã chuyển địa điểm về trung tâm thành phố vào tháng trước."
+        }
+    ]
 },
   'due date': {
     "pos": "phrase",
@@ -1381,21 +1499,47 @@ const SMART_TOEIC_TERMS = {
     "example": "The luxury hotel offers exclusive amenities to executive suite guests.",
     "exampleMeaning": "Khách sạn sang trọng cung cấp các tiện ích dành riêng cho khách ở phòng hạng sang."
 },
-  'executive': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Giám đốc, người điều hành; (Adj) Thuộc quản lý",
-    "definition": "A person with senior managerial responsibility in a business organization.",
-    "example": "The chief executive officer delivered an inspiring speech at the gala.",
-    "exampleMeaning": "Giám đốc điều hành đã đọc một bài phát biểu đầy cảm hứng tại buổi dạ tiệc."
+    'executive': {
+    "pronunciation": "/ɪɡˈzek.jə.tɪv/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Giám đốc, người điều hành",
+            "definition": "A person with senior managerial responsibility in a business.",
+            "example": "The chief executive signed the final contract today.",
+            "exampleMeaning": "Giám đốc điều hành đã ký hợp đồng cuối cùng hôm nay."
+        },
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Thuộc về quản lý, điều hành",
+            "definition": "Relating to managing or directing an organization.",
+            "example": "The hotel offers exclusive executive suites for business travelers.",
+            "exampleMeaning": "Khách sạn cung cấp các phòng hạng sang dành riêng cho doanh nhân."
+        }
+    ]
 },
-  'exhibit': {
-    "pos": "verb",
-    "pronunciation": "",
-    "meaning": "(V) Triển lãm, trưng bày; (N) Vật trưng bày",
-    "definition": "Publicly display a work of art or item of interest; display in a museum.",
-    "example": "Local artists will exhibit their contemporary paintings at the gallery.",
-    "exampleMeaning": "Các nghệ sĩ địa phương sẽ triển lãm các bức tranh hiện đại của họ tại phòng trưng bày."
+    'exhibit': {
+    "pronunciation": "/ɪɡˈzɪb.ɪt/",
+    "meanings": [
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Triển lãm, trưng bày",
+            "definition": "Publicly display a work of art or item of interest.",
+            "example": "Leading tech firms will exhibit their latest products at the expo.",
+            "exampleMeaning": "Các công ty công nghệ hàng đầu sẽ triển lãm các sản phẩm mới nhất của họ tại hội chợ."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Vật trưng bày, tác phẩm triển lãm",
+            "definition": "An object or collection of objects shown in an exhibition.",
+            "example": "Visitors enjoyed the historical photo exhibit in the lobby.",
+            "exampleMeaning": "Du khách rất thích tác phẩm triển lãm ảnh lịch sử tại sảnh."
+        }
+    ]
 },
   'exposition': {
     "pos": "noun",
@@ -1421,13 +1565,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The new software tool will facilitate smoother communication between departments.",
     "exampleMeaning": "Công cụ phần mềm mới sẽ tạo điều kiện thuận lợi cho việc giao tiếp mượt mà hơn giữa các bộ phận."
 },
-  'fair': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Hội chợ, thị trường; (Adj) Công bằng",
-    "definition": "Treating people equally without favoritism; a trade event or market.",
-    "example": "The annual job fair connects top university graduates with leading employers.",
-    "exampleMeaning": "Hội chợ việc làm hàng năm kết nối các sinh viên tốt nghiệp hàng đầu với các nhà tuyển dụng."
+    'fair': {
+    "pronunciation": "/feər/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Hội chợ, thị trường thương mại",
+            "definition": "A gathering of buyers and sellers for trade or exhibition.",
+            "example": "The annual job fair connects students with top employers.",
+            "exampleMeaning": "Hội chợ việc làm hàng năm kết nối sinh viên với các nhà tuyển dụng hàng đầu."
+        },
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Công bằng, hợp lý, vừa phải",
+            "definition": "Treating people equally without favoritism; reasonable.",
+            "example": "We offered a fair price for the commercial property.",
+            "exampleMeaning": "Chúng tôi đã đưa ra một mức giá hợp lý cho bất động sản thương mại."
+        }
+    ]
 },
   'fare': {
     "pos": "noun",
@@ -1445,13 +1602,26 @@ const SMART_TOEIC_TERMS = {
     "example": "He shared the breakthrough discovery with his fellow researchers.",
     "exampleMeaning": "Anh ấy đã chia sẻ phát hiện đột phá với các bạn đồng nghiệp nghiên cứu của mình."
 },
-  'flavor': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Hương vị; (V) Nêm nếm gia vị",
-    "definition": "The distinctive taste of a food or drink; to season.",
-    "example": "The new beverage comes in three different fruit flavors.",
-    "exampleMeaning": "Thức uống mới có ba hương vị trái cây khác nhau."
+    'flavor': {
+    "pronunciation": "/ˈfleɪ.vər/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Hương vị",
+            "definition": "The distinctive taste of a food or drink.",
+            "example": "The coffee shop introduced a new vanilla flavor.",
+            "exampleMeaning": "Quán cà phê đã giới thiệu một hương vị vani mới."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Nêm nếm gia vị, gia tăng hương vị",
+            "definition": "Alter or enhance the taste of food or drink.",
+            "example": "The chef flavors the sauce with fresh organic herbs.",
+            "exampleMeaning": "Đầu bếp nêm nếm nước sốt bằng thảo mộc hữu cơ tươi."
+        }
+    ]
 },
   'frequent': {
     "pos": "adjective",
@@ -1461,13 +1631,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Airline members receive bonus points for frequent business travel.",
     "exampleMeaning": "Thành viên hãng hàng không nhận được điểm thưởng cho việc đi lại công tác thường xuyên."
 },
-  'handle': {
-    "pos": "verb",
-    "pronunciation": "",
-    "meaning": "(V) Xử lý, giải quyết; (N) Tay cầm",
-    "definition": "Manage, deal with, or be responsible for a situation or problem.",
-    "example": "The customer service representative can handle all billing inquiries.",
-    "exampleMeaning": "Đại diện dịch vụ khách hàng có thể xử lý tất cả các thắc mắc về hóa đơn."
+    'handle': {
+    "pronunciation": "/ˈhæn.dəl/",
+    "meanings": [
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Xử lý, giải quyết, quản lý",
+            "definition": "Manage, deal with, or be responsible for a situation.",
+            "example": "Our support team can handle all customer inquiries efficiently.",
+            "exampleMeaning": "Nhóm hỗ trợ của chúng tôi có thể xử lý tất cả các thắc mắc của khách hàng một cách hiệu quả."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Tay cầm, tay nắm cửa",
+            "definition": "The part by which a thing is held or carried.",
+            "example": "Please turn the door handle to open the conference room.",
+            "exampleMeaning": "Vui lòng xoay tay nắm cửa để mở phòng hội nghị."
+        }
+    ]
 },
   'hierarchy': {
     "pos": "noun",
@@ -1477,13 +1660,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The flat organizational hierarchy encourages open communication among staff.",
     "exampleMeaning": "Hệ thống cấp bậc tổ chức phẳng khuyến khích giao tiếp cởi mở giữa các nhân viên."
 },
-  'ideal': {
-    "pos": "adjective",
-    "pronunciation": "",
-    "meaning": "(Adj) Lý tưởng; (N) Hình mẫu lý tưởng",
-    "definition": "Satisfying one's conception of what is perfect; most suitable.",
-    "example": "The waterfront location is ideal for hosting corporate retreats.",
-    "exampleMeaning": "Địa điểm ven sông rất lý tưởng để tổ chức các chuyến đi nghỉ dưỡng của công ty."
+    'ideal': {
+    "pronunciation": "/aɪˈdɪəl/",
+    "meanings": [
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Lý tưởng, hoàn hảo",
+            "definition": "Satisfying one's conception of what is perfect.",
+            "example": "The downtown location is ideal for our new retail branch.",
+            "exampleMeaning": "Vị trí trung tâm thành phố rất lý tưởng cho chi nhánh bán lẻ mới của chúng tôi."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Hình mẫu lý tưởng, tiêu chuẩn cao",
+            "definition": "A person or thing regarded as perfect.",
+            "example": "The company strives to uphold high ethical ideals.",
+            "exampleMeaning": "Công ty nỗ lực duy trì các hình mẫu lý tưởng về đạo đức cao."
+        }
+    ]
 },
   'immediate': {
     "pos": "adjective",
@@ -1493,13 +1689,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The IT department took immediate action to resolve the server outage.",
     "exampleMeaning": "Bộ phận IT đã có hành động ngay lập tức để khắc phục sự cố sập máy chủ."
 },
-  'implement': {
-    "pos": "verb",
-    "pronunciation": "",
-    "meaning": "(V) Triển khai, thực thi; (N) Công cụ, dụng cụ",
-    "definition": "Put a decision, plan, or agreement into effect.",
-    "example": "The company will implement new security measures starting next month.",
-    "exampleMeaning": "Công ty sẽ triển khai các biện pháp an ninh mới bắt đầu từ tháng tới."
+    'implement': {
+    "pronunciation": "/ˈɪm.plɪ.ment/",
+    "meanings": [
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Triển khai, thực thi, thi hành",
+            "definition": "Put a decision, plan, or agreement into effect.",
+            "example": "We will implement the new software system next Monday.",
+            "exampleMeaning": "Chúng tôi sẽ triển khai hệ thống phần mềm mới vào thứ Hai tới."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Công cụ, dụng cụ",
+            "definition": "A tool, utensil, or piece of equipment.",
+            "example": "Agricultural implements were imported for the farming project.",
+            "exampleMeaning": "Các dụng cụ nông nghiệp đã được nhập khẩu cho dự án canh tác."
+        }
+    ]
 },
   'impress': {
     "pos": "verb",
@@ -1517,13 +1726,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The latest software update shows significant improvement in processing speed.",
     "exampleMeaning": "Bản cập nhật phần mềm mới nhất cho thấy sự cải tiến đáng kể về tốc độ xử lý."
 },
-  'inconvenience': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Sự bất tiện; (V) Gây phiền phức",
-    "definition": "Trouble or difficulty caused to one's personal comfort or plans.",
-    "example": "We apologize for any inconvenience caused by the renovation work.",
-    "exampleMeaning": "Chúng tôi xin lỗi vì bất kỳ sự bất tiện nào do công việc cải tạo gây ra."
+    'inconvenience': {
+    "pronunciation": "/ˌɪn.kəmˈviː.ni.əns/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Sự bất tiện, phiền phức",
+            "definition": "Trouble or difficulty caused to one's personal comfort.",
+            "example": "We apologize for any inconvenience caused by the elevator maintenance.",
+            "exampleMeaning": "Chúng tôi xin lỗi vì bất kỳ sự bất tiện nào do việc bảo trì thang máy gây ra."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Gây phiền phức, làm phiền",
+            "definition": "Cause trouble or difficulty to someone.",
+            "example": "We hope the schedule change will not inconvenience our guests.",
+            "exampleMeaning": "Chúng tôi hy vọng việc thay đổi lịch trình sẽ không làm phiền các khách mời."
+        }
+    ]
 },
   'insist': {
     "pos": "verb",
@@ -1533,21 +1755,47 @@ const SMART_TOEIC_TERMS = {
     "example": "The client insisted on reviewing the final contract draft in person.",
     "exampleMeaning": "Khách hàng khăng khăng đòi tự mình xem xét bản thảo hợp đồng cuối cùng."
 },
-  'intern': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Thực tập sinh; (V) Thực tập",
-    "definition": "A student or trainee who works in an organization to gain experience.",
-    "example": "The summer intern assisted the marketing team with social media campaigns.",
-    "exampleMeaning": "Thực tập sinh mùa hè đã hỗ trợ nhóm tiếp thị với các chiến dịch truyền thông."
+    'intern': {
+    "pronunciation": "/ˈɪn.tɜːn/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Thực tập sinh",
+            "definition": "A student or trainee who works to gain experience.",
+            "example": "The marketing intern prepared an excellent market report.",
+            "exampleMeaning": "Thực tập sinh tiếp thị đã chuẩn bị một báo cáo thị trường xuất sắc."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Thực tập",
+            "definition": "Work as an intern.",
+            "example": "She decided to intern at a prestigious accounting firm.",
+            "exampleMeaning": "Cô ấy quyết định thực tập tại một công ty kế toán danh tiếng."
+        }
+    ]
 },
-  'invoice': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Hóa đơn thanh toán; (V) Lập hóa đơn",
-    "definition": "A commercial document issued by a seller to a buyer relating to a sale transaction.",
-    "example": "Please submit your monthly invoice to the accounting office for processing.",
-    "exampleMeaning": "Vui lòng gửi hóa đơn thanh toán hàng tháng cho phòng kế toán để xử lý."
+    'invoice': {
+    "pronunciation": "/ˈɪn.vɔɪs/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Hóa đơn thanh toán",
+            "definition": "A commercial document requesting payment.",
+            "example": "Please send the invoice to the finance department for payment.",
+            "exampleMeaning": "Vui lòng gửi hóa đơn cho bộ phận tài chính để thanh toán."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Lập hóa đơn, gửi hóa đơn",
+            "definition": "Send an invoice to a customer.",
+            "example": "We will invoice your company upon completion of the service.",
+            "exampleMeaning": "Chúng tôi sẽ lập hóa đơn cho công ty bạn khi hoàn thành dịch vụ."
+        }
+    ]
 },
   'isolate': {
     "pos": "verb",
@@ -1565,21 +1813,47 @@ const SMART_TOEIC_TERMS = {
     "example": "The travel agent provided a detailed itinerary for the business trip.",
     "exampleMeaning": "Đại lý du lịch đã cung cấp một lịch trình chi tiết cho chuyến đi công tác."
 },
-  'leave': {
-    "pos": "verb",
-    "pronunciation": "",
-    "meaning": "(V) Rời đi, bỏ lại; (N) Sự nghỉ phép",
-    "definition": "Go away from a place; period of time away from work.",
-    "example": "Employees must request paid annual leave at least two weeks in advance.",
-    "exampleMeaning": "Nhân viên phải xin nghỉ phép hàng năm có hưởng lương trước ít nhất hai tuần."
+    'leave': {
+    "pronunciation": "/liːv/",
+    "meanings": [
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Rời đi, bỏ lại",
+            "definition": "Go away from a place.",
+            "example": "The train will leave the station at 9 AM sharp.",
+            "exampleMeaning": "Tàu sẽ rời ga vào đúng 9 giờ sáng."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Sự nghỉ phép, ngày nghỉ",
+            "definition": "Time off allowed from work.",
+            "example": "She is taking two weeks of maternity leave.",
+            "exampleMeaning": "Cô ấy đang xin nghỉ phép thai sản hai tuần."
+        }
+    ]
 },
-  'lounge': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Phòng chờ; (V) Thư giãn, nghỉ ngơi",
-    "definition": "A public room in a hotel, airport, or club where people can relax.",
-    "example": "First-class passengers have access to an exclusive airport departure lounge.",
-    "exampleMeaning": "Hành khách khoang hạng nhất được sử dụng phòng chờ khởi hành riêng tại sân bay."
+    'lounge': {
+    "pronunciation": "/laʊndʒ/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Phòng chờ, phòng nghỉ",
+            "definition": "A public room where people can relax or wait.",
+            "example": "VIP passengers can relax in the executive airport lounge.",
+            "exampleMeaning": "Hành khách VIP có thể thư giãn tại phòng chờ sân bay hạng sang."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Thư giãn, nghỉ ngơi",
+            "definition": "Lie, sit, or relax in a lazy way.",
+            "example": "Guests can lounge by the hotel pool in the afternoon.",
+            "exampleMeaning": "Khách hàng có thể thư giãn bên hồ bơi khách sạn vào buổi chiều."
+        }
+    ]
 },
   'loyal': {
     "pos": "adjective",
@@ -1621,13 +1895,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The corporate merger created the largest telecommunications firm in the region.",
     "exampleMeaning": "Sự sáp nhập doanh nghiệp đã tạo ra công ty viễn thông lớn nhất trong khu vực."
 },
-  'mistake': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Lỗi sai; (V) Nhầm lẫn",
-    "definition": "An action or judgment that is misguided or wrong.",
-    "example": "Double check your entries on the spreadsheet to avoid any calculation mistake.",
-    "exampleMeaning": "Hãy kiểm tra kỹ các dữ liệu trên bảng tính để tránh bất kỳ lỗi sai tính toán nào."
+    'mistake': {
+    "pronunciation": "/mɪˈsteɪk/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Lỗi sai, sai sót",
+            "definition": "An action or judgment that is misguided or wrong.",
+            "example": "The accountant corrected the calculation mistake immediately.",
+            "exampleMeaning": "Kế toán viên đã sửa lỗi sai tính toán ngay lập tức."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Nhầm lẫn, hiểu nhầm",
+            "definition": "Wrongly identify or misunderstand.",
+            "example": "Please do not mistake my enthusiasm for overconfidence.",
+            "exampleMeaning": "Xin đừng nhầm lẫn sự nhiệt tình của tôi với sự quá tự tin."
+        }
+    ]
 },
   'notify': {
     "pos": "verb",
@@ -1637,13 +1924,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The system will automatically notify users when their order has been shipped.",
     "exampleMeaning": "Hệ thống sẽ tự động thông báo cho người dùng khi đơn hàng của họ đã được giao."
 },
-  'novel': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Tiểu thuyết; (Adj) Mới lạ, độc đáo",
-    "definition": "New or unusual in an interesting way; a long printed story.",
-    "example": "The engineering firm introduced a novel approach to energy conservation.",
-    "exampleMeaning": "Công ty kỹ thuật đã giới thiệu một phương pháp mới lạ độc đáo để bảo tồn năng lượng."
+    'novel': {
+    "pronunciation": "/ˈnɒv.əl/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Tiểu thuyết",
+            "definition": "A printed book containing a long story.",
+            "example": "She enjoys reading historical novels during her free time.",
+            "exampleMeaning": "Cô ấy thích đọc tiểu thuyết lịch sử trong thời gian rảnh rỗi."
+        },
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Mới lạ, độc đáo",
+            "definition": "New or unusual in an interesting way.",
+            "example": "The team proposed a novel strategy to increase sales.",
+            "exampleMeaning": "Nhóm đã đề xuất một chiến lược mới lạ để tăng doanh số."
+        }
+    ]
 },
   'organic': {
     "pos": "adjective",
@@ -1693,13 +1993,26 @@ const SMART_TOEIC_TERMS = {
     "example": "IT outsourcing allows companies to focus on their core competencies.",
     "exampleMeaning": "Dịch vụ thuê ngoài IT cho phép các công ty tập trung vào năng lực cốt lõi của họ."
 },
-  'overseas': {
-    "pos": "adjective",
-    "pronunciation": "",
-    "meaning": "(Adj) Ở nước ngoài; (Adv) Ra nước ngoài",
-    "definition": "In or to a foreign country, especially one across the sea.",
-    "example": "The firm plans to expand its sales network into several overseas markets.",
-    "exampleMeaning": "Công ty có kế hoạch mở rộng mạng lưới bán hàng sang một số thị trường nước ngoài."
+    'overseas': {
+    "pronunciation": "/ˌəʊ.vəˈsiːz/",
+    "meanings": [
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Ở nước ngoài, ngoại quốc",
+            "definition": "Relating to foreign countries across the sea.",
+            "example": "The company launched an overseas expansion campaign.",
+            "exampleMeaning": "Công ty đã phát động một chiến dịch mở rộng ra nước ngoài."
+        },
+        {
+            "pos": "ADVERB",
+            "type": "adverb",
+            "meaning": "Ra nước ngoài",
+            "definition": "In or to a foreign country.",
+            "example": "Many executives travel overseas for international trade shows.",
+            "exampleMeaning": "Nhiều quản lý đi ra nước ngoài để tham dự các hội chợ thương mại quốc tế."
+        }
+    ]
 },
   'payroll': {
     "pos": "noun",
@@ -1725,13 +2038,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Candidates must possess strong analytical and problem-solving skills.",
     "exampleMeaning": "Ứng viên phải sở hữu các kỹ năng phân tích và giải quyết vấn đề mạnh mẽ."
 },
-  'potential': {
-    "pos": "adjective",
-    "pronunciation": "",
-    "meaning": "(Adj) Tiềm năng; (N) Tiềm năng, khả năng",
-    "definition": "Having or showing the capacity to become or develop into something in the future.",
-    "example": "The sales director identified several potential clients during the trade fair.",
-    "exampleMeaning": "Giám đốc kinh doanh đã xác định được một số khách hàng tiềm năng tại hội chợ thương mại."
+    'potential': {
+    "pronunciation": "/pəˈten.ʃəl/",
+    "meanings": [
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Tiềm năng, có triển vọng",
+            "definition": "Having the capacity to develop into something in the future.",
+            "example": "The sales representative met with several potential clients.",
+            "exampleMeaning": "Đại diện kinh doanh đã gặp gỡ một số khách hàng tiềm năng."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Tiềm năng, khả năng phát triển",
+            "definition": "Latent qualities or abilities that may be developed.",
+            "example": "The new manager shows great potential for executive leadership.",
+            "exampleMeaning": "Quản lý mới cho thấy tiềm năng lớn đối với vai trò lãnh đạo điều hành."
+        }
+    ]
 },
   'preferably': {
     "pos": "adverb",
@@ -1741,13 +2067,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Applicants should have a degree in business, preferably with two years of experience.",
     "exampleMeaning": "Ứng viên nên có bằng cấp về kinh doanh, ưu tiên tốt nhất là có 2 năm kinh nghiệm."
 },
-  'premier': {
-    "pos": "adjective",
-    "pronunciation": "",
-    "meaning": "(Adj) Hàng đầu, thứ nhất; (N) Thủ tướng",
-    "definition": "First in importance, order, or position; leading.",
-    "example": "The hotel is considered the premier destination for international conventions.",
-    "exampleMeaning": "Khách sạn được coi là điểm đến hàng đầu cho các hội nghị quốc tế."
+    'premier': {
+    "pronunciation": "/ˈprem.i.ər/",
+    "meanings": [
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Hàng đầu, tốt nhất, cao nhất",
+            "definition": "First in importance, order, or position.",
+            "example": "The resort is the premier destination for corporate retreats.",
+            "exampleMeaning": "Khu nghỉ dưỡng là điểm đến hàng đầu cho các chuyến nghỉ dưỡng doanh nghiệp."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Thủ tướng, người đứng đầu",
+            "definition": "A prime minister or head of government.",
+            "example": "The premier attended the regional economic summit in Tokyo.",
+            "exampleMeaning": "Thủ tướng đã tham dự hội nghị thượng đỉnh kinh tế khu vực tại Tokyo."
+        }
+    ]
 },
   'prepare': {
     "pos": "verb",
@@ -1781,13 +2120,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Our primary objective is to increase customer satisfaction levels.",
     "exampleMeaning": "Mục tiêu chính của chúng tôi là nâng cao mức độ hài lòng của khách hàng."
 },
-  'prime': {
-    "pos": "adjective",
-    "pronunciation": "",
-    "meaning": "(Adj) Hàng đầu, chất lượng nhất; (N) Thời kỳ hoàng kim",
-    "definition": "Of first importance; main; of the highest quality.",
-    "example": "The new commercial building is situated in a prime business location.",
-    "exampleMeaning": "Tòa nhà thương mại mới nằm ở một vị trí kinh doanh đắc địa hàng đầu."
+    'prime': {
+    "pronunciation": "/praɪm/",
+    "meanings": [
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Hàng đầu, đắc địa, chất lượng nhất",
+            "definition": "Of first importance; main; of the highest quality.",
+            "example": "The office building is located in a prime financial district.",
+            "exampleMeaning": "Tòa nhà văn phòng nằm ở một vị trí trung tâm tài chính đắc địa."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Thời kỳ hoàng kim",
+            "definition": "A state or time of greatest strength, vigor, or success.",
+            "example": "The company is currently in its prime of growth and expansion.",
+            "exampleMeaning": "Công ty hiện đang trong thời kỳ hoàng kim của sự phát triển và mở rộng."
+        }
+    ]
 },
   'priority': {
     "pos": "noun",
@@ -1805,13 +2157,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Standard operating procedures must be followed strictly in the laboratory.",
     "exampleMeaning": "Quy trình vận hành tiêu chuẩn phải được tuân thủ nghiêm ngặt trong phòng thí nghiệm."
 },
-  'process': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Quá trình, quy trình; (V) Xử lý (dữ liệu/hồ sơ)",
-    "definition": "A series of actions or steps taken in order to achieve a particular end.",
-    "example": "The recruitment process takes about three weeks from application to offer.",
-    "exampleMeaning": "Quy trình tuyển dụng mất khoảng ba tuần từ khi nộp đơn đến khi nhận lời mời."
+    'process': {
+    "pronunciation": "/ˈprəʊ.ses/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Quá trình, quy trình",
+            "definition": "A series of actions or steps taken to achieve an end.",
+            "example": "The hiring process takes about three weeks to complete.",
+            "exampleMeaning": "Quy trình tuyển dụng mất khoảng ba tuần để hoàn thành."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Xử lý (dữ liệu, hồ sơ, đơn hàng)",
+            "definition": "Perform a series of operations on something.",
+            "example": "The system will process your refund request within twenty-four hours.",
+            "exampleMeaning": "Hệ thống sẽ xử lý yêu cầu hoàn tiền của bạn trong vòng 24 giờ."
+        }
+    ]
 },
   'proficiency': {
     "pos": "noun",
@@ -1821,13 +2186,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Applicants are required to demonstrate high proficiency in written English.",
     "exampleMeaning": "Ứng viên được yêu cầu chứng minh sự thành thạo cao về tiếng Anh viết."
 },
-  'progress': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Tiến độ, sự tiến bộ; (V) Tiến triển",
-    "definition": "Forward or onward movement toward a destination or goal.",
-    "example": "The construction crew made steady progress despite unfavorable weather conditions.",
-    "exampleMeaning": "Đội ngũ xây dựng đã đạt tiến độ đều đặn mặc dù điều kiện thời tiết không thuận lợi."
+    'progress': {
+    "pronunciation": "/ˈprəʊ.ɡres/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Tiến độ, sự tiến bộ",
+            "definition": "Forward movement toward a destination or goal.",
+            "example": "The team made steady progress on the software development project.",
+            "exampleMeaning": "Nhóm đã đạt tiến độ đều đặn trong dự án phát triển phần mềm."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Tiến triển, phát triển",
+            "definition": "Move forward or develop over time.",
+            "example": "As negotiations progress, we hope to finalize the deal soon.",
+            "exampleMeaning": "Khi các cuộc đàm phán tiến triển, chúng tôi hy vọng sớm hoàn tất thương vụ."
+        }
+    ]
 },
   'promote': {
     "pos": "verb",
@@ -1869,13 +2247,26 @@ const SMART_TOEIC_TERMS = {
     "example": "The board approved the budget proposal for the new marketing campaign.",
     "exampleMeaning": "Ban điều hành đã phê duyệt đề xuất ngân sách cho chiến dịch tiếp thị mới."
 },
-  'purchase': {
-    "pos": "verb",
-    "pronunciation": "",
-    "meaning": "(V) Mua; (N) Việc mua hàng, hàng mua được",
-    "definition": "Acquire something by paying for it; buy.",
-    "example": "You can purchase event tickets online using a major credit card.",
-    "exampleMeaning": "Bạn có thể mua vé sự kiện trực tuyến bằng thẻ tín dụng chính."
+    'purchase': {
+    "pronunciation": "/ˈpɜː.tʃəs/",
+    "meanings": [
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Mua, sắm",
+            "definition": "Acquire something by paying for it.",
+            "example": "You can purchase event tickets online or at the box office.",
+            "exampleMeaning": "Bạn có thể mua vé sự kiện trực tuyến hoặc tại quầy bán vé."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Việc mua hàng, hàng hóa mua được",
+            "definition": "The action of buying something; the item bought.",
+            "example": "Please keep your receipt as proof of purchase.",
+            "exampleMeaning": "Vui lòng giữ lại hóa đơn của bạn như một bằng chứng mua hàng."
+        }
+    ]
 },
   'purpose': {
     "pos": "noun",
@@ -1917,13 +2308,26 @@ const SMART_TOEIC_TERMS = {
     "example": "She received an award in recognition of her outstanding sales performance.",
     "exampleMeaning": "Cô ấy đã nhận được một giải thưởng để ghi nhận hiệu suất bán hàng xuất sắc."
 },
-  'refund': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Tiền hoàn lại; (V) Hoàn tiền",
-    "definition": "A payback of a sum of money, typically to a dissatisfied customer.",
-    "example": "The store issued a full refund after the damaged item was returned.",
-    "exampleMeaning": "Cửa hàng đã hoàn tiền đầy đủ sau khi mặt hàng bị hỏng được trả lại."
+    'refund': {
+    "pronunciation": "/ˈriː.fʌnd/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Tiền hoàn lại",
+            "definition": "A payback of a sum of money to a customer.",
+            "example": "The store issued a full refund for the damaged product.",
+            "exampleMeaning": "Cửa hàng đã cấp một khoản hoàn tiền đầy đủ cho sản phẩm bị hỏng."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Hoàn tiền, trả lại tiền",
+            "definition": "Pay back money to a customer.",
+            "example": "We will refund your credit card within three business days.",
+            "exampleMeaning": "Chúng tôi sẽ hoàn tiền lại thẻ tín dụng của bạn trong vòng 3 ngày làm việc."
+        }
+    ]
 },
   'registration': {
     "pos": "noun",
@@ -1941,53 +2345,131 @@ const SMART_TOEIC_TERMS = {
     "example": "The corporate relocation to the new downtown facility is scheduled for next month.",
     "exampleMeaning": "Sự chuyển địa điểm của doanh nghiệp đến cơ sở trung tâm mới được lên lịch vào tháng tới."
 },
-  'representative': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Người đại diện; (Adj) Mang tính đại diện",
-    "definition": "A person chosen or appointed to act or speak for another or others.",
-    "example": "A sales representative will contact you shortly to provide a quote.",
-    "exampleMeaning": "Một người đại diện kinh doanh sẽ sớm liên hệ với bạn để cung cấp báo giá."
+    'representative': {
+    "pronunciation": "/ˌrep.rɪˈzen.tə.tɪv/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Người đại diện, đại biểu",
+            "definition": "A person chosen to act or speak for others.",
+            "example": "A customer service representative is available 24/7 to assist you.",
+            "exampleMeaning": "Một đại diện dịch vụ khách hàng có sẵn 24/7 để hỗ trợ bạn."
+        },
+        {
+            "pos": "ADJECTIVE",
+            "type": "adjective",
+            "meaning": "Mang tính đại diện, tiêu biểu",
+            "definition": "Typical of a class, group, or body of opinion.",
+            "example": "The survey results are representative of consumer trends nationwide.",
+            "exampleMeaning": "Kết quả khảo sát mang tính đại diện cho các xu hướng tiêu dùng trên toàn quốc."
+        }
+    ]
 },
-  'reserve': {
-    "pos": "verb",
-    "pronunciation": "",
-    "meaning": "(V) Đặt chỗ trước, dự trữ; (N) Khu bảo tồn, lượng dự trữ",
-    "definition": "Retain or hold for future use; book a seat or table in advance.",
-    "example": "Please reserve a table for four at the restaurant for seven o'clock.",
-    "exampleMeaning": "Vui lòng đặt chỗ trước một bàn cho 4 người tại nhà hàng lúc 7 giờ."
+    'reserve': {
+    "pronunciation": "/rɪˈzɜːv/",
+    "meanings": [
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Đặt chỗ trước, giữ chỗ, dự trữ",
+            "definition": "Book a seat or table in advance; retain for future use.",
+            "example": "Please reserve a conference room for tomorrow's strategy meeting.",
+            "exampleMeaning": "Vui lòng đặt trước một phòng hội nghị cho cuộc họp chiến lược ngày mai."
+        },
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Lượng dự trữ, khu bảo tồn",
+            "definition": "A supply of something available for use if required.",
+            "example": "The bank maintains a financial reserve for emergency expenses.",
+            "exampleMeaning": "Ngân hàng duy trì một lượng dự trữ tài chính cho các chi phí khẩn cấp."
+        }
+    ]
 },
-  'resort': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Khu nghỉ dưỡng; (V) Nhờ vào, dùng đến (resort to)",
-    "definition": "A place frequented for holidays or recreation.",
-    "example": "The seaside resort offers luxurious accommodations and private beach access.",
-    "exampleMeaning": "Khu nghỉ dưỡng bờ biển cung cấp chỗ ở sang trọng và lối đi riêng ra bãi biển."
+    'resort': {
+    "pronunciation": "/rɪˈzɔːt/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Khu nghỉ dưỡng",
+            "definition": "A place frequented for holidays or recreation.",
+            "example": "The luxury beachfront resort features spa facilities and private villas.",
+            "exampleMeaning": "Khu nghỉ dưỡng sang trọng ven biển có các tiện ích spa và biệt thự riêng."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Nhờ vào, dùng đến (resort to)",
+            "definition": "Turn to and adopt a course of action in order to resolve a difficult situation.",
+            "example": "We hope to resolve the contract dispute without resorting to legal action.",
+            "exampleMeaning": "Chúng tôi hy vọng giải quyết tranh chấp hợp đồng mà không phải nhờ đến hành động pháp lý."
+        }
+    ]
 },
-  'resume': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Sơ yếu lý lịch, CV; (V) Bắt đầu lại",
-    "definition": "A brief account of a person's education and qualifications (CV); begin again.",
-    "example": "Applicants should attach an updated resume when applying online.",
-    "exampleMeaning": "Ứng viên nên đính kèm một CV sơ yếu lý lịch mới nhất khi nộp đơn trực tuyến."
+    'resume': {
+    "pronunciation": "/ˈrez.jʊ.meɪ/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Sơ yếu lý lịch, CV",
+            "definition": "A summary of a person's education and work history.",
+            "example": "Candidates must submit an updated resume when applying online.",
+            "exampleMeaning": "Ứng viên phải nộp một CV sơ yếu lý lịch mới nhất khi nộp đơn trực tuyến."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Bắt đầu lại, tiếp tục",
+            "definition": "Begin again or continue after a pause.",
+            "example": "The presentation will resume after a ten-minute coffee break.",
+            "exampleMeaning": "Bài thuyết trình sẽ bắt đầu lại sau mười phút giải lao cà phê."
+        }
+    ]
 },
-  'retail': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Bán lẻ; (V) Bán lẻ; (Adv) Theo giá bán lẻ",
-    "definition": "The sale of goods to the public in relatively small quantities for use or consumption.",
-    "example": "The company operates over fifty retail stores across the country.",
-    "exampleMeaning": "Công ty vận hành hơn 50 cửa hàng bán lẻ trên khắp cả nước."
+    'retail': {
+    "pronunciation": "/ˈriː.teɪl/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Bán lẻ",
+            "definition": "The sale of goods to the public in small quantities.",
+            "example": "The company expanded its retail operations across the country.",
+            "exampleMeaning": "Công ty đã mở rộng các hoạt động bán lẻ trên khắp cả nước."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Bán lẻ",
+            "definition": "Sell goods to the public in small quantities.",
+            "example": "The smartphone retails at five hundred dollars in stores.",
+            "exampleMeaning": "Chiếc điện thoại thông minh được bán lẻ với giá 500 đô la tại các cửa hàng."
+        }
+    ]
 },
-  'retreat': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Chuyến đi nghỉ dưỡng công ty, nơi rút lui; (V) Rút lui",
-    "definition": "A quiet or secluded place in which one can rest or relax; corporate event.",
-    "example": "The annual executive retreat will focus on team-building and strategic planning.",
-    "exampleMeaning": "Chuyến đi nghỉ dưỡng công ty hàng năm của các quản lý sẽ tập trung vào teambuilding và lập kế hoạch chiến lược."
+    'retreat': {
+    "pronunciation": "/rɪˈtriːt/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Chuyến đi nghỉ dưỡng công ty, nơi rút lui",
+            "definition": "A quiet place for rest; a corporate team-building trip.",
+            "example": "The annual executive retreat was held at a mountain resort.",
+            "exampleMeaning": "Chuyến đi nghỉ dưỡng công ty hàng năm của các quản lý được tổ chức tại một khu nghỉ dưỡng vùng núi."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Rút lui",
+            "definition": "Withdraw or move back from a position.",
+            "example": "The firm had to retreat from the market due to low profit margins.",
+            "exampleMeaning": "Công ty đã phải rút lui khỏi thị trường do tỷ suất lợi nhuận thấp."
+        }
+    ]
 },
   'reversal': {
     "pos": "noun",
@@ -1997,21 +2479,47 @@ const SMART_TOEIC_TERMS = {
     "example": "The sudden reversal of the policy surprised many industry analysts.",
     "exampleMeaning": "Sự đảo ngược đột ngột của chính sách đã làm kinh ngạc nhiều nhà phân tích ngành."
 },
-  'sample': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Mẫu thử; (V) Thử nghiệm, ăn thử",
-    "definition": "A small part or quantity intended to show what the whole is like.",
-    "example": "The cosmetic brand distributed free product samples to event attendees.",
-    "exampleMeaning": "Thương hiệu mỹ phẩm đã phân phát các mẫu thử sản phẩm miễn phí cho người tham dự sự kiện."
+    'sample': {
+    "pronunciation": "/ˈsɑːm.pəl/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Mẫu thử, hàng mẫu",
+            "definition": "A small part or quantity intended to show what the whole is like.",
+            "example": "The sales rep gave the client a free product sample.",
+            "exampleMeaning": "Đại diện kinh doanh đã đưa cho khách hàng một mẫu thử sản phẩm miễn phí."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Thử nghiệm, dùng thử, ăn thử",
+            "definition": "Test or try out a sample of something.",
+            "example": "Attendees can sample different French wines at the trade exhibition.",
+            "exampleMeaning": "Người tham dự có thể dùng thử các loại rượu vang Pháp khác nhau tại triển lãm thương mại."
+        }
+    ]
 },
-  'schedule': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Lịch trình, thời khóa biểu; (V) Lên lịch",
-    "definition": "A plan that gives a list of intended events and times.",
-    "example": "The project remains on schedule despite minor supply delays.",
-    "exampleMeaning": "Dự án vẫn đi đúng lịch trình mặc dù có những sự chậm trễ nhỏ về nguồn cung."
+    'schedule': {
+    "pronunciation": "/ˈʃed.juːl/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Lịch trình, thời khóa biểu",
+            "definition": "A plan that gives a list of intended events and times.",
+            "example": "The project is moving forward according to the master schedule.",
+            "exampleMeaning": "Dự án đang tiến triển theo đúng lịch trình tổng thể."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Lên lịch, xếp lịch",
+            "definition": "Arrange or plan that an event will take place at a particular time.",
+            "example": "The assistant will schedule a meeting with the overseas client.",
+            "exampleMeaning": "Trợ lý sẽ lên lịch một cuộc họp với khách hàng nước ngoài."
+        }
+    ]
 },
   'seek': {
     "pos": "verb",
@@ -2101,13 +2609,26 @@ const SMART_TOEIC_TERMS = {
     "example": "Experts gathered at the annual tech symposium to discuss artificial intelligence.",
     "exampleMeaning": "Các chuyên gia đã tập hợp tại hội thảo chuyên đề công nghệ hàng năm để thảo luận về trí tuệ nhân tạo."
 },
-  'target': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Mục tiêu; (V) Nhắm tới mục tiêu",
-    "definition": "A result that one is attempting to achieve; an objective.",
-    "example": "The sales team exceeded its quarterly revenue target by fifteen percent.",
-    "exampleMeaning": "Nhóm kinh doanh đã vượt mục tiêu doanh thu hàng quý 15%."
+    'target': {
+    "pronunciation": "/ˈtɑː.ɡɪt/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Mục tiêu, chỉ tiêu",
+            "definition": "A result that one is attempting to achieve.",
+            "example": "The sales team achieved its annual revenue target ahead of time.",
+            "exampleMeaning": "Nhóm kinh doanh đã đạt mục tiêu doanh thu hàng năm trước thời hạn."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Nhắm tới mục tiêu",
+            "definition": "Select as an object of attention or attack.",
+            "example": "The new ad campaign targets young tech-savvy professionals.",
+            "exampleMeaning": "Chiến dịch quảng cáo mới nhắm tới các chuyên gia trẻ tuổi am hiểu công nghệ."
+        }
+    ]
 },
   'technician': {
     "pos": "noun",
