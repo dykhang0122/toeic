@@ -159,13 +159,25 @@ function loadState() {
     const key = localWord.word.toLowerCase().trim();
     if (SMART_TOEIC_TERMS[key]) {
       const smart = SMART_TOEIC_TERMS[key];
-      localWord.meanings = [{
-        type: smart.pos,
-        meaning: smart.meaning,
-        definition: smart.definition || '',
-        example: smart.example,
-        exampleMeaning: smart.exampleMeaning
-      }];
+      if (smart.meanings && Array.isArray(smart.meanings) && smart.meanings.length > 0) {
+        localWord.meanings = smart.meanings.map(m => ({
+          type: (m.type || m.pos || 'noun').toLowerCase(),
+          pos: normalizePOS(m.pos || m.type || 'NOUN'),
+          meaning: m.meaning,
+          definition: m.definition || '',
+          example: m.example || '',
+          exampleMeaning: m.exampleMeaning || ''
+        }));
+      } else if (smart.pos && smart.meaning) {
+        localWord.meanings = [{
+          type: smart.pos.toLowerCase(),
+          pos: normalizePOS(smart.pos),
+          meaning: smart.meaning,
+          definition: smart.definition || '',
+          example: smart.example || '',
+          exampleMeaning: smart.exampleMeaning || ''
+        }];
+      }
       if (smart.pronunciation) {
         localWord.pronunciation = sanitizeIPA(smart.pronunciation);
       } else if (isFakeIPA(localWord.word, localWord.pronunciation)) {
@@ -802,8 +814,172 @@ function sanitizeWordTitle(raw) {
   return validTokens.join(' ').trim();
 }
 
+// Global POS Normalizer
+function normalizePOS(rawPOS) {
+  if (!rawPOS) return 'NOUN';
+  const r = String(rawPOS).toLowerCase().trim();
+  if (r === 'n' || r === 'noun') return 'NOUN';
+  if (r === 'v' || r === 'verb') return 'VERB';
+  if (r === 'adj' || r === 'adjective') return 'ADJECTIVE';
+  if (r === 'adv' || r === 'adverb') return 'ADVERB';
+  if (r === 'phrase' || r === 'phr') return 'PHRASE';
+  return rawPOS.toUpperCase();
+}
+
+// Global Free Google Translation Helper for Definitions & Examples
+async function translateTextToVi(text) {
+  if (!text || !text.trim()) return '';
+  try {
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(text.trim())}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data[0]) {
+        return data[0].map(item => item[0]).join('').trim();
+      }
+    }
+  } catch (e) {
+    console.warn('Translation error:', e);
+  }
+  return '';
+}
+const translateExampleText = translateTextToVi;
+
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'institute': {
+    pronunciation: '/ˈɪn.stɪ.tjuːt/',
+    meanings: [
+      {
+        pos: 'NOUN',
+        type: 'noun',
+        meaning: 'Viện, học viện, tổ chức (nghiên cứu, giáo dục)',
+        definition: 'An organization founded for a particular purpose (research, education, or culture).',
+        example: 'She completed her MBA at a prestigious business institute.',
+        exampleMeaning: 'Cô ấy đã hoàn thành chương trình MBA tại một học viện kinh doanh danh tiếng.'
+      },
+      {
+        pos: 'VERB',
+        type: 'verb',
+        meaning: 'Thiết lập, thành lập, tiến hành (chính sách, quy định)',
+        definition: 'To begin or initiate something; to establish.',
+        example: 'The committee decided to institute new safety protocols for all employees.',
+        exampleMeaning: 'Ủy ban đã quyết định thiết lập các quy trình an toàn mới cho tất cả nhân viên.'
+      }
+    ]
+  },
+  'feature': {
+    pronunciation: '/ˈfiː.tʃər/',
+    meanings: [
+      {
+        pos: 'NOUN',
+        type: 'noun',
+        meaning: 'Tính năng, đặc điểm, điểm nổi bật',
+        definition: 'A distinctive attribute or aspect of something.',
+        example: 'The new smartphone model includes advanced battery saving features.',
+        exampleMeaning: 'Mẫu điện thoại thông minh mới bao gồm các tính năng tiết kiệm pin tiên tiến.'
+      },
+      {
+        pos: 'VERB',
+        type: 'verb',
+        meaning: 'Bao gồm, nêu bật, trình chiếu',
+        definition: 'To include something as a prominent or important part.',
+        example: 'The company annual report features key milestones achieved this year.',
+        exampleMeaning: 'Báo cáo thường niên của công ty nêu bật các cột mốc quan trọng đạt được trong năm nay.'
+      },
+      {
+        pos: 'ADJECTIVE',
+        type: 'adjective',
+        meaning: 'Nổi bật, chính, đặc sắc',
+        definition: 'Prominent or highlighted.',
+        example: 'The feature presentation will take place in the main conference hall.',
+        exampleMeaning: 'Bài thuyết trình chính sẽ diễn ra tại hội trường hội nghị chính.'
+      }
+    ]
+  },
+  'conduct': {
+    pronunciation: '/kənˈdʌkt/',
+    meanings: [
+      {
+        pos: 'VERB',
+        type: 'verb',
+        meaning: 'Tiến hành, thực hiện (cuộc điều tra, khảo sát, nghiên cứu)',
+        definition: 'To organize and carry out a particular activity or process.',
+        example: 'The market research team will conduct a survey to analyze customer preferences.',
+        exampleMeaning: 'Nhóm nghiên cứu thị trường sẽ tiến hành khảo sát để phân tích sở thích của khách hàng.'
+      },
+      {
+        pos: 'NOUN',
+        type: 'noun',
+        meaning: 'Hành vi, cách ứng xử, tư cách',
+        definition: 'The manner in which a person behaves in a particular situation.',
+        example: 'All staff are expected to maintain professional conduct at the workplace.',
+        exampleMeaning: 'Tất cả nhân viên được yêu cầu duy trì ứng xử chuyên nghiệp tại nơi làm việc.'
+      }
+    ]
+  },
+  'record': {
+    pronunciation: '/ˈrek.ɔːd/',
+    meanings: [
+      {
+        pos: 'NOUN',
+        type: 'noun',
+        meaning: 'Hồ sơ, bản ghi, kỷ lục',
+        definition: 'A piece of evidence or information about the past kept in writing.',
+        example: 'The accounting department keeps an accurate record of all corporate expenditures.',
+        exampleMeaning: 'Bộ phận kế toán giữ hồ sơ chính xác về tất cả chi tiêu của doanh nghiệp.'
+      },
+      {
+        pos: 'VERB',
+        type: 'verb',
+        meaning: 'Ghi chép, thu âm, ghi hình',
+        definition: 'To set down in writing or other permanent form for later reference.',
+        example: 'The secretary will record the official minutes during today’s board meeting.',
+        exampleMeaning: 'Thư ký sẽ ghi chép lại biên bản chính thức trong cuộc họp ban điều hành hôm nay.'
+      }
+    ]
+  },
+  'manual': {
+    pronunciation: '/ˈmæn.ju.əl/',
+    meanings: [
+      {
+        pos: 'NOUN',
+        type: 'noun',
+        meaning: 'Sách hướng dẫn, tài liệu chỉ dẫn',
+        definition: 'A book giving instructions or information about how to use something.',
+        example: 'Please read the operation manual carefully before starting the equipment.',
+        exampleMeaning: 'Vui lòng đọc kỹ sách hướng dẫn vận hành trước khi khởi động thiết bị.'
+      },
+      {
+        pos: 'ADJECTIVE',
+        type: 'adjective',
+        meaning: 'Thủ công, bằng tay',
+        definition: 'Done or operated by hand rather than automatically.',
+        example: 'The factory relies on manual labor for inspecting delicate electronic parts.',
+        exampleMeaning: 'Nhà máy phụ thuộc vào lao động thủ công để kiểm tra các linh kiện điện tử tinh xảo.'
+      }
+    ]
+  },
+  'associate': {
+    pronunciation: '/əˈsəʊ.si.ət/',
+    meanings: [
+      {
+        pos: 'NOUN',
+        type: 'noun',
+        meaning: 'Đồng nghiệp, đối tác, trợ lý',
+        definition: 'A partner or colleague in business or at work.',
+        example: 'The senior associate welcomed the new team members to the department.',
+        exampleMeaning: 'Đối tác cấp cao đã chào mừng các thành viên mới đến với bộ phận.'
+      },
+      {
+        pos: 'VERB',
+        type: 'verb',
+        meaning: 'Liên kết, kết hợp, gắn liền',
+        definition: 'To connect someone or something in one\'s mind with something else.',
+        example: 'Consumers often associate this brand with high quality and reliability.',
+        exampleMeaning: 'Người tiêu dùng thường liên kết thương hiệu này với chất lượng cao và độ tin cậy.'
+      }
+    ]
+  },
   'boring': {
     pos: 'adjective',
     pronunciation: '/ˈbɔː.rɪŋ/',
@@ -825,14 +1001,6 @@ const SMART_TOEIC_TERMS = {
     example: 'The company agreed to raise the minimum hourly wage for factory workers.',
     exampleMeaning: 'Công ty đã đồng ý tăng mức lương tối thiểu theo giờ cho công nhân nhà máy.'
   },
-  'manual': {
-    pos: 'adjective',
-    pronunciation: '/ˈmæn.ju.əl/',
-    meaning: 'thủ công, bằng tay (adj) / sách hướng dẫn (n)',
-    example: 'Please read the instruction manual carefully before operating the machine.',
-    exampleMeaning: 'Vui lòng đọc kỹ sách hướng dẫn sử dụng trước khi vận hành máy.'
-  },
-  'associate': {
     pos: 'noun',
     pronunciation: '/əˈsəʊ.si.ət/',
     meaning: 'đồng nghiệp, đối tác',
@@ -2048,162 +2216,250 @@ async function importBatchWords() {
   const total = validLines.length;
   let processed = 0;
 
-  function updateProgress(word) {
-    processed++;
-    const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
-    if (progressBar) progressBar.style.width = pct + '%';
-    if (progressPct) progressPct.textContent = pct + '%';
-    if (progressLabel) progressLabel.textContent = `Đang xử lý: "${word}" (${processed}/${total})`;
+// ══════════════════════════════════════════════
+//  CENTRAL DICTIONARY & MULTI-POS LOOKUP ENGINE
+// ══════════════════════════════════════════════
+async function lookupWordAllDetails(rawWord, userMeanings = []) {
+  if (!rawWord) return null;
+  const originalClean = sanitizeWordTitle(rawWord);
+  const cleanWord = await autoCorrectWordTypo(originalClean);
+  const lowerKey = cleanWord.toLowerCase().trim();
+
+  let pronunciation = '';
+  let meanings = [];
+
+  // 1. Check SMART_TOEIC_TERMS curated dictionary
+  if (SMART_TOEIC_TERMS[lowerKey]) {
+    const smart = SMART_TOEIC_TERMS[lowerKey];
+    if (smart.pronunciation) pronunciation = sanitizeIPA(smart.pronunciation);
+
+    if (smart.meanings && Array.isArray(smart.meanings) && smart.meanings.length > 0) {
+      meanings = smart.meanings.map(m => ({
+        type: (m.type || m.pos || 'noun').toLowerCase(),
+        pos: normalizePOS(m.pos || m.type || 'NOUN'),
+        meaning: m.meaning,
+        definition: m.definition || '',
+        example: m.example || '',
+        exampleMeaning: m.exampleMeaning || ''
+      }));
+    } else if (smart.pos && smart.meaning) {
+      meanings = [{
+        type: smart.pos.toLowerCase(),
+        pos: normalizePOS(smart.pos),
+        meaning: smart.meaning,
+        definition: smart.definition || '',
+        example: smart.example || '',
+        exampleMeaning: smart.exampleMeaning || ''
+      }];
+    }
   }
 
-  for (const line of lines) {
-    const parsed = parseBatchLine(line);
-    if (!parsed || !parsed.word) continue;
-    
-    // Auto-correct spell check typos like "Priorizre" -> "Prioritize" or "Pricipal" -> "Principal"
-    const originalClean = parsed.word;
-    const cleanWord = await autoCorrectWordTypo(originalClean);
-    if (cleanWord.toLowerCase() !== originalClean.toLowerCase()) {
-      autoCorrectedCount++;
-      autocorrectLog.push(`"${originalClean}" → "${cleanWord}"`);
-    }
-    
-    updateProgress(cleanWord);
-    
-    // Skip if already exists
-    if (state.vocab.some(w => w.word.toLowerCase() === cleanWord.toLowerCase())) continue;
-    
-    // Auto-lookup pronunciation and examples from dictionary
-    let pronunciation = '';
-    const lookupMeanings = [];
-    
+  // 2. Fetch online Dictionary API if not fully populated
+  if (meanings.length === 0) {
     try {
-      const dictResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
-      if (dictResponse.ok) {
-        const dictData = await dictResponse.json();
+      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
+      if (dictRes.ok) {
+        const dictData = await dictRes.json();
         const firstEntry = dictData[0];
-        
-        // Get pronunciation
+
         let rawPhonetic = firstEntry.phonetic || '';
         if (!rawPhonetic && firstEntry.phonetics) {
           const found = firstEntry.phonetics.find(p => p.text && p.text.startsWith('/'));
           rawPhonetic = found ? found.text : '';
         }
-        rawPhonetic = rawPhonetic.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '').replace(/[()]/g, '').replace(/\s+/g, '').trim();
+        rawPhonetic = rawPhonetic.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '').replace(/[()]/g, '').trim();
         if (rawPhonetic && !rawPhonetic.startsWith('/')) rawPhonetic = '/' + rawPhonetic;
         if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
         pronunciation = rawPhonetic;
-        
-        // Collect dictionary definitions grouped by POS
+
         const dictByPOS = {};
-        const posOrder = []; // preserve order from dict
+        const posOrder = [];
         for (const entry of dictData) {
           if (!entry.meanings) continue;
           for (const mGroup of entry.meanings) {
-            const pos = mGroup.partOfSpeech || 'noun';
-            if (!dictByPOS[pos]) { dictByPOS[pos] = []; posOrder.push(pos); }
+            const rawP = (mGroup.partOfSpeech || 'noun').toLowerCase();
+            const normP = normalizePOS(rawP);
+            if (!dictByPOS[normP]) {
+              dictByPOS[normP] = [];
+              posOrder.push(normP);
+            }
             for (const def of mGroup.definitions) {
-              dictByPOS[pos].push({ definition: def.definition || '', example: def.example || '' });
+              dictByPOS[normP].push({
+                definition: def.definition || '',
+                example: def.example || ''
+              });
             }
           }
         }
 
-        // Determine which POS to generate meanings for:
-        // If user explicitly typed multiple POS (via pipe | or (n)/(v)), use those.
-        // If user typed only ONE meaning with no explicit POS OR just a Vietnamese meaning,
-        // expand to ALL POS found in dictionary so learner sees every usage.
-        const userSpecifiedPOS = parsed.meanings.filter(m => m.type && m.type !== detectWordPOS(cleanWord));
-        const shouldExpandAllPOS = parsed.meanings.length <= 1 && userSpecifiedPOS.length === 0 && posOrder.length > 1;
+        const userViText = (userMeanings && userMeanings[0]?.meaning) ? userMeanings[0].meaning.trim() : '';
 
-        if (shouldExpandAllPOS) {
-          // Generate one block per POS from dictionary
-          for (const pos of posOrder) {
-            const defs = dictByPOS[pos] || [];
-            const bestDict = defs.find(d => d.example) || defs[0] || null;
-            let exText = bestDict?.example || generateTemplateExample(cleanWord, pos);
-            let defText = bestDict?.definition || '';
-            const exTrans = exText ? await translateExampleText(exText) : '';
-            // Use user's Vietnamese meaning for the first POS, leave others with definition hint
-            const userViMeaning = parsed.meanings[0]?.meaning || '';
-            const meaning = pos === posOrder[0] && userViMeaning ? userViMeaning : (defText ? '' : 'Xem định nghĩa');
-            lookupMeanings.push({ type: pos, meaning, definition: defText, example: exText, exampleMeaning: exTrans });
+        for (const posLabel of posOrder) {
+          const defs = dictByPOS[posLabel] || [];
+          const bestDict = defs.find(d => d.example) || defs[0] || null;
+          let exText = bestDict?.example || generateTemplateExample(cleanWord, posLabel.toLowerCase());
+          let defText = bestDict?.definition || '';
+          
+          const exTrans = exText ? await translateTextToVi(exText) : '';
+          let viMeaning = defText ? await translateTextToVi(defText) : '';
+
+          // If user provided a Vietnamese meaning, use it for NOUN or matching POS
+          if (userViText && (posLabel === 'NOUN' || posLabel.toLowerCase() === detectWordPOS(cleanWord))) {
+            if (viMeaning && !viMeaning.toLowerCase().includes(userViText.toLowerCase())) {
+              viMeaning = `${userViText} (${viMeaning})`;
+            } else if (!viMeaning) {
+              viMeaning = userViText;
+            }
           }
-        } else {
-          // For each user-provided meaning, find matching dictionary example
-          for (const userMeaning of parsed.meanings) {
-            const posKey = detectWordPOS(cleanWord, userMeaning.type);
-            const dictDefs = dictByPOS[posKey] || [];
-            const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
-            let exText = bestDict ? bestDict.example : '';
-            let defText = bestDict ? bestDict.definition : '';
-            if (!exText) exText = generateTemplateExample(cleanWord, posKey);
-            const exTrans = exText ? await translateExampleText(exText) : '';
-            lookupMeanings.push({ type: posKey, meaning: userMeaning.meaning || 'Chưa cập nhật', definition: defText, example: exText, exampleMeaning: exTrans });
-          }
-        }
-      }
-    } catch (e) {
-      console.warn("Batch lookup error for " + cleanWord + ":", e);
-    }
-    
-    // If lookup failed, use user-provided meanings directly with smart template sentence
-    if (lookupMeanings.length === 0) {
-      const smartTerm = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
-      if (smartTerm) {
-        lookupMeanings.push({
-          type: smartTerm.pos,
-          meaning: parsed.meanings[0]?.meaning || smartTerm.meaning,
-          definition: smartTerm.definition || '',
-          example: smartTerm.example,
-          exampleMeaning: smartTerm.exampleMeaning
-        });
-      } else {
-        for (const userMeaning of parsed.meanings) {
-          const posKey = detectWordPOS(cleanWord, userMeaning.type);
-          const exText = generateTemplateExample(cleanWord, posKey);
-          const exTrans = exText ? await translateExampleText(exText) : '';
-          lookupMeanings.push({
-            type: posKey,
-            meaning: userMeaning.meaning || 'Chưa cập nhật',
-            definition: '',
+
+          meanings.push({
+            type: posLabel.toLowerCase(),
+            pos: posLabel,
+            meaning: viMeaning || userViText || 'Chưa cập nhật',
+            definition: defText,
             example: exText,
             exampleMeaning: exTrans
           });
         }
       }
+    } catch (e) {
+      console.warn('Dict lookup error for ' + cleanWord, e);
     }
+  }
 
-    if (!pronunciation || isFakeIPA(cleanWord, pronunciation)) {
+  // 3. Final fallback if dictionary returned nothing
+  if (meanings.length === 0) {
+    const userViText = (userMeanings && userMeanings[0]?.meaning) ? userMeanings[0].meaning.trim() : 'Chưa cập nhật';
+    const posKey = detectWordPOS(cleanWord);
+    const exText = generateTemplateExample(cleanWord, posKey);
+    const exTrans = exText ? await translateTextToVi(exText) : '';
+    meanings.push({
+      type: posKey,
+      pos: normalizePOS(posKey),
+      meaning: userViText,
+      definition: '',
+      example: exText,
+      exampleMeaning: exTrans
+    });
+  }
+
+  // 4. Ensure IPA fallback
+  if (!pronunciation || isFakeIPA(cleanWord, pronunciation)) {
+    try {
       const smartTerm = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
       if (smartTerm?.pronunciation) {
         pronunciation = sanitizeIPA(smartTerm.pronunciation);
-      } else {
-        try {
-          pronunciation = cleanWord.includes(' ')
-            ? await resolvePhraseIPA(cleanWord)
-            : ((await getSingleWordDetailsAuto(cleanWord)).pronunciation || '');
-          if (isFakeIPA(cleanWord, pronunciation)) pronunciation = '';
-        } catch (e) {
-          pronunciation = '';
-        }
       }
+    } catch (e) {
+      pronunciation = '';
     }
-    
+  }
+
+  return {
+    word: cleanWord,
+    cleanWord,
+    pronunciation,
+    meanings,
+    wasAutocorrected: cleanWord.toLowerCase() !== originalClean.toLowerCase(),
+    originalClean
+  };
+}
+
+async function getWordDetailsAuto(word) {
+  const result = await lookupWordAllDetails(word);
+  return {
+    word: result.cleanWord,
+    pronunciation: result.pronunciation,
+    meanings: result.meanings,
+    topic: 'Cá nhân'
+  };
+}
+
+async function importBatchWords() {
+  const textarea = document.getElementById('import-batch-area');
+  const text = (textarea?.value || '').trim();
+  if (!text) {
+    alert("Vui lòng dán danh sách từ vựng vào hộp văn bản!");
+    return;
+  }
+  
+  const selectedPart = document.getElementById('import-batch-part')?.value || 'Cá nhân';
+  const lines = text.split('\n');
+  let importedCount = 0;
+  let autoCorrectedCount = 0;
+  const autocorrectLog = [];
+
+  const importBtn = document.getElementById('import-batch-btn') || document.querySelector('button[onclick="importBatchWords()"]');
+  const originalText = importBtn ? importBtn.textContent : 'Lưu';
+  if (importBtn) {
+    importBtn.disabled = true;
+    importBtn.textContent = '🔄 Đang phân tích & tra cứu từ loại...';
+  }
+
+  const progressWrap = document.getElementById('import-progress-wrap');
+  const progressBar = document.getElementById('import-progress-bar');
+  const progressLabel = document.getElementById('import-progress-label');
+  const progressPct = document.getElementById('import-progress-pct');
+  const autocorrectLogEl = document.getElementById('import-autocorrect-log');
+  if (progressWrap) progressWrap.style.display = 'block';
+  if (autocorrectLogEl) autocorrectLogEl.style.display = 'none';
+
+  const validLines = lines.filter(l => parseBatchLine(l));
+  const total = validLines.length;
+  let processed = 0;
+
+  function updateProgress(word) {
+    processed++;
+    const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
+    if (progressBar) progressBar.style.width = pct + '%';
+    if (progressPct) progressPct.textContent = pct + '%';
+    if (progressLabel) progressLabel.textContent = `Đang xử lý từ loại & nghĩa: "${word}" (${processed}/${total})`;
+  }
+
+  for (const line of lines) {
+    const parsed = parseBatchLine(line);
+    if (!parsed || !parsed.word) continue;
+
+    const lookupRes = await lookupWordAllDetails(parsed.word, parsed.meanings);
+    if (!lookupRes || !lookupRes.cleanWord) continue;
+
+    if (lookupRes.wasAutocorrected) {
+      autoCorrectedCount++;
+      autocorrectLog.push(`"${lookupRes.originalClean}" → "${lookupRes.cleanWord}"`);
+    }
+
+    updateProgress(lookupRes.cleanWord);
+
+    // Skip if already exists in vocab bank
+    if (state.vocab.some(w => w.word.toLowerCase() === lookupRes.cleanWord.toLowerCase())) continue;
+
     state.vocab.unshift({
-      word: cleanWord,
-      pronunciation: pronunciation,
+      word: lookupRes.cleanWord,
+      pronunciation: lookupRes.pronunciation,
       topic: selectedPart,
       status: 'new',
       lastReviewed: null,
       reviewCount: 0,
-      meanings: lookupMeanings
+      meanings: lookupRes.meanings
     });
     importedCount++;
   }
 
   saveState();
-  textarea.value = '';
-  importBtn.disabled = false;
+  if (textarea) textarea.value = '';
+  if (importBtn) {
+    importBtn.disabled = false;
+    importBtn.textContent = originalText;
+  }
+  
+  if (autocorrectLogEl && autocorrectLog.length > 0) {
+    autocorrectLogEl.style.display = 'block';
+    autocorrectLogEl.innerHTML = `✏️ Đã tự động sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}`;
+  }
+
+  alert(`✅ Đã nhập thành công ${importedCount} từ vựng vào "${selectedPart}"!` + (autoCorrectedCount > 0 ? `\n✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả.` : ''));
+  switchVocabTab('vocab-list');
+}
   importBtn.textContent = originalText;
 
   // Show progress done
@@ -4142,92 +4398,28 @@ async function qibImport() {
     const parsed = parseBatchLine(line);
     if (!parsed || !parsed.word) continue;
 
-    const originalClean = parsed.word;
-    const cleanWord = await autoCorrectWordTypo(originalClean);
-    if (cleanWord.toLowerCase() !== originalClean.toLowerCase()) {
+    const lookupRes = await lookupWordAllDetails(parsed.word, parsed.meanings);
+    if (!lookupRes || !lookupRes.cleanWord) continue;
+
+    if (lookupRes.wasAutocorrected) {
       autoCorrectedCount++;
-      autocorrectLog.push(`"${originalClean}" → "${cleanWord}"`);
+      autocorrectLog.push(`"${lookupRes.originalClean}" → "${lookupRes.cleanWord}"`);
     }
 
-    updateQibProgress(cleanWord);
+    updateQibProgress(lookupRes.cleanWord);
 
     // Skip duplicates
-    if (state.vocab.some(w => w.word.toLowerCase() === cleanWord.toLowerCase())) continue;
+    if (state.vocab.some(w => w.word.toLowerCase() === lookupRes.cleanWord.toLowerCase())) continue;
 
-    let pronunciation = '';
-    const lookupMeanings = [];
-
-    // Dictionary lookup
-    try {
-      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
-      if (dictRes.ok) {
-        const dictData = await dictRes.json();
-        const firstEntry = dictData[0];
-        let rawPhonetic = firstEntry.phonetic || '';
-        if (!rawPhonetic && firstEntry.phonetics) {
-          const found = firstEntry.phonetics.find(p => p.text && p.text.startsWith('/'));
-          rawPhonetic = found ? found.text : '';
-        }
-        rawPhonetic = rawPhonetic.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '').replace(/[()]/g, '').trim();
-        if (rawPhonetic && !rawPhonetic.startsWith('/')) rawPhonetic = '/' + rawPhonetic;
-        if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
-        pronunciation = rawPhonetic;
-
-        const dictByPOS = {};
-        for (const entry of dictData) {
-          if (!entry.meanings) continue;
-          for (const mGroup of entry.meanings) {
-            const pos = mGroup.partOfSpeech || 'noun';
-            if (!dictByPOS[pos]) dictByPOS[pos] = [];
-            for (const def of mGroup.definitions) {
-              dictByPOS[pos].push({ definition: def.definition || '', example: def.example || '' });
-            }
-          }
-        }
-
-        for (const userMeaning of parsed.meanings) {
-          const posKey = detectWordPOS(cleanWord, userMeaning.type);
-          const dictDefs = dictByPOS[posKey] || [];
-          const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
-          let exText = bestDict?.example || generateTemplateExample(cleanWord, posKey);
-          let defText = bestDict?.definition || '';
-          const exTrans = exText ? await translateExampleText(exText) : '';
-          lookupMeanings.push({ type: posKey, meaning: userMeaning.meaning || 'Chưa cập nhật', definition: defText, example: exText, exampleMeaning: exTrans });
-        }
-      }
-    } catch (e) { console.warn('qib dict error:', e); }
-
-    // Fallback
-    if (lookupMeanings.length === 0) {
-      const smart = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
-      if (smart) {
-        lookupMeanings.push({ type: smart.pos, meaning: parsed.meanings[0]?.meaning || smart.meaning, definition: smart.definition || '', example: smart.example, exampleMeaning: smart.exampleMeaning });
-      } else {
-        for (const um of parsed.meanings) {
-          const posKey = detectWordPOS(cleanWord, um.type);
-          const exText = generateTemplateExample(cleanWord, posKey);
-          const exTrans = exText ? await translateExampleText(exText) : '';
-          lookupMeanings.push({ type: posKey, meaning: um.meaning || 'Chưa cập nhật', definition: '', example: exText, exampleMeaning: exTrans });
-        }
-      }
-    }
-
-    // Resolve pronunciation if missing
-    if (!pronunciation || isFakeIPA(cleanWord, pronunciation)) {
-      const smart = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
-      if (smart?.pronunciation) {
-        pronunciation = sanitizeIPA(smart.pronunciation);
-      } else {
-        try {
-          pronunciation = cleanWord.includes(' ')
-            ? await resolvePhraseIPA(cleanWord)
-            : ((await getSingleWordDetailsAuto(cleanWord)).pronunciation || '');
-          if (isFakeIPA(cleanWord, pronunciation)) pronunciation = '';
-        } catch (e) { pronunciation = ''; }
-      }
-    }
-
-    state.vocab.unshift({ word: cleanWord, pronunciation, topic: selectedPart, status: 'new', lastReviewed: null, reviewCount: 0, meanings: lookupMeanings });
+    state.vocab.unshift({
+      word: lookupRes.cleanWord,
+      pronunciation: lookupRes.pronunciation,
+      topic: selectedPart,
+      status: 'new',
+      lastReviewed: null,
+      reviewCount: 0,
+      meanings: lookupRes.meanings
+    });
     importedCount++;
   }
 
