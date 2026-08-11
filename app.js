@@ -2005,6 +2005,15 @@ async function saveSingleWord(event) {
     };
     alert(`Đã cập nhật từ "${wordInput}" thành công!`);
   } else {
+    // Prevent adding duplicates (case-insensitive check)
+    const isDuplicate = state.vocab.some(w => w.word.toLowerCase().trim() === wordInput.toLowerCase().trim());
+    if (isDuplicate) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalText;
+      alert(`⚠️ Từ "${wordInput}" đã có sẵn trong kho từ vựng cá nhân của bạn!\nHệ thống không thể thêm trùng lặp.`);
+      return;
+    }
+
     // Add new vocab item
     state.vocab.unshift({
       word: wordInput,
@@ -2387,6 +2396,7 @@ async function importBatchWords() {
   const lines = text.split('\n');
   let importedCount = 0;
   let autoCorrectedCount = 0;
+  let skippedDuplicateCount = 0;
   const autocorrectLog = [];
 
   const importBtn = document.getElementById('import-batch-btn') || document.querySelector('button[onclick="importBatchWords()"]');
@@ -2431,7 +2441,10 @@ async function importBatchWords() {
     updateProgress(lookupRes.cleanWord);
 
     // Skip if already exists in vocab bank
-    if (state.vocab.some(w => w.word.toLowerCase() === lookupRes.cleanWord.toLowerCase())) continue;
+    if (state.vocab.some(w => w.word.toLowerCase().trim() === lookupRes.cleanWord.toLowerCase().trim())) {
+      skippedDuplicateCount++;
+      continue;
+    }
 
     state.vocab.unshift({
       word: lookupRes.cleanWord,
@@ -2451,29 +2464,25 @@ async function importBatchWords() {
     importBtn.disabled = false;
     importBtn.textContent = originalText;
   }
-  
-  if (autocorrectLogEl && autocorrectLog.length > 0) {
-    autocorrectLogEl.style.display = 'block';
-    autocorrectLogEl.innerHTML = `✏️ Đã tự động sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}`;
-  }
 
-  alert(`✅ Đã nhập thành công ${importedCount} từ vựng vào "${selectedPart}"!` + (autoCorrectedCount > 0 ? `\n✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả.` : ''));
-  switchVocabTab('vocab-list');
-}
-  importBtn.textContent = originalText;
-
-  // Show progress done
   if (progressLabel) progressLabel.textContent = `✅ Hoàn thành! Đã nhập ${importedCount} từ vào "${selectedPart}"`;
   if (progressBar) progressBar.style.width = '100%';
   if (progressPct) progressPct.textContent = '100%';
-
-  // Show auto-correct log if any
-  if (autocorrectLog.length > 0 && autocorrectLogEl) {
-    autocorrectLogEl.style.display = 'block';
-    autocorrectLogEl.innerHTML = `✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}`;
-  }
   
-  alert(`✅ Đã nhập ${importedCount} từ vựng vào "${selectedPart}"!` + (autoCorrectedCount > 0 ? `\n✏️ Đã tự sửa ${autoCorrectedCount} lỗi chính tả.` : ''));
+  if (autocorrectLogEl) {
+    let logHtml = '';
+    if (autoCorrectedCount > 0) logHtml += `✏️ Đã tự động sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}<br>`;
+    if (skippedDuplicateCount > 0) logHtml += `⚠️ Đã bỏ qua ${skippedDuplicateCount} từ bị trùng lặp vì đã có sẵn trong kho từ.`;
+    if (logHtml) {
+      autocorrectLogEl.style.display = 'block';
+      autocorrectLogEl.innerHTML = logHtml;
+    }
+  }
+
+  let alertMsg = `✅ Đã nhập thành công ${importedCount} từ vựng vào "${selectedPart}"!`;
+  if (skippedDuplicateCount > 0) alertMsg += `\n⚠️ Bỏ qua ${skippedDuplicateCount} từ bị trùng lặp vì đã có sẵn.`;
+  if (autoCorrectedCount > 0) alertMsg += `\n✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả.`;
+  alert(alertMsg);
   switchVocabTab('vocab-list');
 }
 
@@ -4384,6 +4393,7 @@ async function qibImport() {
   let processed = 0;
   let importedCount = 0;
   let autoCorrectedCount = 0;
+  let skippedDuplicateCount = 0;
   const autocorrectLog = [];
 
   function updateQibProgress(word) {
@@ -4408,8 +4418,11 @@ async function qibImport() {
 
     updateQibProgress(lookupRes.cleanWord);
 
-    // Skip duplicates
-    if (state.vocab.some(w => w.word.toLowerCase() === lookupRes.cleanWord.toLowerCase())) continue;
+    // Skip duplicates (case-insensitive check)
+    if (state.vocab.some(w => w.word.toLowerCase().trim() === lookupRes.cleanWord.toLowerCase().trim())) {
+      skippedDuplicateCount++;
+      continue;
+    }
 
     state.vocab.unshift({
       word: lookupRes.cleanWord,
@@ -4426,12 +4439,22 @@ async function qibImport() {
   saveState();
 
   // Final progress state
-  if (progressLabel) progressLabel.textContent = `✅ Xong! Đã lưu ${importedCount} từ vào "${selectedPart}"`;
+  if (progressLabel) {
+    let labelText = `✅ Xong! Đã lưu ${importedCount} từ vào "${selectedPart}"`;
+    if (skippedDuplicateCount > 0) labelText += ` (Bỏ qua ${skippedDuplicateCount} từ bị trùng)`;
+    progressLabel.textContent = labelText;
+  }
   if (progressBar) progressBar.style.width = '100%';
   if (progressPct) progressPct.textContent = '100%';
-  if (autocorrectLog.length > 0 && logEl) {
-    logEl.style.display = 'block';
-    logEl.innerHTML = `✏️ Đã sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}`;
+  
+  if (logEl) {
+    let logText = '';
+    if (autoCorrectedCount > 0) logText += `✏️ Đã sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')} `;
+    if (skippedDuplicateCount > 0) logText += `⚠️ Đã bỏ qua ${skippedDuplicateCount} từ trùng lặp.`;
+    if (logText) {
+      logEl.style.display = 'block';
+      logEl.innerHTML = logText;
+    }
   }
 
   importBtn.disabled = false;
@@ -4442,7 +4465,10 @@ async function qibImport() {
   const vocabListTab = document.getElementById('vocab-list');
   if (vocabListTab && vocabListTab.classList.contains('active')) renderVocabBank();
 
-  alert(`✅ Đã lưu ${importedCount} từ vào "${selectedPart}"!` + (autoCorrectedCount > 0 ? `\n✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả.` : ''));
+  let alertMsg = `✅ Đã lưu thành công ${importedCount} từ vào "${selectedPart}"!`;
+  if (skippedDuplicateCount > 0) alertMsg += `\n⚠️ Bỏ qua ${skippedDuplicateCount} từ bị trùng lặp vì đã có sẵn trong kho từ.`;
+  if (autoCorrectedCount > 0) alertMsg += `\n✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả.`;
+  alert(alertMsg);
 }
 
 // Keep qib-part-pill active state in sync with click
