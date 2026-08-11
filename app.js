@@ -2093,12 +2093,25 @@ const SMART_TOEIC_TERMS = {
     "exampleMeaning": "Chúng tôi cung cấp một cuộc hội đàm tư vấn ban đầu miễn phí cho các khách hàng doanh nghiệp mới."
 },
   'contract': {
-    "pos": "noun",
-    "pronunciation": "",
-    "meaning": "(N) Hợp đồng; (V) Ký hợp đồng, thu nhỏ",
-    "definition": "A written or spoken agreement intended to be enforceable by law.",
-    "example": "The legal department reviewed the vendor contract before signing.",
-    "exampleMeaning": "Bộ phận pháp lý đã xem xét hợp đồng với nhà cung cấp trước khi ký kết."
+    "pronunciation": "/ˈkɒn.trækt/",
+    "meanings": [
+        {
+            "pos": "NOUN",
+            "type": "noun",
+            "meaning": "Hợp đồng, bản cam kết",
+            "definition": "A written or spoken agreement intended to be enforceable by law.",
+            "example": "The client signed a two-year service contract with our firm.",
+            "exampleMeaning": "Khách hàng đã ký hợp đồng dịch vụ 2 năm với công ty chúng tôi."
+        },
+        {
+            "pos": "VERB",
+            "type": "verb",
+            "meaning": "Ký hợp đồng, co lại, thu hẹp",
+            "definition": "Decrease in size, number, or range; enter into a formal agreement.",
+            "example": "The company contracted a local vendor to supply office equipment.",
+            "exampleMeaning": "Công ty đã ký hợp đồng với một nhà cung cấp địa phương để cung cấp thiết bị văn phòng."
+        }
+    ]
 },
   'corporation': {
     "pos": "noun",
@@ -3355,17 +3368,17 @@ const SMART_TOEIC_TERMS = {
             "pos": "NOUN",
             "type": "noun",
             "meaning": "Lịch trình, thời khóa biểu",
-            "definition": "A plan that gives a list of intended events and times.",
-            "example": "The project is moving forward according to the master schedule.",
-            "exampleMeaning": "Dự án đang tiến triển theo đúng lịch trình tổng thể."
+            "definition": "A plan for carrying out a process or procedure, giving lists of intended events.",
+            "example": "The flight schedule is subject to change due to severe weather conditions.",
+            "exampleMeaning": "Lịch trình chuyến bay có thể thay đổi do điều kiện thời tiết khắc nghiệt."
         },
         {
             "pos": "VERB",
             "type": "verb",
-            "meaning": "Lên lịch, xếp lịch",
+            "meaning": "Lên lịch, sắp xếp thời gian",
             "definition": "Arrange or plan that an event will take place at a particular time.",
-            "example": "The assistant will schedule a meeting with the overseas client.",
-            "exampleMeaning": "Trợ lý sẽ lên lịch một cuộc họp với khách hàng nước ngoài."
+            "example": "We scheduled a team strategy session for Tuesday afternoon.",
+            "exampleMeaning": "Chúng tôi đã lên lịch một buổi họp chiến lược nhóm vào chiều thứ Ba."
         }
     ]
 },
@@ -3464,17 +3477,17 @@ const SMART_TOEIC_TERMS = {
             "pos": "NOUN",
             "type": "noun",
             "meaning": "Mục tiêu, chỉ tiêu",
-            "definition": "A result that one is attempting to achieve.",
-            "example": "The sales team achieved its annual revenue target ahead of time.",
-            "exampleMeaning": "Nhóm kinh doanh đã đạt mục tiêu doanh thu hàng năm trước thời hạn."
+            "definition": "A person, object, or place selected as the aim of an attack or effort.",
+            "example": "The sales team exceeded their quarterly revenue target.",
+            "exampleMeaning": "Nhóm bán hàng đã vượt chỉ tiêu doanh thu hàng quý."
         },
         {
             "pos": "VERB",
             "type": "verb",
-            "meaning": "Nhắm tới mục tiêu",
+            "meaning": "Nhắm vào, hướng đến",
             "definition": "Select as an object of attention or attack.",
-            "example": "The new ad campaign targets young tech-savvy professionals.",
-            "exampleMeaning": "Chiến dịch quảng cáo mới nhắm tới các chuyên gia trẻ tuổi am hiểu công nghệ."
+            "example": "The advertising campaign targets young urban professionals.",
+            "exampleMeaning": "Chiến dịch quảng cáo nhắm vào các chuyên gia trẻ ở thành thị."
         }
     ]
 },
