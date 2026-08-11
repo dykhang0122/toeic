@@ -3814,3 +3814,203 @@ function calculateWordSimilarity(s1, s2) {
   return Math.round((1 - distance / maxLength) * 100);
 }
 
+// ══════════════════════════════════════════════
+//  FLOATING QUICK-IMPORT BAR  (qib*)
+// ══════════════════════════════════════════════
+let _qibOpen = false;
+
+function toggleQuickImportBar() {
+  const bar = document.getElementById('quick-import-bar');
+  const arrow = document.getElementById('qib-arrow');
+  if (!bar) return;
+  _qibOpen = !_qibOpen;
+  if (_qibOpen) {
+    bar.style.transform = 'translateY(0)';
+    if (arrow) arrow.style.transform = 'rotate(180deg)';
+  } else {
+    bar.style.transform = 'translateY(calc(100% - 48px))';
+    if (arrow) arrow.style.transform = 'rotate(0deg)';
+  }
+}
+
+function qibSelectPart(btn) {
+  // Deselect all pills
+  document.querySelectorAll('.qib-part-pill').forEach(b => {
+    b.style.background = '#1e293b';
+    b.style.border = '1.5px solid #334155';
+    b.style.color = '#94a3b8';
+  });
+  // Activate clicked
+  btn.style.background = 'var(--accent-primary, #6366f1)';
+  btn.style.border = '1.5px solid var(--accent-primary, #6366f1)';
+  btn.style.color = '#fff';
+  // Update badge in handle
+  const badge = document.getElementById('qib-part-badge');
+  if (badge) badge.textContent = btn.textContent.trim().replace(/[🖼️💬🗣️📢📝📄📰👤]/u, '').trim();
+}
+
+async function qibImport() {
+  const textarea = document.getElementById('qib-textarea');
+  const text = (textarea?.value || '').trim();
+  if (!text) { alert('Vui lòng nhập từ vựng!'); return; }
+
+  // Determine selected part
+  const activePill = document.querySelector('.qib-part-pill.active') ||
+                     document.querySelector('.qib-part-pill[style*="background:var(--accent-primary"]') ||
+                     document.querySelector('.qib-part-pill[style*="#6366f1"]');
+  const selectedPart = activePill ? activePill.getAttribute('data-part') : 'Cá nhân';
+
+  const importBtn = document.getElementById('qib-import-btn');
+  const originalText = importBtn.textContent;
+  importBtn.disabled = true;
+  importBtn.textContent = '🔄 Đang xử lý...';
+
+  // Show progress
+  const progressRow = document.getElementById('qib-progress-row');
+  const progressBar = document.getElementById('qib-progress-bar');
+  const progressLabel = document.getElementById('qib-progress-label');
+  const progressPct = document.getElementById('qib-progress-pct');
+  const logEl = document.getElementById('qib-autocorrect-log');
+  if (progressRow) progressRow.style.display = 'block';
+  if (logEl) logEl.style.display = 'none';
+
+  const lines = text.split('\n');
+  const validLines = lines.filter(l => parseBatchLine(l));
+  const total = validLines.length;
+  let processed = 0;
+  let importedCount = 0;
+  let autoCorrectedCount = 0;
+  const autocorrectLog = [];
+
+  function updateQibProgress(word) {
+    processed++;
+    const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
+    if (progressBar) progressBar.style.width = pct + '%';
+    if (progressPct) progressPct.textContent = pct + '%';
+    if (progressLabel) progressLabel.textContent = `⚙️ "${word}" — ${processed}/${total}`;
+  }
+
+  for (const line of lines) {
+    const parsed = parseBatchLine(line);
+    if (!parsed || !parsed.word) continue;
+
+    const originalClean = parsed.word;
+    const cleanWord = await autoCorrectWordTypo(originalClean);
+    if (cleanWord.toLowerCase() !== originalClean.toLowerCase()) {
+      autoCorrectedCount++;
+      autocorrectLog.push(`"${originalClean}" → "${cleanWord}"`);
+    }
+
+    updateQibProgress(cleanWord);
+
+    // Skip duplicates
+    if (state.vocab.some(w => w.word.toLowerCase() === cleanWord.toLowerCase())) continue;
+
+    let pronunciation = '';
+    const lookupMeanings = [];
+
+    // Dictionary lookup
+    try {
+      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
+      if (dictRes.ok) {
+        const dictData = await dictRes.json();
+        const firstEntry = dictData[0];
+        let rawPhonetic = firstEntry.phonetic || '';
+        if (!rawPhonetic && firstEntry.phonetics) {
+          const found = firstEntry.phonetics.find(p => p.text && p.text.startsWith('/'));
+          rawPhonetic = found ? found.text : '';
+        }
+        rawPhonetic = rawPhonetic.replace(/\(\s*(n|v|adj|adv|noun|verb|adjective|adverb)\s*\)/gi, '').replace(/[()]/g, '').trim();
+        if (rawPhonetic && !rawPhonetic.startsWith('/')) rawPhonetic = '/' + rawPhonetic;
+        if (rawPhonetic && !rawPhonetic.endsWith('/')) rawPhonetic = rawPhonetic + '/';
+        pronunciation = rawPhonetic;
+
+        const dictByPOS = {};
+        for (const entry of dictData) {
+          if (!entry.meanings) continue;
+          for (const mGroup of entry.meanings) {
+            const pos = mGroup.partOfSpeech || 'noun';
+            if (!dictByPOS[pos]) dictByPOS[pos] = [];
+            for (const def of mGroup.definitions) {
+              dictByPOS[pos].push({ definition: def.definition || '', example: def.example || '' });
+            }
+          }
+        }
+
+        for (const userMeaning of parsed.meanings) {
+          const posKey = detectWordPOS(cleanWord, userMeaning.type);
+          const dictDefs = dictByPOS[posKey] || [];
+          const bestDict = dictDefs.find(d => d.example) || dictDefs[0] || null;
+          let exText = bestDict?.example || generateTemplateExample(cleanWord, posKey);
+          let defText = bestDict?.definition || '';
+          const exTrans = exText ? await translateExampleText(exText) : '';
+          lookupMeanings.push({ type: posKey, meaning: userMeaning.meaning || 'Chưa cập nhật', definition: defText, example: exText, exampleMeaning: exTrans });
+        }
+      }
+    } catch (e) { console.warn('qib dict error:', e); }
+
+    // Fallback
+    if (lookupMeanings.length === 0) {
+      const smart = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
+      if (smart) {
+        lookupMeanings.push({ type: smart.pos, meaning: parsed.meanings[0]?.meaning || smart.meaning, definition: smart.definition || '', example: smart.example, exampleMeaning: smart.exampleMeaning });
+      } else {
+        for (const um of parsed.meanings) {
+          const posKey = detectWordPOS(cleanWord, um.type);
+          const exText = generateTemplateExample(cleanWord, posKey);
+          const exTrans = exText ? await translateExampleText(exText) : '';
+          lookupMeanings.push({ type: posKey, meaning: um.meaning || 'Chưa cập nhật', definition: '', example: exText, exampleMeaning: exTrans });
+        }
+      }
+    }
+
+    // Resolve pronunciation if missing
+    if (!pronunciation || isFakeIPA(cleanWord, pronunciation)) {
+      const smart = SMART_TOEIC_TERMS[cleanWord.toLowerCase()];
+      if (smart?.pronunciation) {
+        pronunciation = sanitizeIPA(smart.pronunciation);
+      } else {
+        try {
+          pronunciation = cleanWord.includes(' ')
+            ? await resolvePhraseIPA(cleanWord)
+            : ((await getSingleWordDetailsAuto(cleanWord)).pronunciation || '');
+          if (isFakeIPA(cleanWord, pronunciation)) pronunciation = '';
+        } catch (e) { pronunciation = ''; }
+      }
+    }
+
+    state.vocab.unshift({ word: cleanWord, pronunciation, topic: selectedPart, status: 'new', lastReviewed: null, reviewCount: 0, meanings: lookupMeanings });
+    importedCount++;
+  }
+
+  saveState();
+
+  // Final progress state
+  if (progressLabel) progressLabel.textContent = `✅ Xong! Đã lưu ${importedCount} từ vào "${selectedPart}"`;
+  if (progressBar) progressBar.style.width = '100%';
+  if (progressPct) progressPct.textContent = '100%';
+  if (autocorrectLog.length > 0 && logEl) {
+    logEl.style.display = 'block';
+    logEl.innerHTML = `✏️ Đã sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}`;
+  }
+
+  importBtn.disabled = false;
+  importBtn.textContent = originalText;
+  textarea.value = '';
+
+  // Refresh vocab list if visible
+  const vocabListTab = document.getElementById('vocab-list');
+  if (vocabListTab && vocabListTab.classList.contains('active')) renderVocabBank();
+
+  alert(`✅ Đã lưu ${importedCount} từ vào "${selectedPart}"!` + (autoCorrectedCount > 0 ? `\n✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả.` : ''));
+}
+
+// Keep qib-part-pill active state in sync with click
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.qib-part-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.qib-part-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+});
