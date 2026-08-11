@@ -1780,14 +1780,37 @@ async function importBatchWords() {
     return;
   }
   
+  const selectedPart = document.getElementById('import-batch-part')?.value || 'Cá nhân';
   const lines = text.split('\n');
   let importedCount = 0;
   let autoCorrectedCount = 0;
+  const autocorrectLog = [];
   
-  const importBtn = document.querySelector('button[onclick="importBatchWords()"]');
+  const importBtn = document.getElementById('import-batch-btn') || document.querySelector('button[onclick="importBatchWords()"]');
   const originalText = importBtn.textContent;
   importBtn.disabled = true;
-  importBtn.textContent = '🔄 Đang phân tích & tra cứu online...';
+  importBtn.textContent = '🔄 Đang phân tích & tra cứu...';
+
+  // Show progress bar
+  const progressWrap = document.getElementById('import-progress-wrap');
+  const progressBar = document.getElementById('import-progress-bar');
+  const progressLabel = document.getElementById('import-progress-label');
+  const progressPct = document.getElementById('import-progress-pct');
+  const autocorrectLogEl = document.getElementById('import-autocorrect-log');
+  if (progressWrap) progressWrap.style.display = 'block';
+  if (autocorrectLogEl) autocorrectLogEl.style.display = 'none';
+
+  const validLines = lines.filter(l => parseBatchLine(l));
+  const total = validLines.length;
+  let processed = 0;
+
+  function updateProgress(word) {
+    processed++;
+    const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
+    if (progressBar) progressBar.style.width = pct + '%';
+    if (progressPct) progressPct.textContent = pct + '%';
+    if (progressLabel) progressLabel.textContent = `Đang xử lý: "${word}" (${processed}/${total})`;
+  }
 
   for (const line of lines) {
     const parsed = parseBatchLine(line);
@@ -1798,7 +1821,10 @@ async function importBatchWords() {
     const cleanWord = await autoCorrectWordTypo(originalClean);
     if (cleanWord.toLowerCase() !== originalClean.toLowerCase()) {
       autoCorrectedCount++;
+      autocorrectLog.push(`"${originalClean}" → "${cleanWord}"`);
     }
+    
+    updateProgress(cleanWord);
     
     // Skip if already exists
     if (state.vocab.some(w => w.word.toLowerCase() === cleanWord.toLowerCase())) continue;
@@ -1918,7 +1944,7 @@ async function importBatchWords() {
     state.vocab.unshift({
       word: cleanWord,
       pronunciation: pronunciation,
-      topic: 'Nhập lô',
+      topic: selectedPart,
       status: 'new',
       lastReviewed: null,
       reviewCount: 0,
@@ -1931,13 +1957,34 @@ async function importBatchWords() {
   textarea.value = '';
   importBtn.disabled = false;
   importBtn.textContent = originalText;
-  
-  let msg = `Đã nhập thành công ${importedCount} từ vựng!`;
-  if (autoCorrectedCount > 0) {
-    msg += ` (Hệ thống đã tự động sửa ${autoCorrectedCount} lỗi chính tả tiếng Anh)`;
+
+  // Show progress done
+  if (progressLabel) progressLabel.textContent = `✅ Hoàn thành! Đã nhập ${importedCount} từ vào "${selectedPart}"`;
+  if (progressBar) progressBar.style.width = '100%';
+  if (progressPct) progressPct.textContent = '100%';
+
+  // Show auto-correct log if any
+  if (autocorrectLog.length > 0 && autocorrectLogEl) {
+    autocorrectLogEl.style.display = 'block';
+    autocorrectLogEl.innerHTML = `✏️ Tự động sửa ${autoCorrectedCount} lỗi chính tả: ${autocorrectLog.join(' | ')}`;
   }
-  alert(msg);
+  
+  alert(`✅ Đã nhập ${importedCount} từ vựng vào "${selectedPart}"!` + (autoCorrectedCount > 0 ? `\n✏️ Đã tự sửa ${autoCorrectedCount} lỗi chính tả.` : ''));
   switchVocabTab('vocab-list');
+}
+
+// selectImportPart: highlight the selected Part button in the import UI
+function selectImportPart(btn) {
+  document.querySelectorAll('.part-select-btn').forEach(b => {
+    b.style.background = 'var(--bg-tertiary)';
+    b.style.border = '2px solid var(--border-color)';
+    b.style.color = 'var(--text-primary)';
+  });
+  btn.style.background = 'var(--accent-primary)';
+  btn.style.border = '2px solid var(--accent-primary)';
+  btn.style.color = '#fff';
+  const partInput = document.getElementById('import-batch-part');
+  if (partInput) partInput.value = btn.getAttribute('data-part');
 }
 
 // Spaced Repetition Practice

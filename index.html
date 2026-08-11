@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sổ Học TOEIC Cá Nhân - Học Tập Thông Minh & Tự Động</title>
   <meta name="description" content="Sổ học TOEIC cá nhân giúp quản lý từ vựng, tự động ôn tập, nộp bài tập về nhà Reading/Listening, ghi nhật ký Mock Test và thống kê tiến độ học tập chi tiết.">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -177,14 +177,34 @@
       </div>
 
       <!-- Tab: Import batch words -->
-      <div id="vocab-import" class="tab-content glass-card" style="max-width: 600px; margin: 0 auto;">
-        <h2 style="font-family: var(--font-display); margin-bottom: 1rem; font-size: 1.5rem;">Import nhanh danh sách từ vựng</h2>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.4;">
-          Bạn có thể dán danh sách từ vựng copy từ tài liệu, bài tập hay ghi chú. Hệ thống tự động phân tách từ vựng và nghĩa.
-          <br><strong>Định dạng hỗ trợ:</strong> <code>từ - nghĩa dịch</code> hoặc <code>từ: nghĩa dịch</code> (Mỗi từ 1 dòng).
+      <div id="vocab-import" class="tab-content glass-card" style="max-width: 640px; margin: 0 auto;">
+        <h2 style="font-family: var(--font-display); margin-bottom: 0.5rem; font-size: 1.5rem;">📥 Import hàng loạt từ vựng</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5;">
+          Dán danh sách từ vựng từ tài liệu, sách giáo khoa, ghi chú. Hệ thống tự động:<br>
+          <span style="color: var(--accent-success); font-weight: 600;">✔ Sửa lỗi chính tả &nbsp; ✔ Xác định đúng từ loại &nbsp; ✔ Sinh ví dụ thực tế</span><br>
+          <strong>Định dạng:</strong> <code>từ - nghĩa</code> hoặc <code>từ (n/v/adj): nghĩa</code> &nbsp;|&nbsp; Mỗi từ 1 dòng.
         </p>
+
+        <!-- Part Selector -->
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label style="font-weight: 700; color: var(--accent-primary); display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem;">
+            🎯 Chọn Part TOEIC để gán chủ đề
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;" id="part-selector-grid">
+            <button type="button" class="part-select-btn active" data-part="Cá nhân" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--accent-primary); background: var(--accent-primary); color: #fff; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">👤 Cá nhân</button>
+            <button type="button" class="part-select-btn" data-part="Part 1 – Mô tả hình ảnh" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">🖼️ Part 1</button>
+            <button type="button" class="part-select-btn" data-part="Part 2 – Hỏi & Đáp" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">💬 Part 2</button>
+            <button type="button" class="part-select-btn" data-part="Part 3 – Hội thoại" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">🗣️ Part 3</button>
+            <button type="button" class="part-select-btn" data-part="Part 4 – Bài phát biểu ngắn" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">📢 Part 4</button>
+            <button type="button" class="part-select-btn" data-part="Part 5 – Điền từ vào câu" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">📝 Part 5</button>
+            <button type="button" class="part-select-btn" data-part="Part 6 – Điền vào đoạn văn" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">📄 Part 6</button>
+            <button type="button" class="part-select-btn" data-part="Part 7 – Đọc hiểu" onclick="selectImportPart(this)" style="padding: 0.5rem 0.3rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">📰 Part 7</button>
+          </div>
+          <input type="hidden" id="import-batch-part" value="Cá nhân">
+        </div>
+
         <!-- OCR Handout Scanner widget -->
-        <div style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); transition: var(--transition-smooth);" id="ocr-drop-zone">
+        <div style="border: 2px dashed var(--border-color); border-radius: 16px; padding: 1.2rem; text-align: center; margin-bottom: 1.25rem; background: rgba(255,255,255,0.02); transition: var(--transition-smooth);" id="ocr-drop-zone">
           <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📸</span>
           <label style="cursor: pointer; color: var(--accent-primary); font-weight: 600;">
             Tải ảnh chụp tài liệu lên để quét chữ (OCR)
@@ -196,11 +216,24 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Nhập danh sách từ vựng</label>
-          <textarea id="import-batch-area" class="form-control" rows="8" placeholder="applicant - ứng viên&#10;recruit - tuyển dụng&#10;salary - tiền lương"></textarea>
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label style="font-weight: 600;">Nhập danh sách từ vựng</label>
+          <textarea id="import-batch-area" class="form-control" rows="8" placeholder="invoice - hóa đơn&#10;confirm (v) - xác nhận&#10;hesitant (adj) : do dự&#10;Priorizre - ưu tiên  ← hệ thống tự sửa chính tả!"></textarea>
         </div>
-        <button class="btn-primary" style="width: 100%;" onclick="importBatchWords()">Phân tích & Thêm vào hệ thống</button>
+
+        <!-- Progress bar (hidden initially) -->
+        <div id="import-progress-wrap" style="display: none; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <span id="import-progress-label" style="font-size: 0.85rem; font-weight: 600; color: var(--accent-primary);">Đang xử lý...</span>
+            <span id="import-progress-pct" style="font-size: 0.85rem; color: var(--text-secondary);">0%</span>
+          </div>
+          <div style="background: var(--bg-tertiary); border-radius: 99px; height: 8px; overflow: hidden;">
+            <div id="import-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-success)); border-radius: 99px; transition: width 0.3s ease;"></div>
+          </div>
+          <div id="import-autocorrect-log" style="margin-top: 0.6rem; font-size: 0.8rem; color: var(--accent-warning); display: none;"></div>
+        </div>
+
+        <button id="import-batch-btn" class="btn-primary" style="width: 100%; font-size: 1rem; padding: 0.9rem;" onclick="importBatchWords()">⚡ Phân tích &amp; Thêm vào hệ thống</button>
       </div>
 
       <!-- Tab: Spaced Repetition -->
@@ -706,7 +739,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="words.js?v=4"></script>
-  <script src="app.js?v=35"></script>
+  <script src="words.js?v=5"></script>
+  <script src="app.js?v=36"></script>
 </body>
 </html>
