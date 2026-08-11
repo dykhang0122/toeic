@@ -846,6 +846,14 @@ async function translateTextToVi(text) {
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'collaborate': {
+    "pos": "verb",
+    "pronunciation": "/kəˈlæb.ə.reɪt/",
+    "meaning": "Hợp tác, cộng tác",
+    "definition": "To work jointly on an activity or project.",
+    "example": "Researchers from around the world collaborate on this project.",
+    "exampleMeaning": "Các nhà nghiên cứu từ khắp nơi trên thế giới hợp tác trong dự án này."
+  },
   'accommodate': {
     "pos": "verb",
     "pronunciation": "/əˈkɒməˌdeɪt/",
@@ -3320,8 +3328,11 @@ function generateTemplateExample(wordOrPhrase, type) {
 function cleanVietnameseTranslation(raw) {
   if (!raw) return '';
   let trans = raw.trim();
-  // Safe prefix stripping with word boundaries (\b) so "người" or "vi khuẩn" is NEVER stripped
-  trans = trans.replace(/^\b(a|an|to|be|is|do it|một|cái|chiếc|cuốn|quyển|để|được|bị|làm cho|ở|đang|là)\b\s*/i, '').trim();
+  // Strip leading English & Vietnamese infinitive / article prefixes
+  trans = trans.replace(/^(để|làm cho|được|bị|một|cái|chiếc|cuốn|quyển|ở|đang|là|to|be|a|an)\s+/i, '').trim();
+  if (trans.length > 0) {
+    trans = trans.charAt(0).toUpperCase() + trans.slice(1);
+  }
   // Fix known typos in translation text
   trans = trans.replace(/\bgofl\b/gi, 'golf');
   trans = trans.replace(/\bi khuẩn\b/gi, 'vi khuẩn');
