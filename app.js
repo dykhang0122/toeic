@@ -842,7 +842,6 @@ async function translateTextToVi(text) {
   }
   return '';
 }
-const translateExampleText = translateTextToVi;
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
@@ -1000,12 +999,6 @@ const SMART_TOEIC_TERMS = {
     meaning: 'tiền lương, tiền công (tính theo giờ/tuần)',
     example: 'The company agreed to raise the minimum hourly wage for factory workers.',
     exampleMeaning: 'Công ty đã đồng ý tăng mức lương tối thiểu theo giờ cho công nhân nhà máy.'
-  },
-    pos: 'noun',
-    pronunciation: '/əˈsəʊ.si.ət/',
-    meaning: 'đồng nghiệp, đối tác',
-    example: 'The senior associate welcomed the new team members to the department.',
-    exampleMeaning: 'Đối tác cấp cao đã chào mừng các thành viên mới đến với bộ phận.'
   },
   'prioritize': {
     pos: 'verb',
@@ -2192,38 +2185,6 @@ function parseBatchLine(line) {
   
   return { word: cleanWord, meanings };
 }
-
-async function importBatchWords() {
-  const textarea = document.getElementById('import-batch-area');
-  const text = textarea.value.trim();
-  if (!text) {
-    alert("Vui lòng dán danh sách từ vựng vào hộp văn bản!");
-    return;
-  }
-  
-  const selectedPart = document.getElementById('import-batch-part')?.value || 'Cá nhân';
-  const lines = text.split('\n');
-  let importedCount = 0;
-  let autoCorrectedCount = 0;
-  const autocorrectLog = [];
-  
-  const importBtn = document.getElementById('import-batch-btn') || document.querySelector('button[onclick="importBatchWords()"]');
-  const originalText = importBtn.textContent;
-  importBtn.disabled = true;
-  importBtn.textContent = '🔄 Đang phân tích & tra cứu...';
-
-  // Show progress bar
-  const progressWrap = document.getElementById('import-progress-wrap');
-  const progressBar = document.getElementById('import-progress-bar');
-  const progressLabel = document.getElementById('import-progress-label');
-  const progressPct = document.getElementById('import-progress-pct');
-  const autocorrectLogEl = document.getElementById('import-autocorrect-log');
-  if (progressWrap) progressWrap.style.display = 'block';
-  if (autocorrectLogEl) autocorrectLogEl.style.display = 'none';
-
-  const validLines = lines.filter(l => parseBatchLine(l));
-  const total = validLines.length;
-  let processed = 0;
 
 // ══════════════════════════════════════════════
 //  CENTRAL DICTIONARY & MULTI-POS LOOKUP ENGINE
