@@ -4204,11 +4204,16 @@ async function lookupWordAllDetails(rawWord, userMeanings = []) {
     }
   }
 
+  // Fetch Thesaurus Synonyms & Antonyms
+  const thesaurus = await fetchThesaurusSynonyms(cleanWord);
+
   return {
     word: cleanWord,
     cleanWord,
     pronunciation,
     meanings,
+    synonyms: thesaurus.synonyms || [],
+    antonyms: thesaurus.antonyms || [],
     wasAutocorrected: cleanWord.toLowerCase() !== originalClean.toLowerCase(),
     originalClean
   };
@@ -4338,6 +4343,49 @@ function selectImportPart(btn) {
   btn.style.color = '#fff';
   const partInput = document.getElementById('import-batch-part');
   if (partInput) partInput.value = btn.getAttribute('data-part');
+}
+
+// High quality SpeechSynthesizer TTS audio player
+function playWordTTS(text) {
+  if (!text) return;
+  const clean = text.replace(/\(.*\)/, '').trim();
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.88;
+    utterance.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const usVoice = voices.find(v => (v.lang === 'en-US' || v.lang === 'en_US') && (v.name.includes('Google US') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Karen')));
+    if (usVoice) utterance.voice = usVoice;
+    window.speechSynthesis.speak(utterance);
+    return;
+  }
+  const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(clean)}&tl=en&client=tw-ob`);
+  audio.play().catch(e => console.warn('Audio play failed', e));
+}
+
+// Thesaurus.com / Datamuse Synonyms & Antonyms Lookup
+async function fetchThesaurusSynonyms(word) {
+  if (!word) return { synonyms: [], antonyms: [] };
+  try {
+    const synRes = await fetch(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}&max=6`);
+    const antRes = await fetch(`https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}&max=4`);
+    let synonyms = [];
+    let antonyms = [];
+    if (synRes.ok) {
+      const synData = await synRes.json();
+      synonyms = synData.map(item => item.word);
+    }
+    if (antRes.ok) {
+      const antData = await antRes.json();
+      antonyms = antData.map(item => item.word);
+    }
+    return { synonyms, antonyms };
+  } catch (e) {
+    console.warn('Thesaurus API error:', e);
+    return { synonyms: [], antonyms: [] };
+  }
 }
 
 // Spaced Repetition Practice
