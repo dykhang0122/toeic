@@ -5259,28 +5259,66 @@ async function fetchThesaurusSynonyms(word) {
   }
 }
 
+// Helper to populate topic dropdowns dynamically across all tabs
+function populateAllTopicDropdowns() {
+  const uniqueTopics = Array.from(new Set(state.vocab.map(w => w.topic || 'Cá nhân'))).filter(Boolean);
+  
+  const dropdownIds = ['vbank-topic-filter', 'match-topic-filter', 'spell-topic-filter', 'review-topic-filter'];
+  dropdownIds.forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const currentVal = select.value || 'all';
+    
+    let html = `<option value="all">🌐 Tất cả nguồn / Part</option>`;
+    if (uniqueTopics.includes('Cá nhân')) {
+      html += `<option value="Cá nhân" ${currentVal === 'Cá nhân' ? 'selected' : ''}>👤 Kho từ cá nhân</option>`;
+    }
+    uniqueTopics.filter(t => t !== 'Cá nhân').forEach(t => {
+      html += `<option value="${t}" ${currentVal === t ? 'selected' : ''}>${t}</option>`;
+    });
+    
+    select.innerHTML = html;
+  });
+}
+
+// Helper to filter state.vocab by Topic and Status
+function getFilteredVocabPool(topicFilterId, statusFilterId, isSpacedReview = false) {
+  const topicSel = document.getElementById(topicFilterId);
+  const statusSel = document.getElementById(statusFilterId);
+
+  const selectedTopic = topicSel ? topicSel.value : 'all';
+  const selectedStatus = statusSel ? statusSel.value : (isSpacedReview ? 'reviewing' : 'all');
+
+  return state.vocab.filter(rawWord => {
+    const wordTopic = rawWord.topic || 'Cá nhân';
+    const matchTopic = (selectedTopic === 'all' || wordTopic === selectedTopic);
+
+    let matchStatus = true;
+    if (selectedStatus === 'all') {
+      if (isSpacedReview) {
+        matchStatus = (rawWord.status === 'reviewing' || rawWord.status === 'learning' || rawWord.status === 'new');
+      } else {
+        matchStatus = true;
+      }
+    } else {
+      matchStatus = (rawWord.status === selectedStatus);
+    }
+
+    return matchTopic && matchStatus;
+  });
+}
+
 // Spaced Repetition Practice
 let activeReviewList = [];
 let activeReviewIndex = 0;
 
 function startSpacedReviewSession() {
-  // Read status filter dropdown
-  const filterSel = document.getElementById('review-status-filter');
-  const filterVal = filterSel ? filterSel.value : 'all';
+  populateAllTopicDropdowns();
+  const pool = getFilteredVocabPool('review-topic-filter', 'review-status-filter', true);
 
-  // Filter words based on selected status
-  let pool;
-  if (filterVal === 'all') {
-    pool = state.vocab.filter(w => w.status === 'reviewing' || w.status === 'learning' || w.status === 'new');
-  } else {
-    pool = state.vocab.filter(w => w.status === filterVal);
-  }
-
-  // Update count label
   const countEl = document.getElementById('review-filter-count');
   if (countEl) {
-    const statusLabels = { all: 'Tất cả', new: 'Từ mới', reviewing: 'Hay quên', learning: 'Đang nhớ', mastered: 'Đã thuộc' };
-    countEl.textContent = `${pool.length} từ (${statusLabels[filterVal] || filterVal})`;
+    countEl.textContent = `🎯 Có ${pool.length} từ phù hợp với bộ lọc`;
   }
 
   activeReviewList = pool.sort(() => 0.5 - Math.random());
@@ -5951,43 +5989,31 @@ let totalPairsCount = 0;
 
 function resetMatchGameView() {
   if (matchTimerInterval) clearInterval(matchTimerInterval);
+  populateAllTopicDropdowns();
   document.getElementById('match-timer').textContent = 'Thời gian: 0.0s';
   document.getElementById('match-start-screen').style.display = 'block';
   document.getElementById('match-playground').style.display = 'none';
   document.getElementById('match-success-screen').style.display = 'none';
+  
   // Update count label on tab open
-  const filterSel = document.getElementById('match-status-filter');
-  const filterVal = filterSel ? filterSel.value : 'all';
-  const pool = filterVal === 'all' ? state.vocab : state.vocab.filter(w => w.status === filterVal);
+  const pool = getFilteredVocabPool('match-topic-filter', 'match-status-filter', false);
   const countEl = document.getElementById('match-filter-count');
   if (countEl) {
-    const statusLabels = { all: 'Tất cả', new: 'Từ mới', reviewing: 'Hay quên', learning: 'Đang nhớ', mastered: 'Đã thuộc' };
-    countEl.textContent = `${pool.length} từ (${statusLabels[filterVal] || filterVal})`;
+    countEl.textContent = `🎯 Có ${pool.length} từ phù hợp với bộ lọc`;
   }
 }
 
 function initMatchGame() {
-  // Read status filter dropdown
-  const filterSel = document.getElementById('match-status-filter');
-  const filterVal = filterSel ? filterSel.value : 'all';
+  populateAllTopicDropdowns();
+  const pool = getFilteredVocabPool('match-topic-filter', 'match-status-filter', false);
 
-  // Filter vocab pool based on selected status
-  let pool;
-  if (filterVal === 'all') {
-    pool = state.vocab;
-  } else {
-    pool = state.vocab.filter(w => w.status === filterVal);
-  }
-
-  // Update count label
   const countEl = document.getElementById('match-filter-count');
   if (countEl) {
-    const statusLabels = { all: 'Tất cả', new: 'Từ mới', reviewing: 'Hay quên', learning: 'Đang nhớ', mastered: 'Đã thuộc' };
-    countEl.textContent = `${pool.length} từ (${statusLabels[filterVal] || filterVal})`;
+    countEl.textContent = `🎯 Có ${pool.length} từ phù hợp với bộ lọc`;
   }
 
   if (pool.length < 4) {
-    alert(`Không đủ từ! Cần ít nhất 4 từ trong nhóm "${filterVal === 'all' ? 'Tất cả' : filterVal}" để chơi game ghép thẻ. Hiện có ${pool.length} từ.`);
+    alert(`Không đủ từ! Cần ít nhất 4 từ trong bộ lọc đã chọn để chơi game ghép thẻ. Hiện có ${pool.length} từ.`);
     return;
   }
 
@@ -6005,11 +6031,22 @@ function initMatchGame() {
   matchedPairsCount = 0;
   selectedCards = [];
 
-  // Generate cards (word card + meaning card)
+  // Generate cards (word card + meaning card) with proper Vietnamese meaning extraction
   const cards = [];
-  selectedWords.forEach(w => {
-    cards.push({ id: `word_${w.word}`, text: w.word, type: 'word', value: w.word });
-    cards.push({ id: `meaning_${w.word}`, text: w.meaning, type: 'meaning', value: w.word });
+  selectedWords.forEach(rawW => {
+    const w = sanitizeVocabEntry(rawW);
+    const wordText = (w && w.word) ? w.word : (rawW.word || '');
+    
+    let meaningText = '';
+    if (w && w.meanings && w.meanings.length > 0) {
+      meaningText = w.meanings.map(m => m.meaning).filter(Boolean).join(', ');
+    }
+    if (!meaningText) {
+      meaningText = rawW.meaning || rawW.meaning_vi || 'Nghĩa tiếng Việt';
+    }
+
+    cards.push({ id: `word_${wordText}`, text: wordText, type: 'word', value: wordText });
+    cards.push({ id: `meaning_${wordText}`, text: meaningText, type: 'meaning', value: wordText });
   });
 
   // Shuffle card deck
@@ -6097,30 +6134,19 @@ let spellList = [];
 let spellIndex = 0;
 
 function initSpellMode() {
-  // Read status filter dropdown
-  const filterSel = document.getElementById('spell-status-filter');
-  const filterVal = filterSel ? filterSel.value : 'all';
+  populateAllTopicDropdowns();
+  const pool = getFilteredVocabPool('spell-topic-filter', 'spell-status-filter', false);
 
-  // Filter vocab pool based on selected status
-  let pool;
-  if (filterVal === 'all') {
-    pool = state.vocab;
-  } else {
-    pool = state.vocab.filter(w => w.status === filterVal);
-  }
-
-  // Update count label
   const countEl = document.getElementById('spell-filter-count');
   if (countEl) {
-    const statusLabels = { all: 'Tất cả', new: 'Từ mới', reviewing: 'Hay quên', learning: 'Đang nhớ', mastered: 'Đã thuộc' };
-    countEl.textContent = `${pool.length} từ (${statusLabels[filterVal] || filterVal})`;
+    countEl.textContent = `🎯 Có ${pool.length} từ phù hợp với bộ lọc`;
   }
 
   // Gather words
   spellList = [...pool].sort(() => 0.5 - Math.random());
   
   if (spellList.length === 0) {
-    alert(`Không có từ nào trong nhóm đã chọn! Hãy chọn nhóm từ khác hoặc thêm từ vào kho từ.`);
+    alert(`Không có từ nào trong nhóm đã chọn! Hãy thay đổi bộ lọc hoặc thêm từ mới.`);
     return;
   }
 

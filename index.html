@@ -238,17 +238,26 @@
 
       <!-- Tab: Spaced Repetition -->
       <div id="vocab-review" class="tab-content">
-        <!-- Status Filter for Spaced Repetition -->
-        <div style="max-width: 650px; margin: 0 auto 1.2rem auto; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-          <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap;">📋 Lọc từ:</label>
-          <select id="review-status-filter" class="search-box" style="flex: 1; min-width: 180px; max-width: 280px;" onchange="startSpacedReviewSession()">
-            <option value="all">Tất cả trạng thái</option>
-            <option value="new">Từ mới</option>
-            <option value="reviewing" selected>Hay quên (Review)</option>
-            <option value="learning">Đang nhớ</option>
-            <option value="mastered">Đã thuộc</option>
-          </select>
-          <span id="review-filter-count" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;"></span>
+        <!-- Filter Bar for Spaced Repetition -->
+        <div style="max-width: 650px; margin: 0 auto 1.2rem auto; display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">📁 Kho từ:</label>
+            <select id="review-topic-filter" class="search-box" style="min-width: 160px; max-width: 220px;" onchange="startSpacedReviewSession()">
+              <option value="all">🌐 Tất cả nguồn / Part</option>
+              <option value="Cá nhân">👤 Kho từ cá nhân</option>
+            </select>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">📋 Trạng thái:</label>
+            <select id="review-status-filter" class="search-box" style="min-width: 160px; max-width: 220px;" onchange="startSpacedReviewSession()">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="reviewing" selected>🔴 Từ hay quên (Review)</option>
+              <option value="new">🆕 Từ mới học</option>
+              <option value="learning">🟡 Đang nhớ</option>
+              <option value="mastered">🟢 Đã thuộc</option>
+            </select>
+          </div>
+          <span id="review-filter-count" style="font-size: 0.85rem; color: var(--accent-primary); font-weight: 600; width: 100%; text-align: center; margin-top: 0.2rem;"></span>
         </div>
         <!-- Active Review Frame -->
         <div id="vocab-review-active" class="flashcard-container" style="display: none; max-width: 650px; margin: 0 auto;">
@@ -334,7 +343,7 @@
         <div id="vocab-review-empty" class="glass-card" style="max-width: 500px; margin: 0 auto; text-align: center; padding: 3rem 1.5rem; display: none;">
           <div style="font-size: 4rem; margin-bottom: 1rem;">✨</div>
           <h2 style="font-family: var(--font-display); margin-bottom: 0.5rem;">Tuyệt vời!</h2>
-          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Hôm nay bạn không có từ vựng nào cần phải ôn lại. Hãy học thêm từ mới hoặc làm bài tập!</p>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Không tìm thấy từ vựng nào thuộc nhóm lọc này.</p>
           <button class="btn-primary" onclick="switchVocabTab('vocab-add')">Thêm từ mới</button>
         </div>
       </div>
@@ -352,15 +361,24 @@
               Ghép các thẻ từ tiếng Anh với nghĩa tiếng Việt tương ứng càng nhanh càng tốt. Lưới 8-12 thẻ.
             </p>
             <div style="display: flex; align-items: center; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
-              <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap;">📋 Lọc từ:</label>
-              <select id="match-status-filter" class="search-box" style="min-width: 180px; max-width: 260px;">
-                <option value="all">Tất cả trạng thái</option>
-                <option value="new">Từ mới</option>
-                <option value="reviewing">Hay quên (Review)</option>
-                <option value="learning">Đang nhớ</option>
-                <option value="mastered">Đã thuộc</option>
-              </select>
-              <span id="match-filter-count" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;"></span>
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">📁 Kho từ:</label>
+                <select id="match-topic-filter" class="search-box" style="min-width: 160px; max-width: 220px;" onchange="resetMatchGameView()">
+                  <option value="all">🌐 Tất cả nguồn / Part</option>
+                  <option value="Cá nhân">👤 Kho từ cá nhân</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">📋 Trạng thái:</label>
+                <select id="match-status-filter" class="search-box" style="min-width: 160px; max-width: 220px;" onchange="resetMatchGameView()">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="reviewing">🔴 Từ hay quên (Review)</option>
+                  <option value="new">🆕 Từ mới học</option>
+                  <option value="learning">🟡 Đang nhớ</option>
+                  <option value="mastered">🟢 Đã thuộc</option>
+                </select>
+              </div>
+              <span id="match-filter-count" style="font-size: 0.85rem; color: var(--accent-primary); font-weight: 600; width: 100%; text-align: center; margin-top: 0.2rem;"></span>
             </div>
             <button class="btn-primary" onclick="initMatchGame()">Bắt đầu ghép thẻ</button>
           </div>
@@ -387,17 +405,26 @@
             <div style="font-weight: 600; color: var(--accent-primary);">✍️ Luyện gõ từ vựng TOEIC</div>
             <div id="spell-progress" style="color: var(--text-secondary); font-size: 0.9rem;">0/0</div>
           </div>
-          <!-- Status Filter for Spell Mode -->
-          <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
-            <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap;">📋 Lọc từ:</label>
-            <select id="spell-status-filter" class="search-box" style="flex: 1; min-width: 180px; max-width: 260px;" onchange="initSpellMode()">
-              <option value="all">Tất cả trạng thái</option>
-              <option value="new">Từ mới</option>
-              <option value="reviewing">Hay quên (Review)</option>
-              <option value="learning">Đang nhớ</option>
-              <option value="mastered">Đã thuộc</option>
-            </select>
-            <span id="spell-filter-count" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;"></span>
+          <!-- Filter Bar for Spell Mode -->
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">📁 Kho từ:</label>
+              <select id="spell-topic-filter" class="search-box" style="min-width: 160px; max-width: 220px;" onchange="initSpellMode()">
+                <option value="all">🌐 Tất cả nguồn / Part</option>
+                <option value="Cá nhân">👤 Kho từ cá nhân</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">📋 Trạng thái:</label>
+              <select id="spell-status-filter" class="search-box" style="min-width: 160px; max-width: 220px;" onchange="initSpellMode()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="reviewing">🔴 Từ hay quên (Review)</option>
+                <option value="new">🆕 Từ mới học</option>
+                <option value="learning">🟡 Đang nhớ</option>
+                <option value="mastered">🟢 Đã thuộc</option>
+              </select>
+            </div>
+            <span id="spell-filter-count" style="font-size: 0.85rem; color: var(--accent-primary); font-weight: 600; width: 100%; text-align: center; margin-top: 0.2rem;"></span>
           </div>
           
           <div id="spell-playground">
