@@ -1455,3 +1455,28 @@ body.light-theme .status-badge.mastered {
   border-color: #10b981;
   font-weight: 800;
 }
+
+/* BULLETPROOF OVERRIDES FOR ANY INLINE STYLES IN LIGHT THEME */
+body.light-theme .word-library-card span,
+body.light-theme .word-library-card div,
+body.light-theme .pos-meaning-block span,
+body.light-theme .pos-meaning-block div,
+body.light-theme [style*="color:#f1f5f9"],
+body.light-theme [style*="color: #f1f5f9"],
+body.light-theme [style*="color:#e2e8f0"],
+body.light-theme [style*="color: #e2e8f0"],
+body.light-theme [style*="color:#94a3b8"],
+body.light-theme [style*="color: #94a3b8"],
+body.light-theme [style*="color:#cbd5e1"],
+body.light-theme [style*="color: #cbd5e1"] {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+body.light-theme [style*="background:rgba(255,255,255,0.04)"],
+body.light-theme [style*="background: rgba(255, 255, 255, 0.04)"],
+body.light-theme [style*="background:rgba(255,255,255,0.05)"],
+body.light-theme [style*="background: rgba(255, 255, 255, 0.05)"] {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
