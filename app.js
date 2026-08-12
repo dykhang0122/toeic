@@ -796,30 +796,20 @@ function renderVocabBank() {
       }
 
       meaningsHtml += `
-        <div style="
-          margin-top: ${idx > 0 ? '0.6rem' : '0'};
-          padding: 0.65rem 0.8rem;
-          background: ${col.bg};
-          border-left: 3px solid ${col.border};
-          border-radius: 0 8px 8px 0;
-        ">
+        <div class="pos-meaning-block pos-block-${posKey}" style="margin-top: ${idx > 0 ? '0.6rem' : '0'};">
           <div style="display:flex;align-items:center;gap:0.45rem;margin-bottom:0.3rem;flex-wrap:wrap;">
-            <span style="
-              background:${col.badge};color:#0f172a;
-              font-size:0.68rem;font-weight:800;padding:1px 7px;
-              border-radius:99px;letter-spacing:0.5px;
-            ">${col.label}</span>
-            <span style="font-weight:700;color:#f1f5f9;font-size:0.92rem;">${mainMeaning}</span>
+            <span class="pos-pill-tag pos-pill-${posKey}">${col.label}</span>
+            <span class="meaning-main-text">${mainMeaning}</span>
           </div>
-          ${m.definition ? `<div style="color:#94a3b8;font-size:0.78rem;margin-bottom:0.3rem;font-style:italic;">${m.definition}</div>` : ''}
+          ${m.definition ? `<div class="meaning-def-text">${m.definition}</div>` : ''}
           ${m.example ? `
-          <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:0.4rem 0.6rem;margin-top:0.3rem;">
-            <div style="color:#e2e8f0;font-size:0.8rem;font-style:italic;">
-              <span style="color:${col.badge};font-weight:700;margin-right:4px;">e.g.</span>${m.example}
+          <div class="example-box-wrap">
+            <div class="example-text">
+              <span class="example-prefix">e.g.</span>${m.example}
             </div>
-            ${m.exampleMeaning ? `<div style="color:#64748b;font-size:0.75rem;margin-top:0.15rem;">↳ ${m.exampleMeaning}</div>` : ''}
+            ${m.exampleMeaning ? `<div class="example-meaning-text">↳ ${m.exampleMeaning}</div>` : ''}
           </div>` : ''}
-          ${synonymNote ? `<div style="margin-top:0.35rem;font-size:0.75rem;color:#fbbf24;">🔗 ${synonymNote}</div>` : ''}
+          ${synonymNote ? `<div class="synonym-note-text">🔗 ${synonymNote}</div>` : ''}
         </div>
       `;
     });
