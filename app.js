@@ -7349,3 +7349,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+// Theme Toggle System (Light / Dark Mode)
+function applyTheme(theme) {
+  const btn = document.getElementById('theme-toggle-btn');
+  if (theme === 'light') {
+    document.body.classList.add('light-theme');
+    if (btn) btn.innerHTML = '☀️ Sáng';
+  } else {
+    document.body.classList.remove('light-theme');
+    if (btn) btn.innerHTML = '🌙 Tối';
+  }
+  localStorage.setItem('toeic_app_theme', theme);
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('toeic_app_theme') || 'light';
+  applyTheme(savedTheme);
+}
+
+function toggleAppTheme() {
+  const isLight = document.body.classList.contains('light-theme');
+  applyTheme(isLight ? 'dark' : 'light');
+}
+
+// Auto init theme on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTheme);
+} else {
+  initTheme();
+}
