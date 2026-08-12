@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Sổ Học TOEIC Cá Nhân - Học Tập Thông Minh & Tự Động</title>
   <meta name="description" content="Sổ học TOEIC cá nhân giúp quản lý từ vựng, tự động ôn tập, nộp bài tập về nhà Reading/Listening, ghi nhật ký Mock Test và thống kê tiến độ học tập chi tiết.">
-  <link rel="stylesheet" href="style.css?v=999">
+  <link rel="stylesheet" href="style.css?v=1000">
 </head>
 <body>
 
@@ -108,7 +108,7 @@
         <button class="tab-btn" onclick="switchVocabTab('vocab-add')">Thêm từ đơn</button>
         <button class="tab-btn" onclick="switchVocabTab('vocab-import')">📥 Import hàng loạt</button>
         <button class="tab-btn" onclick="switchVocabTab('vocab-review')">🧠 Ôn tập Spaced Repetition</button>
-        <button class="tab-btn" onclick="switchVocabTab('vocab-match')">🧩 Ghép thẻ</button>
+        <button class="tab-btn" onclick="switchVocabTab('vocab-match')">🧩 Ghép thẻ / Nối chữ</button>
         <button class="tab-btn" onclick="switchVocabTab('vocab-spell')">✍️ Luyện gõ</button>
       </div>
 
@@ -119,7 +119,7 @@
           <select id="vbank-topic-filter" class="search-box" onchange="renderVocabBank()" style="max-width: 220px;">
             <option value="all">Tất cả chủ đề / Part</option>
           </select>
-          <select id="vbank-pos-filter" class="search-box" onchange="renderVocabBank()" style="max-width: 170px;">
+          <select id="vbank-pos-filter" class="search-box" onchange="renderVocabBank()" style="min-width: 200px; max-width: 260px;">
             <option value="all">🏷️ Tất cả loại từ</option>
             <option value="NOUN">🏷️ Danh từ (Noun)</option>
             <option value="VERB">⚡ Động từ (Verb)</option>
@@ -260,7 +260,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 0.4rem;">
             <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">🏷️ Loại từ:</label>
-            <select id="review-pos-filter" class="search-box" style="min-width: 150px; max-width: 200px;" onchange="startSpacedReviewSession()">
+            <select id="review-pos-filter" class="search-box" style="min-width: 190px; max-width: 240px;" onchange="startSpacedReviewSession()">
               <option value="all">Tất cả loại từ (N, V, Adj...)</option>
               <option value="NOUN">🏷️ Danh từ (Noun)</option>
               <option value="VERB">⚡ Động từ (Verb)</option>
@@ -932,7 +932,7 @@
     </div><!-- /qib-body -->
   </div><!-- /quick-import-bar -->
 
-  <script src="words.js?v=999"></script>
-  <script src="app.js?v=999"></script>
+  <script src="words.js?v=1000"></script>
+  <script src="app.js?v=1000"></script>
 </body>
 </html>

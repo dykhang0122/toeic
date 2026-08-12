@@ -5291,17 +5291,27 @@ function matchWordPOS(rawWord, selectedPOS) {
   const targetPOS = selectedPOS.toUpperCase(); // NOUN, VERB, ADJECTIVE, ADVERB, PHRASE
   const targetLower = targetPOS.toLowerCase();
 
-  // Check meanings array
-  if (rawWord.meanings && Array.isArray(rawWord.meanings) && rawWord.meanings.length > 0) {
-    return rawWord.meanings.some(m => {
-      const normP = normalizePOS(m.pos || m.type || '');
-      return normP === targetPOS || (m.type && m.type.toLowerCase() === targetLower) || (m.pos && m.pos.toLowerCase() === targetLower);
+  // Sanitize entry to get cleaned meanings
+  const cleanEntry = sanitizeVocabEntry(rawWord);
+  const meanings = (cleanEntry && cleanEntry.meanings && cleanEntry.meanings.length > 0) 
+    ? cleanEntry.meanings 
+    : (rawWord.meanings && Array.isArray(rawWord.meanings) && rawWord.meanings.length > 0 ? rawWord.meanings : null);
+
+  if (meanings && meanings.length > 0) {
+    // Check if any meaning matches the target POS
+    const hasMatchingMeaning = meanings.some(m => {
+      const p = (m.pos || m.type || '').toString().trim().toUpperCase();
+      const normP = normalizePOS(p);
+      return normP === targetPOS || p === targetPOS || p.toLowerCase() === targetLower;
     });
+
+    // If the word has meanings, return exact result (do NOT fallback to rawWord defaults!)
+    return hasMatchingMeaning;
   }
 
-  // Fallback to top-level properties
-  const topNorm = normalizePOS(rawWord.pos || rawWord.type || '');
-  return topNorm === targetPOS || (rawWord.type && rawWord.type.toLowerCase() === targetLower);
+  // Fallback ONLY for raw words that do not have a meanings array
+  const rawPOS = (rawWord.pos || rawWord.type || '').toString().trim().toUpperCase();
+  return normalizePOS(rawPOS) === targetPOS || rawPOS === targetPOS || rawPOS.toLowerCase() === targetLower;
 }
 
 // Helper to filter state.vocab by Topic, Status, and POS
