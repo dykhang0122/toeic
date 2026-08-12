@@ -1325,96 +1325,133 @@ body.light-theme .theme-toggle-btn {
 }
 
 /* Light Theme Overrides for Maximum Contrast & Professional English Dictionary Look */
+.topic-pill-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .topic-pill-tag {
+  color: #1e293b !important;
+  background: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  font-weight: 800 !important;
+}
+
 body.light-theme .word-library-card {
   background: #ffffff !important;
-  border: 1.5px solid rgba(99, 102, 241, 0.15) !important;
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03) !important;
+  border: 2px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
 }
 
 body.light-theme .word-library-card:hover {
   transform: translateY(-4px);
   border-color: #4f46e5 !important;
-  box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.18) !important;
+  box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.2) !important;
 }
 
 body.light-theme .word-library-title {
-  color: #0f172a !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
 }
 
 body.light-theme .ipa-text {
-  color: #4f46e5 !important;
+  color: #3730a3 !important;
+  font-weight: 800 !important;
 }
 
 body.light-theme .meaning-main-text {
-  color: #0f172a !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+  font-size: 1.02rem !important;
 }
 
 body.light-theme .meaning-def-text {
-  color: #475569 !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
 }
 
 body.light-theme .example-box-wrap {
   background: #f8fafc !important;
-  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-left: 4px solid #4f46e5 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
 body.light-theme .example-text {
-  color: #1e293b !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
 }
 
 body.light-theme .example-prefix {
-  color: #4f46e5 !important;
+  color: #4338ca !important;
+  font-weight: 900 !important;
 }
 
 body.light-theme .example-meaning-text {
-  color: #64748b !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+body.light-theme .synonym-note-text {
+  color: #b45309 !important;
+  font-weight: 800 !important;
 }
 
 body.light-theme .pos-block-noun {
-  background: rgba(99, 102, 241, 0.07) !important;
+  background: rgba(99, 102, 241, 0.09) !important;
   border-left-color: #4f46e5 !important;
 }
 
 body.light-theme .pos-block-verb {
-  background: rgba(16, 185, 129, 0.07) !important;
+  background: rgba(16, 185, 129, 0.09) !important;
   border-left-color: #059669 !important;
 }
 
 body.light-theme .pos-block-adjective {
-  background: rgba(245, 158, 11, 0.07) !important;
+  background: rgba(245, 158, 11, 0.09) !important;
   border-left-color: #d97706 !important;
 }
 
 body.light-theme .pos-block-adverb {
-  background: rgba(6, 182, 212, 0.07) !important;
+  background: rgba(6, 182, 212, 0.09) !important;
   border-left-color: #0284c7 !important;
 }
 
 body.light-theme .pos-block-phrase {
-  background: rgba(168, 85, 247, 0.07) !important;
+  background: rgba(168, 85, 247, 0.09) !important;
   border-left-color: #7c3aed !important;
 }
 
 body.light-theme .status-badge.new {
-  background: #f1f5f9;
-  color: #475569;
-  border-color: #cbd5e1;
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
+  font-weight: 800;
 }
 
 body.light-theme .status-badge.reviewing {
   background: #fee2e2;
-  color: #991b1b;
-  border-color: #fca5a5;
+  color: #7f1d1d;
+  border-color: #ef4444;
+  font-weight: 800;
 }
 
 body.light-theme .status-badge.learning {
   background: #fef3c7;
-  color: #92400e;
-  border-color: #fde68a;
+  color: #78350f;
+  border-color: #f59e0b;
+  font-weight: 800;
 }
 
 body.light-theme .status-badge.mastered {
   background: #d1fae5;
-  color: #065f46;
-  border-color: #6ee7b7;
+  color: #064e3b;
+  border-color: #10b981;
+  font-weight: 800;
 }

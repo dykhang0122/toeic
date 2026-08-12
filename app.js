@@ -815,7 +815,7 @@ function renderVocabBank() {
     });
 
     const topicTag = rawWordData.topic && rawWordData.topic !== 'Cá nhân' 
-      ? `<span style="font-size:0.68rem;font-weight:700;color:#64748b;background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:6px;">${rawWordData.topic}</span>` 
+      ? `<span class="topic-pill-tag">${rawWordData.topic}</span>` 
       : '';
 
     const card = document.createElement('div');
