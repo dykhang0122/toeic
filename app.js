@@ -734,6 +734,8 @@ function renderVocabBank() {
   grid.innerHTML = '';
   const searchVal = document.getElementById('vbank-search').value.toLowerCase();
   const filterStatus = document.getElementById('vbank-filter').value;
+  const posFilterDropdown = document.getElementById('vbank-pos-filter');
+  const filterPOS = posFilterDropdown ? posFilterDropdown.value : 'all';
   
   // Get and populate unique topics
   const topicFilterDropdown = document.getElementById('vbank-topic-filter');
@@ -759,6 +761,7 @@ function renderVocabBank() {
     if (!matchSearch) return;
     if (filterStatus !== 'all' && rawWordData.status !== filterStatus) return;
     if (filterTopic !== 'all' && (rawWordData.topic || 'Cá nhân') !== filterTopic) return;
+    if (filterPOS !== 'all' && !matchWordPOS(rawWordData, filterPOS)) return;
     
     let statusClass = 'new', statusText = 'Mới';
     if (rawWordData.status === 'mastered')      { statusClass = 'mastered';  statusText = 'Đã thuộc'; }
@@ -5281,13 +5284,35 @@ function populateAllTopicDropdowns() {
   });
 }
 
-// Helper to filter state.vocab by Topic and Status
-function getFilteredVocabPool(topicFilterId, statusFilterId, isSpacedReview = false) {
+// Helper to check if word matches selected Part of Speech (POS)
+function matchWordPOS(rawWord, selectedPOS) {
+  if (!selectedPOS || selectedPOS === 'all') return true;
+
+  const targetPOS = selectedPOS.toUpperCase(); // NOUN, VERB, ADJECTIVE, ADVERB, PHRASE
+  const targetLower = targetPOS.toLowerCase();
+
+  // Check meanings array
+  if (rawWord.meanings && Array.isArray(rawWord.meanings) && rawWord.meanings.length > 0) {
+    return rawWord.meanings.some(m => {
+      const normP = normalizePOS(m.pos || m.type || '');
+      return normP === targetPOS || (m.type && m.type.toLowerCase() === targetLower) || (m.pos && m.pos.toLowerCase() === targetLower);
+    });
+  }
+
+  // Fallback to top-level properties
+  const topNorm = normalizePOS(rawWord.pos || rawWord.type || '');
+  return topNorm === targetPOS || (rawWord.type && rawWord.type.toLowerCase() === targetLower);
+}
+
+// Helper to filter state.vocab by Topic, Status, and POS
+function getFilteredVocabPool(topicFilterId, statusFilterId, posFilterId, isSpacedReview = false) {
   const topicSel = document.getElementById(topicFilterId);
   const statusSel = document.getElementById(statusFilterId);
+  const posSel = document.getElementById(posFilterId);
 
   const selectedTopic = topicSel ? topicSel.value : 'all';
   const selectedStatus = statusSel ? statusSel.value : (isSpacedReview ? 'reviewing' : 'all');
+  const selectedPOS = posSel ? posSel.value : 'all';
 
   return state.vocab.filter(rawWord => {
     const wordTopic = rawWord.topic || 'Cá nhân';
@@ -5304,7 +5329,9 @@ function getFilteredVocabPool(topicFilterId, statusFilterId, isSpacedReview = fa
       matchStatus = (rawWord.status === selectedStatus);
     }
 
-    return matchTopic && matchStatus;
+    const matchPOS = matchWordPOS(rawWord, selectedPOS);
+
+    return matchTopic && matchStatus && matchPOS;
   });
 }
 
@@ -5314,7 +5341,7 @@ let activeReviewIndex = 0;
 
 function startSpacedReviewSession() {
   populateAllTopicDropdowns();
-  const pool = getFilteredVocabPool('review-topic-filter', 'review-status-filter', true);
+  const pool = getFilteredVocabPool('review-topic-filter', 'review-status-filter', 'review-pos-filter', true);
 
   const countEl = document.getElementById('review-filter-count');
   if (countEl) {
@@ -5996,7 +6023,7 @@ function resetMatchGameView() {
   document.getElementById('match-success-screen').style.display = 'none';
   
   // Update count label on tab open
-  const pool = getFilteredVocabPool('match-topic-filter', 'match-status-filter', false);
+  const pool = getFilteredVocabPool('match-topic-filter', 'match-status-filter', 'match-pos-filter', false);
   const countEl = document.getElementById('match-filter-count');
   if (countEl) {
     countEl.textContent = `🎯 Có ${pool.length} từ phù hợp với bộ lọc`;
@@ -6005,7 +6032,7 @@ function resetMatchGameView() {
 
 function initMatchGame() {
   populateAllTopicDropdowns();
-  const pool = getFilteredVocabPool('match-topic-filter', 'match-status-filter', false);
+  const pool = getFilteredVocabPool('match-topic-filter', 'match-status-filter', 'match-pos-filter', false);
 
   const countEl = document.getElementById('match-filter-count');
   if (countEl) {
@@ -6135,7 +6162,7 @@ let spellIndex = 0;
 
 function initSpellMode() {
   populateAllTopicDropdowns();
-  const pool = getFilteredVocabPool('spell-topic-filter', 'spell-status-filter', false);
+  const pool = getFilteredVocabPool('spell-topic-filter', 'spell-status-filter', 'spell-pos-filter', false);
 
   const countEl = document.getElementById('spell-filter-count');
   if (countEl) {
