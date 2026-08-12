@@ -1161,194 +1161,50 @@ body.light-theme .theme-toggle-btn {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
-/* ════════ 🎨 PROFESSIONAL VOCABULARY CARD SYSTEM ════════ */
-.word-library-card {
-  transition: var(--transition-smooth);
-  position: relative;
-  overflow: hidden;
-}
-
-.word-library-title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
-}
-
-.word-library-ipa-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0.35rem;
-  margin-bottom: 0.75rem;
-}
-
-.ipa-text {
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--accent-primary);
-}
-
-.ipa-missing {
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 0.8rem;
-}
-
-.pos-meaning-block {
-  padding: 0.75rem 0.9rem;
-  border-radius: 0 12px 12px 0;
-  transition: var(--transition-smooth);
-}
-
-.pos-block-noun {
-  background: rgba(99, 102, 241, 0.12);
-  border-left: 4px solid #6366f1;
-}
-
-.pos-block-verb {
-  background: rgba(16, 185, 129, 0.12);
-  border-left: 4px solid #10b981;
-}
-
-.pos-block-adjective {
-  background: rgba(245, 158, 11, 0.12);
-  border-left: 4px solid #f59e0b;
-}
-
-.pos-block-adverb {
-  background: rgba(6, 182, 212, 0.12);
-  border-left: 4px solid #06b6d4;
-}
-
-.pos-block-phrase {
-  background: rgba(168, 85, 247, 0.12);
-  border-left: 4px solid #8b5cf6;
-}
-
-.pos-pill-tag {
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 99px;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-}
-
-.pos-pill-noun { background: #6366f1; }
-.pos-pill-verb { background: #10b981; }
-.pos-pill-adjective { background: #f59e0b; }
-.pos-pill-adverb { background: #06b6d4; }
-.pos-pill-phrase { background: #8b5cf6; }
-
-.meaning-main-text {
-  font-weight: 700;
-  font-size: 0.98rem;
-  color: var(--text-primary);
-}
-
-.meaning-def-text {
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  font-style: italic;
-  margin-top: 0.2rem;
-}
-
-.example-box-wrap {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
-  margin-top: 0.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.example-text {
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  font-style: italic;
-  line-height: 1.4;
-}
-
-.example-prefix {
-  font-weight: 800;
-  color: var(--accent-primary);
-  margin-right: 6px;
-  font-style: normal;
-}
-
-.example-meaning-text {
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
-}
-
-.synonym-note-text {
-  margin-top: 0.4rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #f59e0b;
-}
-
-/* Status Badges */
-.status-badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 99px;
-  letter-spacing: 0.3px;
-}
-
-.status-badge.new {
-  background: rgba(148, 163, 184, 0.15);
-  color: var(--text-secondary);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-.status-badge.reviewing {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-}
-
-.status-badge.learning {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
-
-.status-badge.mastered {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-
-/* ════════ 🎨 ELEGANT & COMPACT VOCABULARY CARD SYSTEM ════════ */
-.library-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.2rem;
+/* ════════ 🎨 UNIFIED ELEGANT & COMPACT VOCABULARY CARD SYSTEM ════════ */
+#vbank-grid, .library-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 1.25rem !important;
   align-items: start !important; /* CRITICAL FIX: Stops cards from stretching vertically with giant blank gaps! */
+  grid-auto-rows: max-content !important; /* CARDS ONLY TAKE EXACT CONTENT HEIGHT! */
   margin-top: 1.2rem;
 }
 
 .word-library-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-self: start !important;
+  height: auto !important;
+  min-height: unset !important;
   padding: 1.25rem 1.4rem;
   border-radius: 18px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
   transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
 }
 
 .word-library-card:hover {
   transform: translateY(-3px);
   border-color: rgba(99, 102, 241, 0.4);
   box-shadow: 0 12px 36px rgba(99, 102, 241, 0.2);
+}
+
+.word-library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.word-library-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .word-library-title {
@@ -1518,14 +1374,19 @@ body.light-theme .theme-toggle-btn {
 }
 
 /* ════════ ☀️ ELEGANT LIGHT THEME HIGH-CONTRAST SYSTEM ════════ */
+body.light-theme #vbank-grid,
 body.light-theme .library-grid {
   align-items: start !important;
+  grid-auto-rows: max-content !important;
 }
 
 body.light-theme .word-library-card {
   background: #ffffff !important;
   border: 1.5px solid #e2e8f0 !important;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+  height: auto !important;
+  min-height: unset !important;
+  align-self: start !important;
 }
 
 body.light-theme .word-library-card:hover {
