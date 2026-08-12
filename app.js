@@ -818,17 +818,19 @@ function renderVocabBank() {
       ? `<span class="topic-pill-tag">${rawWordData.topic}</span>` 
       : '';
 
+    const cleanWord = wordData.word.replace(/\s+\d+\s*nghĩa/gi, '').trim();
+
     const card = document.createElement('div');
     card.className = 'glass-card word-library-card';
     card.innerHTML = `
       <div class="word-library-header">
         <div class="word-library-title-wrap">
-          <span class="word-library-title">${wordData.word}</span>
-          ${hasManyMeanings ? `<span style="font-size:0.68rem;font-weight:800;color:#818cf8;background:rgba(99,102,241,0.15);padding:2px 7px;border-radius:99px;margin-left:6px;">${meanings.length} nghĩa</span>` : ''}
+          <span class="word-library-title">${cleanWord}</span>
+          ${hasManyMeanings ? `<span class="meaning-count-badge">${meanings.length} nghĩa</span>` : ''}
         </div>
-        <div style="display:flex;align-items:center;gap:0.5rem;" onclick="event.stopPropagation();">
-          <button onclick="editVocabWord(${index}, event)" style="background:none;border:none;cursor:pointer;font-size:0.95rem;padding:2px;" title="Sửa từ">✏️</button>
-          <button onclick="deleteVocabWord(${index}, event)" style="background:none;border:none;cursor:pointer;font-size:0.95rem;padding:2px;" title="Xóa từ">❌</button>
+        <div style="display:flex;align-items:center;gap:0.4rem;" onclick="event.stopPropagation();">
+          <button onclick="editVocabWord(${index}, event)" class="icon-action-btn" title="Sửa từ">✏️</button>
+          <button onclick="deleteVocabWord(${index}, event)" class="icon-action-btn" title="Xóa từ">❌</button>
           <span class="status-badge ${statusClass}">${statusText}</span>
         </div>
       </div>
@@ -838,10 +840,10 @@ function renderVocabBank() {
           : `<span class="ipa-text ipa-missing">Chưa có IPA</span>`}
         <div style="display:flex;align-items:center;gap:0.4rem;">
           ${topicTag}
-          <button onclick="playWordTTS('${wordData.word.replace(/'/g, "\\'")}', event)" style="background:none;border:none;cursor:pointer;color:var(--accent-primary);" title="Phát âm">🔊</button>
+          <button onclick="playWordTTS('${cleanWord.replace(/'/g, "\\'")}', event)" class="audio-speaker-btn" title="Phát âm">🔊</button>
         </div>
       </div>
-      <div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.4rem;">
+      <div class="meanings-wrapper">
         ${meaningsHtml}
       </div>
     `;

@@ -1215,6 +1215,63 @@ body.light-theme .theme-toggle-btn {
   color: var(--text-primary);
 }
 
+.meaning-count-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.3px;
+}
+
+body.light-theme .meaning-count-badge {
+  color: #4f46e5 !important;
+  background: #e0e7ff !important;
+  border-color: #c7d2fe !important;
+}
+
+.icon-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+  opacity: 0.8;
+}
+
+.icon-action-btn:hover {
+  opacity: 1;
+  background: rgba(99, 102, 241, 0.12);
+  transform: scale(1.1);
+}
+
+.audio-speaker-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-primary);
+  font-size: 1.05rem;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+}
+
+.audio-speaker-btn:hover {
+  background: rgba(99, 102, 241, 0.12);
+  transform: scale(1.15);
+}
+
+.meanings-wrapper {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
 .word-library-ipa-row {
   display: flex;
   align-items: center;
