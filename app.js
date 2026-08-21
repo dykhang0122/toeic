@@ -844,7 +844,12 @@ function renderVocabBank() {
         <div style="display:flex;align-items:center;gap:0.4rem;" onclick="event.stopPropagation();">
           <button onclick="editVocabWord(${index}, event)" class="icon-action-btn" title="Sửa từ">✏️</button>
           <button onclick="deleteVocabWord(${index}, event)" class="icon-action-btn" title="Xóa từ">❌</button>
-          <span class="status-badge ${statusClass}">${statusText}</span>
+          <select class="vbank-status-select ${statusClass}" onchange="changeWordStatusDirectly(${index}, this.value, event)" title="Thay đổi trạng thái học">
+            <option value="new" ${rawStatus === 'new' ? 'selected' : ''}>🆕 Từ mới</option>
+            <option value="reviewing" ${rawStatus === 'reviewing' ? 'selected' : ''}>🔴 Hay quên</option>
+            <option value="learning" ${rawStatus === 'learning' ? 'selected' : ''}>🟡 Đang nhớ</option>
+            <option value="mastered" ${rawStatus === 'mastered' ? 'selected' : ''}>🟢 Đã thuộc</option>
+          </select>
         </div>
       </div>
       <div class="word-library-ipa-row">
@@ -5492,6 +5497,225 @@ function reviewChoice(status) {
   }
   
   showReviewCard(activeReviewIndex + 1);
+}
+
+// ════════════════════════════════════════════════════════════
+// 🔍 QUICK SEARCH & WORD STATUS MANAGEMENT
+// ════════════════════════════════════════════════════════════
+
+// 1. Direct status update from Vocabulary Bank grid card
+function changeWordStatusDirectly(index, newStatus, event) {
+  if (event) event.stopPropagation();
+  if (index >= 0 && index < state.vocab.length) {
+    state.vocab[index].status = newStatus;
+    state.vocab[index].lastReviewed = new Date().toISOString();
+    saveState();
+    updateDashboardStats();
+    renderVocabBank();
+  }
+}
+
+// 2. Status update by Word Name (from search popup or modal)
+function changeWordStatusByName(wordName, newStatus) {
+  const vocabWord = state.vocab.find(w => w.word.toLowerCase() === wordName.toLowerCase());
+  if (vocabWord) {
+    vocabWord.status = newStatus;
+    vocabWord.lastReviewed = new Date().toISOString();
+    vocabWord.reviewCount = (vocabWord.reviewCount || 0) + 1;
+    saveState();
+    updateDashboardStats();
+    
+    // Refresh open UI views
+    const vocabListTab = document.getElementById('vocab-list');
+    if (vocabListTab && vocabListTab.classList.contains('active')) {
+      renderVocabBank();
+    }
+    
+    // If in quick search dropdown, refresh search results
+    const searchVal = document.getElementById('review-quick-search') ? document.getElementById('review-quick-search').value : '';
+    if (searchVal) handleQuickWordSearch(searchVal);
+    
+    // If modal is open, refresh modal list
+    const modal = document.getElementById('word-status-modal');
+    if (modal && modal.style.display !== 'none') renderModalWordList();
+  }
+}
+
+// 3. Live Search Input handler in Spaced Repetition toolbar
+function handleQuickWordSearch(query) {
+  const dropdown = document.getElementById('review-quick-search-dropdown');
+  if (!dropdown) return;
+
+  const cleanQuery = query.toString().trim().toLowerCase();
+  if (!cleanQuery) {
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+    return;
+  }
+
+  const matches = state.vocab.filter(rawWord => {
+    const wordData = sanitizeVocabEntry(rawWord);
+    if (!wordData || !wordData.word) return false;
+    const matchWord = wordData.word.toLowerCase().includes(cleanQuery);
+    const matchMeaning = wordData.meanings && wordData.meanings.some(m => 
+      (m.meaning && m.meaning.toLowerCase().includes(cleanQuery)) || 
+      (m.definition && m.definition.toLowerCase().includes(cleanQuery))
+    );
+    return matchWord || matchMeaning;
+  }).slice(0, 15);
+
+  if (matches.length === 0) {
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = `
+      <div style="padding: 0.8rem; text-align: center; color: var(--text-secondary); font-size: 0.85rem;">
+        🔍 Không tìm thấy từ vựng khớp với "${cleanQuery}".
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  matches.forEach(rawWord => {
+    const wordData = sanitizeVocabEntry(rawWord);
+    const primaryMeaning = wordData.meanings && wordData.meanings[0] ? wordData.meanings[0].meaning : '';
+    const st = (rawWord.status || 'new').toLowerCase();
+
+    html += `
+      <div class="quick-search-item" onclick="jumpToFlashcardWord('${wordData.word.replace(/'/g, "\\'")}')">
+        <div style="flex: 1; min-width: 0; text-align: left;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="color: #ffffff; font-size: 0.95rem;">${wordData.word}</strong>
+            ${wordData.ipa ? `<span style="font-size: 0.75rem; color: #a1a1aa; font-family: monospace;">${wordData.ipa}</span>` : ''}
+          </div>
+          <div style="font-size: 0.8rem; color: var(--accent-success); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${primaryMeaning}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.3rem;" onclick="event.stopPropagation();">
+          <button class="quick-status-btn btn-reviewing ${st === 'reviewing' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'reviewing')">🔴 Hay quên</button>
+          <button class="quick-status-btn btn-learning ${st === 'learning' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'learning')">🟡 Đang nhớ</button>
+          <button class="quick-status-btn btn-mastered ${st === 'mastered' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'mastered')">🟢 Đã thuộc</button>
+          <button class="quick-status-btn btn-new ${st === 'new' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'new')">🆕 Từ mới</button>
+          <button class="btn-primary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; border-radius: 8px;" onclick="jumpToFlashcardWord('${wordData.word.replace(/'/g, "\\'")}')">👁️ Xem thẻ</button>
+        </div>
+      </div>
+    `;
+  });
+
+  dropdown.style.display = 'block';
+  dropdown.innerHTML = html;
+}
+
+// Close quick search dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const container = document.querySelector('.quick-search-container');
+  const dropdown = document.getElementById('review-quick-search-dropdown');
+  if (dropdown && container && !container.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
+
+// 4. Jump directly to flashcard word
+function jumpToFlashcardWord(wordName) {
+  const dropdown = document.getElementById('review-quick-search-dropdown');
+  if (dropdown) dropdown.style.display = 'none';
+  
+  switchVocabTab('vocab-review');
+
+  let idx = activeReviewList.findIndex(w => w.word.toLowerCase() === wordName.toLowerCase());
+  if (idx !== -1) {
+    showReviewCard(idx);
+  } else {
+    const targetWord = state.vocab.find(w => w.word.toLowerCase() === wordName.toLowerCase());
+    if (targetWord) {
+      activeReviewList.unshift(targetWord);
+      showReviewCard(0);
+    }
+  }
+}
+
+// 5. Word Status Manager Modal
+function openWordStatusManagerModal() {
+  const modal = document.getElementById('word-status-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    renderModalWordList();
+    const input = document.getElementById('modal-word-search-input');
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }
+}
+
+function closeWordStatusManagerModal() {
+  const modal = document.getElementById('word-status-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function renderModalWordList() {
+  const container = document.getElementById('modal-word-list-container');
+  const searchInput = document.getElementById('modal-word-search-input');
+  const statusFilter = document.getElementById('modal-status-filter');
+  const countEl = document.getElementById('modal-result-count');
+  if (!container) return;
+
+  const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  const filterSt = statusFilter ? statusFilter.value : 'all';
+
+  const matches = state.vocab.filter(rawWord => {
+    const wordData = sanitizeVocabEntry(rawWord);
+    if (!wordData || !wordData.word) return false;
+
+    const st = (rawWord.status || 'new').toLowerCase();
+    if (filterSt !== 'all' && st !== filterSt) return false;
+
+    if (!query) return true;
+    const matchWord = wordData.word.toLowerCase().includes(query);
+    const matchMeaning = wordData.meanings && wordData.meanings.some(m => 
+      (m.meaning && m.meaning.toLowerCase().includes(query)) || 
+      (m.definition && m.definition.toLowerCase().includes(query))
+    );
+    return matchWord || matchMeaning;
+  });
+
+  if (countEl) countEl.textContent = `Hiển thị ${matches.length} / ${state.vocab.length} từ vựng`;
+
+  if (matches.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+        🔍 Không tìm thấy từ vựng nào khớp với bộ lọc.
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  matches.forEach(rawWord => {
+    const wordData = sanitizeVocabEntry(rawWord);
+    const primaryMeaning = wordData.meanings && wordData.meanings[0] ? wordData.meanings[0].meaning : '';
+    const st = (rawWord.status || 'new').toLowerCase();
+
+    html += `
+      <div style="padding: 0.75rem 1rem; margin-bottom: 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <strong style="color: #ffffff; font-size: 1rem;">${wordData.word}</strong>
+            ${wordData.ipa ? `<span style="font-size: 0.8rem; color: #a1a1aa; font-family: monospace;">${wordData.ipa}</span>` : ''}
+            <span class="status-badge ${st}">${st === 'mastered' ? 'Đã thuộc' : st === 'reviewing' ? 'Hay quên' : st === 'learning' ? 'Đang nhớ' : 'Mới'}</span>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--accent-success); margin-top: 0.2rem;">${primaryMeaning}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+          <button class="quick-status-btn btn-reviewing ${st === 'reviewing' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'reviewing')">🔴 Hay quên</button>
+          <button class="quick-status-btn btn-learning ${st === 'learning' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'learning')">🟡 Đang nhớ</button>
+          <button class="quick-status-btn btn-mastered ${st === 'mastered' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'mastered')">🟢 Đã thuộc</button>
+          <button class="quick-status-btn btn-new ${st === 'new' ? 'active' : ''}" onclick="changeWordStatusByName('${wordData.word.replace(/'/g, "\\'")}', 'new')">🆕 Từ mới</button>
+          <button class="btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.78rem; border-radius: 8px;" onclick="closeWordStatusManagerModal(); jumpToFlashcardWord('${wordData.word.replace(/'/g, "\\'")}')">👁️ Học ngay</button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 }
 
 // ==========================================
