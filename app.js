@@ -770,14 +770,16 @@ function renderVocabBank() {
         (wordData.meanings && wordData.meanings.some(m => m.meaning.toLowerCase().includes(searchVal) || (m.definition && m.definition.toLowerCase().includes(searchVal))));
         
     if (!matchSearch) return;
-    if (filterStatus !== 'all' && rawWordData.status !== filterStatus) return;
+    const rawStatus = (rawWordData.status || 'new').toString().trim().toLowerCase();
+    const normFilterStatus = (filterStatus || 'all').toString().trim().toLowerCase();
+    if (normFilterStatus !== 'all' && rawStatus !== normFilterStatus) return;
     if (filterTopic !== 'all' && (rawWordData.topic || 'Cá nhân') !== filterTopic) return;
     if (filterPOS !== 'all' && !matchWordPOS(rawWordData, filterPOS)) return;
     
     let statusClass = 'new', statusText = 'Mới';
-    if (rawWordData.status === 'mastered')      { statusClass = 'mastered';  statusText = 'Đã thuộc'; }
-    else if (rawWordData.status === 'reviewing') { statusClass = 'reviewing'; statusText = 'Hay quên'; }
-    else if (rawWordData.status === 'learning')  { statusClass = 'learning';  statusText = 'Đang nhớ'; }
+    if (rawStatus === 'mastered')      { statusClass = 'mastered';  statusText = 'Đã thuộc'; }
+    else if (rawStatus === 'reviewing') { statusClass = 'reviewing'; statusText = 'Hay quên'; }
+    else if (rawStatus === 'learning')  { statusClass = 'learning';  statusText = 'Đang nhớ'; }
 
     // POS color map
     const posColors = {
@@ -5324,23 +5326,16 @@ function getFilteredVocabPool(topicFilterId, statusFilterId, posFilterId, isSpac
   const posSel = document.getElementById(posFilterId);
 
   const selectedTopic = topicSel ? topicSel.value : 'all';
-  const selectedStatus = statusSel ? statusSel.value : (isSpacedReview ? 'reviewing' : 'all');
+  const selectedStatus = statusSel ? statusSel.value : 'all';
   const selectedPOS = posSel ? posSel.value : 'all';
 
   return state.vocab.filter(rawWord => {
     const wordTopic = rawWord.topic || 'Cá nhân';
     const matchTopic = (selectedTopic === 'all' || wordTopic === selectedTopic);
 
-    let matchStatus = true;
-    if (selectedStatus === 'all') {
-      if (isSpacedReview) {
-        matchStatus = (rawWord.status === 'reviewing' || rawWord.status === 'learning' || rawWord.status === 'new');
-      } else {
-        matchStatus = true;
-      }
-    } else {
-      matchStatus = (rawWord.status === selectedStatus);
-    }
+    const wordStatus = (rawWord.status || 'new').toString().trim().toLowerCase();
+    const targetStatus = selectedStatus.toString().trim().toLowerCase();
+    const matchStatus = (targetStatus === 'all' || wordStatus === targetStatus);
 
     const matchPOS = matchWordPOS(rawWord, selectedPOS);
 
