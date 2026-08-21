@@ -289,7 +289,7 @@
           <div style="width: 100%; position: relative; margin-top: 0.4rem;">
             <div style="display: flex; gap: 0.5rem; align-items: center;">
               <div style="position: relative; flex: 1;">
-                <input type="text" id="review-quick-search" class="search-box" style="width: 100%; padding-left: 2.2rem;" placeholder="🔍 Tìm nhanh từ vựng để chuyển sang Hay quên / Đang nhớ / Đã thuộc..." oninput="handleQuickWordSearch(this.value)" autocomplete="off">
+                <input type="text" id="review-quick-search" class="search-box" style="width: 100%; padding-left: 2.2rem;" placeholder="🔍 Tìm nhanh từ vựng để chuyển sang Hay quên / Đang nhớ / Đã thuộc (Ấn Enter để xem thẻ)..." oninput="handleQuickWordSearch(this.value)" onkeydown="if(event.key==='Enter'){ handleQuickSearchEnter(this.value); }" autocomplete="off">
                 <span style="position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); opacity: 0.6; font-size: 0.9rem;">🔍</span>
               </div>
               <button class="btn-primary" style="padding: 0.45rem 0.9rem; font-size: 0.82rem; white-space: nowrap; border-radius: 12px; display: flex; align-items: center; gap: 0.35rem;" onclick="openWordStatusManagerModal()">

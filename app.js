@@ -5632,16 +5632,46 @@ function jumpToFlashcardWord(wordName) {
   }
 }
 
+// Handler for pressing ENTER in quick search input
+function handleQuickSearchEnter(query) {
+  const dropdown = document.getElementById('review-quick-search-dropdown');
+  if (dropdown) dropdown.style.display = 'none';
+
+  const cleanQuery = query.toString().trim().toLowerCase();
+  if (!cleanQuery) return;
+
+  const exactMatch = state.vocab.find(rawWord => {
+    const wordData = sanitizeVocabEntry(rawWord);
+    return wordData && wordData.word && wordData.word.toLowerCase() === cleanQuery;
+  });
+
+  const partialMatch = exactMatch || state.vocab.find(rawWord => {
+    const wordData = sanitizeVocabEntry(rawWord);
+    return wordData && wordData.word && wordData.word.toLowerCase().includes(cleanQuery);
+  });
+
+  if (partialMatch) {
+    jumpToFlashcardWord(partialMatch.word);
+  } else {
+    // If not found directly, open modal prefilled
+    openWordStatusManagerModal();
+  }
+}
+
 // 5. Word Status Manager Modal
 function openWordStatusManagerModal() {
   const modal = document.getElementById('word-status-modal');
   if (modal) {
     modal.style.display = 'flex';
+    const mainSearchInput = document.getElementById('review-quick-search');
+    const modalInput = document.getElementById('modal-word-search-input');
+    if (mainSearchInput && modalInput && mainSearchInput.value.trim()) {
+      modalInput.value = mainSearchInput.value.trim();
+    }
     renderModalWordList();
-    const input = document.getElementById('modal-word-search-input');
-    if (input) {
-      input.focus();
-      input.select();
+    if (modalInput) {
+      modalInput.focus();
+      modalInput.select();
     }
   }
 }
