@@ -5620,6 +5620,11 @@ function jumpToFlashcardWord(wordName) {
   
   switchVocabTab('vocab-review');
 
+  const activeDiv = document.getElementById('vocab-review-active');
+  const emptyDiv = document.getElementById('vocab-review-empty');
+  if (activeDiv) activeDiv.style.display = 'block';
+  if (emptyDiv) emptyDiv.style.display = 'none';
+
   let idx = activeReviewList.findIndex(w => w.word.toLowerCase() === wordName.toLowerCase());
   if (idx !== -1) {
     showReviewCard(idx);
