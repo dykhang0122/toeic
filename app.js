@@ -15,14 +15,9 @@ function seedInitialData() {
     Object.keys(toeicVocabulary).forEach(topicKey => {
       const topicData = toeicVocabulary[topicKey];
       topicData.words.forEach(w => {
-        state.vocab.push({
-          word: w.word,
-          pronunciation: w.pronunciation || '',
-          topic: topicData.title,
-          status: 'new', // new, reviewing, learning, mastered
-          lastReviewed: null,
-          reviewCount: 0,
-          meanings: [
+        const meaningsList = (w.meanings && Array.isArray(w.meanings) && w.meanings.length > 0)
+          ? w.meanings
+          : [
             {
               type: w.type || 'noun',
               meaning: w.meaning,
@@ -30,7 +25,15 @@ function seedInitialData() {
               example: w.example || '',
               exampleMeaning: w.exampleMeaning || ''
             }
-          ]
+          ];
+        state.vocab.push({
+          word: w.word,
+          pronunciation: w.pronunciation || '',
+          topic: topicData.title,
+          status: 'new', // new, reviewing, learning, mastered
+          lastReviewed: null,
+          reviewCount: 0,
+          meanings: meaningsList
         });
       });
     });
@@ -38,13 +41,18 @@ function seedInitialData() {
   } else if (state.vocab.length > 0 && typeof toeicVocabulary !== 'undefined') {
     let updated = false;
     
-    // 1. Copy missing fields (like exampleMeaning or pronunciation) from words.js to local words
+    // 1. Copy missing fields (like exampleMeaning or pronunciation or full meanings array) from words.js to local words
     state.vocab.forEach(localWord => {
       Object.keys(toeicVocabulary).forEach(topicKey => {
         const match = toeicVocabulary[topicKey].words.find(w => w.word.toLowerCase() === localWord.word.toLowerCase());
         if (match) {
-          // Normalize if not done yet
-          if (!localWord.meanings || localWord.meanings.length === 0) {
+          if (match.meanings && Array.isArray(match.meanings) && match.meanings.length > 0) {
+            // Update local meanings with full list if match has multiple meanings
+            if (!localWord.meanings || localWord.meanings.length < match.meanings.length) {
+              localWord.meanings = match.meanings;
+              updated = true;
+            }
+          } else if (!localWord.meanings || localWord.meanings.length === 0) {
             localWord.meanings = [{
               type: localWord.type || match.type || 'noun',
               meaning: localWord.meaning || match.meaning || '',
@@ -56,7 +64,7 @@ function seedInitialData() {
           }
           
           const primaryMeaning = localWord.meanings[0];
-          if (!primaryMeaning.exampleMeaning && match.exampleMeaning) {
+          if (primaryMeaning && !primaryMeaning.exampleMeaning && match.exampleMeaning) {
             primaryMeaning.exampleMeaning = match.exampleMeaning;
             updated = true;
           }
@@ -68,20 +76,15 @@ function seedInitialData() {
       });
     });
 
-    // 2. Import completely new category words (Listening P1-4, Reading P5-7) that do not exist locally
+    // 2. Import completely new category words that do not exist locally
     Object.keys(toeicVocabulary).forEach(topicKey => {
       const topicData = toeicVocabulary[topicKey];
       topicData.words.forEach(w => {
         const exists = state.vocab.some(localWord => localWord.word.toLowerCase() === w.word.toLowerCase());
         if (!exists) {
-          state.vocab.push({
-            word: w.word,
-            pronunciation: w.pronunciation || '',
-            topic: topicData.title,
-            status: 'new',
-            lastReviewed: null,
-            reviewCount: 0,
-            meanings: [
+          const meaningsList = (w.meanings && Array.isArray(w.meanings) && w.meanings.length > 0)
+            ? w.meanings
+            : [
               {
                 type: w.type || 'noun',
                 meaning: w.meaning,
@@ -89,7 +92,15 @@ function seedInitialData() {
                 example: w.example || '',
                 exampleMeaning: w.exampleMeaning || ''
               }
-            ]
+            ];
+          state.vocab.push({
+            word: w.word,
+            pronunciation: w.pronunciation || '',
+            topic: topicData.title,
+            status: 'new',
+            lastReviewed: null,
+            reviewCount: 0,
+            meanings: meaningsList
           });
           updated = true;
         }

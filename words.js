@@ -557,43 +557,109 @@ const toeicVocabulary = {
         "meaning": "Phần cứng (máy tính, thiết bị) [Danh từ không đếm được]",
         "definition": "Tools, machinery, and other durable equipment, especially computer components.",
         "example": "The IT department upgraded all computer hardware to increase system processing speed.",
-        "exampleMeaning": "Phòng IT đã nâng cấp tất cả phần cứng máy tính để tăng tốc độ xử lý của hệ thống."
+        "exampleMeaning": "Phòng IT đã nâng cấp tất cả phần cứng máy tính để tăng tốc độ xử lý của hệ thống.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Phần cứng (máy tính, thiết bị) [Danh từ không đếm được]",
+            "definition": "Tools, machinery, and other durable equipment, especially computer components.",
+            "example": "The IT department upgraded all computer hardware to increase system processing speed.",
+            "exampleMeaning": "Phòng IT đã nâng cấp tất cả phần cứng máy tính để tăng tốc độ xử lý của hệ thống."
+          }
+        ]
       },
       {
         "word": "Hostility",
         "type": "noun",
         "pronunciation": "/hɒˈstɪləti/",
-        "meaning": "Sự thù hằn, sự chống đối [Hostilities: Cuộc giao tranh] (Danh từ không đếm được / số nhiều)",
-        "definition": "Unfriendly or hostile behavior, opposition, or active warfare.",
-        "example": "The agreement helped reduce hostility between the two competing companies.",
-        "exampleMeaning": "Thỏa thuận đã giúp giảm bớt sự chống đối giữa hai công ty đối thủ."
+        "meaning": "Sự thù hằn, thái độ thù địch (Không đếm được) / Cuộc giao tranh (Hostilities - Số nhiều)",
+        "definition": "Unfriendly behavior or aggressive feelings; acts of warfare.",
+        "example": "The agreement helped reduce hostility between the two competing management teams.",
+        "exampleMeaning": "Thỏa thuận đã giúp giảm bớt sự chống đối giữa hai đội quản lý đối thủ.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Sự thù hằn, thái độ thù địch, sự chống đối [Danh từ không đếm được]",
+            "definition": "Unfriendly or hostile behavior, opposition, or aggressive feelings.",
+            "example": "The agreement helped reduce hostility between the two competing management teams.",
+            "exampleMeaning": "Thỏa thuận đã giúp giảm bớt sự chống đối giữa hai đội quản lý đối thủ."
+          },
+          {
+            "type": "noun",
+            "meaning": "Cuộc giao tranh, hành động chiến tranh [Danh từ số nhiều - Hostilities]",
+            "definition": "Acts of warfare or open armed conflict.",
+            "example": "All military hostilities ceased after the peace declaration was officially signed.",
+            "exampleMeaning": "Mọi cuộc giao tranh quân sự đã chấm dứt sau khi tuyên bố hòa bình chính thức được ký kết."
+          }
+        ]
       },
       {
         "word": "Flexitime",
         "type": "noun",
         "pronunciation": "/ˈfleksitaɪm/",
-        "meaning": "Chế độ giờ làm việc linh hoạt [Danh từ không đếm được]",
+        "meaning": "Chế độ giờ làm việc linh hoạt (Danh từ không đếm được / Tính từ)",
         "definition": "A system of working flexible hours arranged by agreement between employer and employee.",
-        "example": "Employees who work flexitime can adjust their working hours to avoid peak traffic.",
-        "exampleMeaning": "Nhân viên làm việc theo chế độ giờ linh hoạt có thể điều chỉnh giờ làm để tránh giờ cao điểm."
+        "example": "Offering flexitime allows employees to balance work responsibilities and family commitments.",
+        "exampleMeaning": "Cung cấp chế độ giờ làm linh hoạt cho phép nhân viên cân bằng trách nhiệm công việc và gia đình.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Chế độ giờ làm việc linh hoạt [Danh từ không đếm được]",
+            "definition": "A system of working flexible hours arranged by agreement between employer and employee.",
+            "example": "Offering flexitime allows employees to balance work responsibilities and family commitments.",
+            "exampleMeaning": "Cung cấp chế độ giờ làm linh hoạt cho phép nhân viên cân bằng trách nhiệm công việc và gia đình."
+          },
+          {
+            "type": "adjective",
+            "meaning": "Thuộc về giờ làm việc linh hoạt [Tính từ bổ nghĩa]",
+            "definition": "Relating to or operating under a flexible working hours scheme.",
+            "example": "The HR department introduced a flexitime system to improve staff job satisfaction.",
+            "exampleMeaning": "Phòng nhân sự đã áp dụng một hệ thống giờ làm việc linh hoạt để nâng cao sự hài lòng của nhân viên."
+          }
+        ]
       },
       {
         "word": "Funding",
         "type": "noun",
         "pronunciation": "/ˈfʌndɪŋ/",
-        "meaning": "Nguồn vốn, kinh phí, tiền tài trợ [Danh từ không đếm được]",
-        "definition": "Financial support or money provided for a particular project or purpose.",
-        "example": "The research team successfully secured government funding for their new project.",
-        "exampleMeaning": "Nhóm nghiên cứu đã thành công trong việc đảm bảo nguồn kinh phí từ chính phủ cho dự án mới."
+        "meaning": "Nguồn vốn, kinh phí tài trợ (Danh từ không đếm được) / Đang cấp vốn (V-ing)",
+        "definition": "Financial support provided for a project; the action of providing money.",
+        "example": "The research team successfully secured government funding for their new medical project.",
+        "exampleMeaning": "Nhóm nghiên cứu đã thành công trong việc đảm bảo nguồn kinh phí từ chính phủ cho dự án y tế mới.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Nguồn vốn, kinh phí, tiền tài trợ [Danh từ không đếm được]",
+            "definition": "Financial support or money provided for a particular project or purpose.",
+            "example": "The research team successfully secured government funding for their new medical project.",
+            "exampleMeaning": "Nhóm nghiên cứu đã thành công trong việc đảm bảo nguồn kinh phí từ chính phủ cho dự án y tế mới."
+          },
+          {
+            "type": "verb",
+            "meaning": "Đang tài trợ vốn, việc cấp vốn [Dạng V-ing của động từ Fund]",
+            "definition": "Providing money or financial support for a project, activity, or organization.",
+            "example": "The corporate sponsor is funding three new community educational initiatives.",
+            "exampleMeaning": "Nhà tài trợ doanh nghiệp đang tài trợ vốn cho ba sáng kiến giáo dục cộng đồng mới."
+          }
+        ]
       },
       {
         "word": "Stationery",
         "type": "noun",
         "pronunciation": "/ˈsteɪʃənri/",
-        "meaning": "Văn phòng phẩm (giấy, bút, sổ...) [Danh từ không đếm được]",
+        "meaning": "Văn phòng phẩm (giấy, bút, phong bì, sổ...) [Danh từ không đếm được]",
         "definition": "Writing materials such as paper, envelopes, pens, and other office supplies.",
-        "example": "Please submit a request form if you need additional office stationery.",
-        "exampleMeaning": "Vui lòng nộp mẫu yêu cầu nếu bạn cần thêm văn phòng phẩm."
+        "example": "Please submit a requisition form if your department needs additional office stationery.",
+        "exampleMeaning": "Vui lòng nộp mẫu yêu cầu nếu bộ phận của bạn cần thêm văn phòng phẩm.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Văn phòng phẩm (giấy, bút, phong bì, sổ...) [Danh từ không đếm được]",
+            "definition": "Writing materials such as paper, envelopes, pens, and other office supplies.",
+            "example": "Please submit a requisition form if your department needs additional office stationery.",
+            "exampleMeaning": "Vui lòng nộp mẫu yêu cầu nếu bộ phận của bạn cần thêm văn phòng phẩm."
+          }
+        ]
       },
       {
         "word": "Punctuality",
@@ -601,8 +667,17 @@ const toeicVocabulary = {
         "pronunciation": "/ˌpʌŋktʃuˈæləti/",
         "meaning": "Sự đúng giờ, tính đúng giờ [Danh từ không đếm được]",
         "definition": "The quality or habit of arriving or doing things at the appointed time.",
-        "example": "Punctuality is regarded as a key indicator of professionalism in the workplace.",
-        "exampleMeaning": "Sự đúng giờ được xem là chỉ số quan trọng về tính chuyên nghiệp tại nơi làm việc."
+        "example": "Punctuality is regarded as a key indicator of professionalism in corporate business.",
+        "exampleMeaning": "Sự đúng giờ được xem là chỉ số quan trọng về tính chuyên nghiệp trong doanh nghiệp.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Sự đúng giờ, tính đúng giờ [Danh từ không đếm được]",
+            "definition": "The quality or habit of arriving or doing things at the appointed time.",
+            "example": "Punctuality is regarded as a key indicator of professionalism in corporate business.",
+            "exampleMeaning": "Sự đúng giờ được xem là chỉ số quan trọng về tính chuyên nghiệp trong doanh nghiệp."
+          }
+        ]
       },
       {
         "word": "Remuneration",
@@ -610,26 +685,67 @@ const toeicVocabulary = {
         "pronunciation": "/rɪˌmjuːnəˈreɪʃn/",
         "meaning": "Tiền thù lao, tiền công, lương thưởng [Danh từ không đếm được]",
         "definition": "Payment for work or services rendered, including salary, performance bonuses, and benefits.",
-        "example": "The company offers an attractive remuneration package to draw top talent.",
-        "exampleMeaning": "Công ty cung cấp một gói thù lao hấp dẫn để thu hút các nhân tài hàng đầu."
+        "example": "The executive compensation committee established a competitive remuneration scheme.",
+        "exampleMeaning": "Ủy ban đãi ngộ lãnh đạo đã thiết lập một chế độ thù lao rất cạnh tranh.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Tiền thù lao, tiền công, lương thưởng [Danh từ không đếm được]",
+            "definition": "Payment for work or services rendered, including salary, performance bonuses, and benefits.",
+            "example": "The executive compensation committee established a competitive remuneration scheme.",
+            "exampleMeaning": "Ủy ban đãi ngộ lãnh đạo đã thiết lập một chế độ thù lao rất cạnh tranh."
+          }
+        ]
       },
       {
         "word": "Enthusiasm",
         "type": "noun",
         "pronunciation": "/ɪnˈθjuːziæzəm/",
-        "meaning": "Sự nhiệt huyết, lòng nhiệt thành, sự hứng thú [Danh từ - chủ yếu không đếm được]",
-        "definition": "Intense and eager enjoyment, interest, or approval.",
-        "example": "Her enthusiasm for customer service earned her the Employee of the Month award.",
-        "exampleMeaning": "Sự nhiệt huyết của cô ấy với dịch vụ khách hàng đã giúp cô giành giải Nhân viên của tháng."
+        "meaning": "Sự nhiệt huyết (Không đếm được) / Niềm đam mê, sở thích (Đếm được)",
+        "definition": "Intense and eager enjoyment or interest; a passion or pursuit.",
+        "example": "Her enthusiasm for customer service earned her the Employee of the Year award.",
+        "exampleMeaning": "Sự nhiệt huyết của cô ấy đối với dịch vụ khách hàng đã giúp cô giành giải Nhân viên của năm.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Sự nhiệt huyết, lòng nhiệt thành, sự hứng thú [Danh từ không đếm được]",
+            "definition": "Intense and eager enjoyment, interest, or approval.",
+            "example": "Her enthusiasm for customer service earned her the Employee of the Year award.",
+            "exampleMeaning": "Sự nhiệt huyết của cô ấy đối với dịch vụ khách hàng đã giúp cô giành giải Nhân viên của năm."
+          },
+          {
+            "type": "noun",
+            "meaning": "Niềm đam mê, sở thích mãnh liệt [Danh từ đếm được - plural: enthusiasms]",
+            "definition": "A particular topic or activity that one is passionate about.",
+            "example": "Digital photography and landscape gardening are among his primary enthusiasms.",
+            "exampleMeaning": "Nhiếp ảnh kỹ thuật số và làm vườn cảnh quan là những niềm đam mê chính của anh ấy."
+          }
+        ]
       },
       {
         "word": "Downtime",
         "type": "noun",
         "pronunciation": "/ˈdaʊntaɪm/",
-        "meaning": "Thời gian ngừng hoạt động (kỹ thuật) / Thời gian nghỉ ngơi [Danh từ không đếm được]",
-        "definition": "Time during which a machine or system is unavailable, or time spent relaxing.",
-        "example": "Scheduled server downtime will occur this Sunday from midnight to 3 AM.",
-        "exampleMeaning": "Thời gian ngừng hoạt động máy chủ theo lịch sẽ diễn ra vào Chủ Nhật này từ 0 giờ đến 3 giờ sáng."
+        "meaning": "Thời gian hệ thống ngừng hoạt động (Kỹ thuật) / Thời gian nghỉ ngơi (Cá nhân)",
+        "definition": "Time when a machine/system is unavailable, or time spent relaxing.",
+        "example": "Scheduled server downtime will occur this Sunday from 2 AM to 4 AM for maintenance.",
+        "exampleMeaning": "Thời gian ngừng hoạt động máy chủ theo lịch sẽ diễn ra vào Chủ Nhật này từ 2 giờ đến 4 giờ sáng để bảo trì.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Thời gian hệ thống / máy móc ngừng hoạt động [Kỹ thuật - Danh từ không đếm được]",
+            "definition": "Period during which a machine, computer system, or factory is shut down or unavailable.",
+            "example": "Scheduled server downtime will occur this Sunday from 2 AM to 4 AM for maintenance.",
+            "exampleMeaning": "Thời gian ngừng hoạt động máy chủ theo lịch sẽ diễn ra vào Chủ Nhật này từ 2 giờ đến 4 giờ sáng để bảo trì."
+          },
+          {
+            "type": "noun",
+            "meaning": "Thời gian nghỉ ngơi, thư giãn sau giờ làm việc [Danh từ không đếm được]",
+            "definition": "Time spent relaxing away from work or daily responsibilities.",
+            "example": "Employees need adequate downtime on weekends to recharge before starting a new work week.",
+            "exampleMeaning": "Nhân viên cần đủ thời gian nghỉ ngơi vào cuối tuần để nạp lại năng lượng trước khi bắt đầu tuần làm việc mới."
+          }
+        ]
       },
       {
         "word": "Complacency",
@@ -637,62 +753,174 @@ const toeicVocabulary = {
         "pronunciation": "/kəmˈpleɪsnsi/",
         "meaning": "Sự tự mãn, thái độ chủ quan [Danh từ không đếm được]",
         "definition": "A feeling of smug or uncritical satisfaction with oneself or one's achievements.",
-        "example": "Despite strong annual profits, management warned staff against complacency.",
-        "exampleMeaning": "Dù lợi nhuận hàng năm cao, ban quản lý vẫn cảnh báo nhân viên không được chủ quan tự mãn."
+        "example": "Despite strong quarterly profit growth, management warned staff against complacency.",
+        "exampleMeaning": "Dù lợi nhuận quý tăng trưởng mạnh, ban quản lý vẫn cảnh báo nhân viên không được chủ quan tự mãn.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Sự tự mãn, thái độ chủ quan [Danh từ không đếm được]",
+            "definition": "A feeling of smug or uncritical satisfaction with oneself or one's achievements.",
+            "example": "Despite strong quarterly profit growth, management warned staff against complacency.",
+            "exampleMeaning": "Dù lợi nhuận quý tăng trưởng mạnh, ban quản lý vẫn cảnh báo nhân viên không được chủ quan tự mãn."
+          }
+        ]
       },
       {
         "word": "Equipment",
         "type": "noun",
         "pronunciation": "/ɪˈkwɪpmənt/",
         "meaning": "Trang thiết bị, dụng cụ, máy móc [Danh từ không đếm được]",
-        "definition": "The necessary items, tools, or machinery for a particular purpose.",
-        "example": "All heavy machinery and laboratory equipment must undergo safety inspection.",
-        "exampleMeaning": "Tất cả máy móc hạng nặng và thiết bị phòng thí nghiệm phải trải qua kiểm tra an toàn."
+        "definition": "The necessary items, tools, or machinery for a particular activity or purpose.",
+        "example": "All heavy machinery and office equipment must undergo routine safety inspection.",
+        "exampleMeaning": "Tất cả máy móc hạng nặng và thiết bị văn phòng phải trải qua kiểm tra an toàn định kỳ.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Trang thiết bị, dụng cụ, máy móc [Danh từ không đếm được]",
+            "definition": "The necessary items, tools, or machinery for a particular activity or purpose.",
+            "example": "All heavy machinery and office equipment must undergo routine safety inspection.",
+            "exampleMeaning": "Tất cả máy móc hạng nặng và thiết bị văn phòng phải trải qua kiểm tra an toàn định kỳ."
+          }
+        ]
       },
       {
         "word": "Capital",
         "type": "noun",
         "pronunciation": "/ˈkæpɪtl/",
-        "meaning": "• Nguồn vốn (không đếm được); Thủ đô, chữ hoa (đếm được) | Tính từ: Thuộc về tử hình, xuất sắc",
-        "definition": "Financial assets or money invested in business; capital city; uppercase letter.",
-        "example": "The startup is seeking additional capital from venture investors to scale up operations.",
-        "exampleMeaning": "Công ty khởi nghiệp đang tìm kiếm thêm nguồn vốn từ các nhà đầu tư mạo hiểm để mở rộng quy mô."
+        "meaning": "Nguồn vốn (Danh từ không đếm được) / Thủ đô, Chữ hoa (Đếm được) / Xuất sắc, Tử hình (Tính từ)",
+        "definition": "Wealth invested in business; capital city or uppercase letter; principal or excellent.",
+        "example": "The tech startup is seeking additional venture capital to expand into global markets.",
+        "exampleMeaning": "Công ty khởi nghiệp công nghệ đang tìm kiếm thêm vốn mạo hiểm để mở rộng ra thị trường toàn cầu.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Nguồn vốn, vốn đầu tư kinh doanh [Danh từ không đếm được]",
+            "definition": "Financial wealth, money, or assets invested to generate income or start a business.",
+            "example": "The tech startup is seeking additional venture capital to expand into global markets.",
+            "exampleMeaning": "Công ty khởi nghiệp công nghệ đang tìm kiếm thêm vốn mạo hiểm để mở rộng ra thị trường toàn cầu."
+          },
+          {
+            "type": "noun",
+            "meaning": "Thủ đô (thành phố); Chữ viết hoa [Danh từ đếm được]",
+            "definition": "The most important city or official seat of government; an uppercase letter.",
+            "example": "Hanoi is the capital of Vietnam, and proper names must begin with a capital letter.",
+            "exampleMeaning": "Hà Nội là thủ đô của Việt Nam, và danh từ riêng phải bắt đầu bằng một chữ in hoa."
+          },
+          {
+            "type": "adjective",
+            "meaning": "Xuất sắc, chính; Thuộc về án tử hình (Capital punishment)",
+            "definition": "Principal or most important; punishable by death (of a crime); excellent.",
+            "example": "That was a capital suggestion for cutting administrative expenses.",
+            "exampleMeaning": "Đó là một gợi ý tuyệt vời cho việc cắt giảm chi phí hành chính."
+          }
+        ]
       },
       {
         "word": "Overtime",
         "type": "noun",
         "pronunciation": "/ˈəʊvətaɪm/",
-        "meaning": "• Giờ làm thêm (OT), tiền làm ngoài giờ, hiệp phụ (Danh từ không đếm được) | Trạng từ: Làm ngoài giờ",
-        "definition": "Time worked in addition to normal working hours, or pay received for extra work.",
-        "example": "Employees working overtime during the holiday season receive a higher hourly rate.",
-        "exampleMeaning": "Nhân viên làm ngoài giờ trong mùa lễ sẽ nhận được mức lương giờ cao hơn."
+        "meaning": "Giờ làm thêm (Danh từ không đếm được) / Làm ngoài giờ (Trạng từ) / Thuộc về OT (Tính từ)",
+        "definition": "Time worked beyond regular hours; pay for extra work; working extra time.",
+        "example": "Employees who work overtime during peak production seasons earn premium pay rates.",
+        "exampleMeaning": "Nhân viên làm thêm giờ trong các mùa sản xuất cao điểm sẽ nhận được mức lương ngoài giờ cao hơn.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Giờ làm thêm (OT), tiền lương ngoài giờ, hiệp phụ [Danh từ không đếm được]",
+            "definition": "Time worked beyond normal working hours, or pay received for extra working hours.",
+            "example": "Employees who work overtime during peak production seasons earn premium pay rates.",
+            "exampleMeaning": "Nhân viên làm thêm giờ trong các mùa sản xuất cao điểm sẽ nhận được mức lương ngoài giờ cao hơn."
+          },
+          {
+            "type": "adverb",
+            "meaning": "Làm việc ngoài giờ, làm quá giờ quy định [Trạng từ]",
+            "definition": "In addition to normal working hours.",
+            "example": "The accounting team worked overtime every night to complete the financial audit.",
+            "exampleMeaning": "Nhóm kế toán đã làm việc ngoài giờ mỗi tối để hoàn thành đợt kiểm toán tài chính."
+          },
+          {
+            "type": "adjective",
+            "meaning": "Thuộc về giờ làm thêm, lương làm ngoài giờ [Tính từ]",
+            "definition": "Relating to time worked beyond regular scheduled hours.",
+            "example": "The company policy specifies that overtime pay will be calculated at 150% of the regular rate.",
+            "exampleMeaning": "Quy định công ty nêu rõ tiền lương làm thêm giờ sẽ được tính bằng 150% mức lương bình thường."
+          }
+        ]
       },
       {
         "word": "Reluctance",
         "type": "noun",
         "pronunciation": "/rɪˈlʌktəns/",
         "meaning": "Sự miễn cưỡng, sự ngần ngại [Danh từ không đếm được]",
-        "definition": "Unwillingness or hesitancy to do something.",
-        "example": "He overcame his reluctance and presented the proposal directly to the board of directors.",
-        "exampleMeaning": "Anh ấy đã vượt qua sự ngần ngại và trình bày đề xuất trực tiếp với hội đồng quản trị."
+        "definition": "Unwillingness or hesitancy to do or accept something.",
+        "example": "He overcame his initial reluctance and accepted the promotion to branch manager.",
+        "exampleMeaning": "Anh ấy đã vượt qua sự ngần ngại ban đầu và chấp nhận việc thăng chức lên làm giám đốc chi nhánh.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Sự miễn cưỡng, sự ngần ngại [Danh từ không đếm được]",
+            "definition": "Unwillingness or hesitancy to do or accept something.",
+            "example": "He overcame his initial reluctance and accepted the promotion to branch manager.",
+            "exampleMeaning": "Anh ấy đã vượt qua sự ngần ngại ban đầu và chấp nhận việc thăng chức lên làm giám đốc chi nhánh."
+          }
+        ]
       },
       {
         "word": "Interest",
         "type": "noun",
         "pronunciation": "/ˈɪntrest/",
-        "meaning": "• Lãi suất (không đếm được); Sự hứng thú, lợi ích (cả hai) | Động từ: Gây chú ý, làm cho hứng thú",
-        "definition": "Money paid at a particular rate for money borrowed; a feeling of curiosity or concern.",
-        "example": "The central bank decided to lower interest rates to encourage borrowing and business investment.",
-        "exampleMeaning": "Ngân hàng trung ương quyết định hạ lãi suất để khuyến khích vay vốn và đầu tư kinh doanh."
+        "meaning": "Tiền lãi (Danh từ không đếm được) / Sự hứng thú, lợi ích (Danh từ) / Gây chú ý (Động từ)",
+        "definition": "Money paid for borrowed money; feeling of wanting to know; to excite curiosity.",
+        "example": "The central bank decided to lower interest rates to encourage commercial borrowing.",
+        "exampleMeaning": "Ngân hàng trung ương quyết định giảm lãi suất để khuyến khích việc vay vốn thương mại.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Tiền lãi, lãi suất ngân hàng [Danh từ không đếm được]",
+            "definition": "Money paid regularly at a specified rate for the use of money lent or borrowed.",
+            "example": "The central bank decided to lower interest rates to encourage commercial borrowing.",
+            "exampleMeaning": "Ngân hàng trung ương quyết định giảm lãi suất để khuyến khích việc vay vốn thương mại."
+          },
+          {
+            "type": "noun",
+            "meaning": "Sự hứng thú, sự quan tâm, lợi ích/quyền lợi [Danh từ đếm được & không đếm được]",
+            "definition": "The feeling of wanting to know or learn about something; a benefit or advantage.",
+            "example": "The new product launch generated immense interest among international buyers.",
+            "exampleMeaning": "Buổi ra mắt sản phẩm mới đã tạo ra sự quan tâm to lớn đối với các người mua quốc tế."
+          },
+          {
+            "type": "verb",
+            "meaning": "Gây sự chú ý, làm cho hứng thú, lôi cuốn [Động từ - Interest somebody]",
+            "definition": "To excite the curiosity or attention of someone; cause to take part in.",
+            "example": "Does this investment strategy interest you for your client portfolio?",
+            "exampleMeaning": "Chiến lược đầu tư này có làm bạn hứng thú cho danh mục đầu tư của khách hàng không?"
+          }
+        ]
       },
       {
         "word": "Machinery",
         "type": "noun",
         "pronunciation": "/məˈʃiːnəri/",
-        "meaning": "Hệ thống máy móc nói chung, bộ máy vận hành [Danh từ không đếm được]",
-        "definition": "Machines collectively or the components of a machine.",
-        "example": "The manufacturing plant invested in state-of-the-art machinery to automate assembly.",
-        "exampleMeaning": "Nhà máy sản xuất đã đầu tư vào hệ thống máy móc hiện đại để tự động hóa dây chuyền lắp ráp."
+        "meaning": "Hệ thống máy móc (Thiết bị) / Bộ máy vận hành (Tổ chức/Chính quyền)",
+        "definition": "Machines collectively; internal organizational structure or administrative system.",
+        "example": "Modern manufacturing machinery has significantly increased factory output and precision.",
+        "exampleMeaning": "Hệ thống máy móc sản xuất hiện đại đã làm tăng đáng kể sản lượng và độ chính xác của nhà máy.",
+        "meanings": [
+          {
+            "type": "noun",
+            "meaning": "Hệ thống máy móc, thiết bị kỹ thuật nói chung [Danh từ không đếm được]",
+            "definition": "Machines collectively or the moving components of a machine.",
+            "example": "Modern manufacturing machinery has significantly increased factory output and precision.",
+            "exampleMeaning": "Hệ thống máy móc sản xuất hiện đại đã làm tăng đáng kể sản lượng và độ chính xác của nhà máy."
+          },
+          {
+            "type": "noun",
+            "meaning": "Bộ máy vận hành, cơ chế hoạt động tổ chức/chính phủ [Danh từ không đếm được]",
+            "definition": "The organization or structure of something; administrative system.",
+            "example": "The administrative machinery of the government needs reform to reduce bureaucratic delays.",
+            "exampleMeaning": "Bộ máy vận hành hành chính của chính phủ cần cải cách để giảm bớt sự chậm trễ do thủ tục."
+          }
+        ]
       }
     ]
   },
