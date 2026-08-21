@@ -293,7 +293,7 @@
             <div id="review-progress" style="color: var(--text-secondary);">0/0</div>
           </div>
           
-          <div class="oq-card-scene" onclick="flipReviewCard()">
+          <div class="oq-card-scene" onclick="flipReviewCard(event)">
             <div id="review-flashcard" class="oq-card">
               <!-- Front -->
               <div class="oq-card-face oq-card-front">
@@ -320,16 +320,18 @@
                 <div class="oq-header-tool">
                   <button class="oq-settings-btn" onclick="event.stopPropagation();">⚙️</button>
                   <span style="font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent-success);">Mặt sau</span>
+                  <button style="font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; cursor: pointer;" onclick="event.stopPropagation(); flipReviewCard();">🔄 Lật thẻ</button>
                 </div>
-                <div class="oq-center-info">
+                <div class="oq-center-info" onclick="event.stopPropagation();" style="overflow-y: auto; max-height: 350px;">
                   <span id="rv-back-meaning" class="oq-meaning">Ý nghĩa</span>
                   <div class="oq-example-box">
                     <div id="rv-back-example" class="oq-example">Example sentence</div>
                     <div id="rv-back-example-meaning" style="font-size: 0.85rem; color: #a1a1aa; margin-top: 0.4rem; font-style: italic; display: none;">Dịch nghĩa câu ví dụ</div>
                   </div>
                 </div>
-                <div class="oq-footer-tools" onclick="event.stopPropagation();">
-                  <button class="oq-sound-btn" style="border: none; background: transparent; width: auto; font-size: 0.85rem;" disabled>Lật lại mặt trước để ghi âm</button>
+                <div class="oq-footer-tools" onclick="event.stopPropagation();" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                  <span style="font-size: 0.8rem; color: var(--text-secondary);">💡 Lật lại mặt trước để ghi âm</span>
+                  <button class="btn-primary" style="font-size: 0.8rem; padding: 0.35rem 0.95rem; border-radius: 20px; cursor: pointer;" onclick="event.stopPropagation(); flipReviewCard();">🔄 Lật mặt trước</button>
                 </div>
               </div>
             </div>

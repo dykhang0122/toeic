@@ -5426,8 +5426,10 @@ function showReviewCard(index) {
         </div>
       `;
     });
-    backCenterInfo.style.maxHeight = '280px';
+    backCenterInfo.style.maxHeight = '350px';
     backCenterInfo.style.overflowY = 'auto';
+    backCenterInfo.style.paddingRight = '6px';
+    backCenterInfo.style.width = '100%';
     backCenterInfo.innerHTML = meaningsHtml;
   }
   
@@ -5446,7 +5448,12 @@ function showReviewCard(index) {
   }, 300);
 }
 
-function flipReviewCard() {
+function flipReviewCard(event) {
+  if (event && event.target) {
+    if (event.target.closest('.oq-center-info') || event.target.closest('.oq-footer-tools') || event.target.closest('button') || event.target.closest('.oq-switch')) {
+      return;
+    }
+  }
   document.getElementById('review-flashcard').classList.toggle('is-flipped');
 }
 
