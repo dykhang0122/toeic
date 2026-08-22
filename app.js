@@ -932,6 +932,150 @@ async function translateTextToVi(text) {
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'spread out': {
+    "pronunciation": "/spred aʊt/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Trải ra, rải ra, bày ra",
+    "definition": "To stretch out, extend, or scatter over an area.",
+    "example": "Documents are spread out across the table.",
+    "exampleMeaning": "Các tài liệu được trải ra khắp bàn."
+  },
+  'post': {
+    "pronunciation": "/pəʊst/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Dán, đăng (thông báo, tin)",
+    "definition": "To display a notice, sign, or announcement publicly.",
+    "example": "A notice is posted on the bulletin board.",
+    "exampleMeaning": "Một thông báo được dán trên bảng thông báo."
+  },
+  'lying on': {
+    "pronunciation": "/ˈlaɪ.ɪŋ ɒn/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Nằm trên (mặt đất, bề mặt)",
+    "definition": "Resting flat on a surface or the ground.",
+    "example": "Some fallen leaves are lying on the ground.",
+    "exampleMeaning": "Một số lá cây rụng đang nằm trên mặt đất."
+  },
+  'weaving': {
+    "pronunciation": "/ˈwiː.vɪŋ/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Đang đan, đang dệt",
+    "definition": "Forming fabric or objects by interlacing threads or strips.",
+    "example": "The woman is weaving a basket by hand.",
+    "exampleMeaning": "Người phụ nữ đang đan một chiếc giỏ bằng tay."
+  },
+  'wiping down': {
+    "pronunciation": "/ˈwaɪ.pɪŋ daʊn/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Lau chùi, lau sạch",
+    "definition": "Cleaning a surface by rubbing it with a cloth.",
+    "example": "A staff member is wiping down the dining table.",
+    "exampleMeaning": "Nhân viên đang lau chùi bàn ăn."
+  },
+  'wrapping': {
+    "pronunciation": "/ˈræp.ɪŋ/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Bọc, quấn",
+    "definition": "Covering or enclosing something in paper or material.",
+    "example": "He is wrapping a package for shipment.",
+    "exampleMeaning": "Anh ấy đang bọc một kiện hàng để vận chuyển."
+  },
+  'sweeping': {
+    "pronunciation": "/ˈswiː.pɪŋ/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Quét nhà, quét sàn",
+    "definition": "Cleaning a floor using a broom.",
+    "example": "A worker is sweeping the sidewalk.",
+    "exampleMeaning": "Một công nhân đang quét vỉa hè."
+  },
+  'brochure': {
+    "pronunciation": "/ˈbrəʊ.ʃər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Tờ rơi quảng cáo, sách hướng dẫn nhỏ",
+    "definition": "A small magazine or booklet containing pictures and information about a product or service.",
+    "example": "She is reading a travel brochure at the counter.",
+    "exampleMeaning": "Cô ấy đang đọc một tờ rơi du lịch tại quầy."
+  },
+  'carpet': {
+    "pronunciation": "/ˈkɑː.pɪt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Thảm trải sàn",
+    "definition": "A floor covering made of thick woven fabric.",
+    "example": "The floor is covered with a blue carpet.",
+    "exampleMeaning": "Sàn nhà được trải một chiếc thảm màu xanh."
+  },
+  'cushion': {
+    "pronunciation": "/ˈkʊʃ.ən/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Gối tựa (dùng cho sofa, ghế)",
+    "definition": "A soft pillow or pad used for sitting or resting against.",
+    "example": "Several cushions are placed on the sofa.",
+    "exampleMeaning": "Nhiều chiếc gối tựa được đặt trên ghế sofa."
+  },
+  'suitcase': {
+    "pronunciation": "/ˈsuːt.keɪs/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Vali kéo, vali du lịch",
+    "definition": "A traveling bag for carrying clothes and personal items.",
+    "example": "The traveler is pulling a suitcase behind him.",
+    "exampleMeaning": "Người du lịch đang kéo một chiếc vali đằng sau."
+  },
+  'bicycle rack': {
+    "pronunciation": "/ˈbaɪ.sɪ.kəl ræk/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Giá kệ để khóa xe, giá để xe",
+    "definition": "A framework to which bicycles can be securely attached.",
+    "example": "Several bikes are parked at the bicycle rack.",
+    "exampleMeaning": "Nhiều chiếc xe đạp được đỗ tại giá để xe."
+  },
+  'bench': {
+    "pronunciation": "/bentʃ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Ghế dài",
+    "definition": "A long seat for two or more people, usually outdoors or in public areas.",
+    "example": "People are sitting on a park bench.",
+    "exampleMeaning": "Mọi người đang ngồi trên một chiếc ghế dài trong công viên."
+  },
+  'ground': {
+    "pronunciation": "/ɡraʊnd/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Mặt đất, lòng đường",
+    "definition": "The solid surface of the earth.",
+    "example": "Boxes are placed directly on the ground.",
+    "exampleMeaning": "Các thùng hàng được đặt trực tiếp trên mặt đất."
+  },
+  'basket': {
+    "pronunciation": "/ˈbɑː.skɪt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cái rổ, cái giỏ",
+    "definition": "A container made of woven material used for carrying or holding items.",
+    "example": "The shopping basket is filled with groceries.",
+    "exampleMeaning": "Chiếc giỏ mua sắm chứa đầy đồ tạp hóa."
+  },
+  'forklift': {
+    "pronunciation": "/ˈfɔːk.lɪft/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Xe nâng",
+    "definition": "A small industrial vehicle with a power-operated fork platform to lift heavy goods.",
+    "example": "A worker is operating a forklift in the warehouse.",
+    "exampleMeaning": "Một công nhân đang vận hành xe nâng trong nhà kho."
+  },
   'appeal': {
     "pronunciation": "/əˈpiːl/",
     "meanings": [
