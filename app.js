@@ -932,6 +932,267 @@ async function translateTextToVi(text) {
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'carry under one\'s arm': {
+    "pronunciation": "/ˈkæri ˈʌndər wʌnz ɑːm/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Ôm, kẹp dưới tay",
+    "definition": "Holding or carrying something under the arm.",
+    "example": "The man is carrying a briefcase under his arm.",
+    "exampleMeaning": "Người đàn ông đang kẹp một chiếc cặp sách dưới tay."
+  },
+  'pick up': {
+    "pronunciation": "/pɪk ʌp/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Lấy, nhặt lên",
+    "definition": "To lift something up from a surface.",
+    "example": "A customer is picking up a book from the table.",
+    "exampleMeaning": "Khách hàng đang nhặt một cuốn sách lên từ mặt bàn."
+  },
+  'board': {
+    "pronunciation": "/bɔːd/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Lên (xe buýt, tàu, máy bay)",
+    "definition": "To get on or enter a ship, aircraft, train, or bus.",
+    "example": "Passengers are boarding the airplane.",
+    "exampleMeaning": "Hành khách đang lên máy bay."
+  },
+  'throw away': {
+    "pronunciation": "/θrəʊ əˈweɪ/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Vứt bỏ, bỏ rác",
+    "definition": "To discard something as trash.",
+    "example": "A man is throwing away a paper cup into the bin.",
+    "exampleMeaning": "Một người đàn ông đang vứt chiếc cốc giấy vào thùng rác."
+  },
+  'arrange': {
+    "pronunciation": "/əˈreɪndʒ/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Sắp xếp, bài trí",
+    "definition": "To put things in a neat, attractive, or required order.",
+    "example": "Chairs are arranged around the meeting table.",
+    "exampleMeaning": "Ghế đang được sắp xếp xung quanh bàn họp."
+  },
+  'assemble': {
+    "pronunciation": "/əˈsem.bəl/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Lắp ráp (đồ đạc), tụ họp",
+    "definition": "To fit together the parts of something.",
+    "example": "Workers are assembling furniture in the workshop.",
+    "exampleMeaning": "Công nhân đang lắp ráp đồ nội thất trong xưởng."
+  },
+  'operate': {
+    "pronunciation": "/ˈɒp.ər.eɪt/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Vận hành, điều khiển (máy móc)",
+    "definition": "To control or function machine equipment.",
+    "example": "A worker is operating heavy machinery.",
+    "exampleMeaning": "Một công nhân đang vận hành máy móc hạng nặng."
+  },
+  'gaze at': {
+    "pronunciation": "/ɡeɪz æt/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Nhìn chằm chằm, ngắm nhìn",
+    "definition": "To look steadily and intently at something.",
+    "example": "She is gazing at a painting in the art gallery.",
+    "exampleMeaning": "Cô ấy đang ngắm nhìn một bức tranh trong phòng triển lãm nghệ thuật."
+  },
+  'gather': {
+    "pronunciation": "/ˈɡæð.ər/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Tập trung, tụ họp, thu gom",
+    "definition": "To come together or bring items together in one place.",
+    "example": "People are gathering in front of the building.",
+    "exampleMeaning": "Mọi người đang tụ họp trước tòa nhà."
+  },
+  'window shop': {
+    "pronunciation": "/ˈwɪn.dəʊ ʃɒp/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Đi ngắm đồ qua cửa kính (không mua)",
+    "definition": "Looking at goods displayed in store windows without intending to buy.",
+    "example": "Some pedestrians are window shopping along the street.",
+    "exampleMeaning": "Một số người đi bộ đang ngắm đồ qua cửa kính dọc theo con phố."
+  },
+  'tie up': {
+    "pronunciation": "/taɪ ʌp/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Buộc chặt, cột lại",
+    "definition": "To bind or fasten securely with string or rope.",
+    "example": "A boat is tied up at the dock.",
+    "exampleMeaning": "Chiếc thuyền được buộc chặt tại bến cảng."
+  },
+  'water': {
+    "pronunciation": "/ˈwɔː.tər/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Tưới (cây, hoa)",
+    "definition": "To pour water on plants or land to help them grow.",
+    "example": "A gardener is watering the plants in the garden.",
+    "exampleMeaning": "Người làm vườn đang tưới cây trong vườn."
+  },
+  'load onto': {
+    "pronunciation": "/ləʊd ˈɒn.tuː/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Chất, đặt lên (xe, kệ...)",
+    "definition": "To place goods or items onto a vehicle or surface.",
+    "example": "Boxes are being loaded onto the truck.",
+    "exampleMeaning": "Các thùng hàng đang được chất lên xe tải."
+  },
+  'unpack': {
+    "pronunciation": "/ʌnˈpæk/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Dỡ, mở (hành lý, thùng hàng)",
+    "definition": "To remove items from a suitcase, box, or container.",
+    "example": "A woman is unpacking her suitcase in the hotel room.",
+    "exampleMeaning": "Người phụ nữ đang dỡ hành lý khỏi vali trong phòng khách sạn."
+  },
+  'scarf': {
+    "pronunciation": "/skɑːf/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Khăn quàng cổ",
+    "definition": "A piece of cloth worn around the neck or head for warmth or fashion.",
+    "example": "She is wearing a warm scarf around her neck.",
+    "exampleMeaning": "Cô ấy đang quàng một chiếc khăn ấm quanh cổ."
+  },
+  'package': {
+    "pronunciation": "/ˈpæk.ɪdʒ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Gói hàng, bưu kiện",
+    "definition": "An object or set of objects wrapped or boxed for transport.",
+    "example": "A courier is delivering a package to the office.",
+    "exampleMeaning": "Nhân viên chuyển phát đang giao một gói hàng đến văn phòng."
+  },
+  'mail': {
+    "pronunciation": "/meɪl/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Thư từ, bưu phẩm",
+    "definition": "Letters and parcels delivered by the postal system.",
+    "example": "He is sorting through the morning mail.",
+    "exampleMeaning": "Anh ấy đang phân loại thư từ buổi sáng."
+  },
+  'trash': {
+    "pronunciation": "/træʃ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Rác, đồ bỏ đi",
+    "definition": "Waste material or things that are discarded.",
+    "example": "Someone is putting trash into the container.",
+    "exampleMeaning": "Có người đang bỏ rác vào thùng."
+  },
+  'fabric': {
+    "pronunciation": "/ˈfæb.rɪk/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Vải vóc, chất liệu vải",
+    "definition": "Cloth produced by weaving or knitting textile fibers.",
+    "example": "Rolls of colorful fabric are on display.",
+    "exampleMeaning": "Các cuộn vải đầy màu sắc đang được trưng bày."
+  },
+  'helmet': {
+    "pronunciation": "/ˈhel.mət/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Mũ bảo hộ, mũ bảo hiểm",
+    "definition": "A hard protective hat worn by workers or cyclists.",
+    "example": "Construction workers are wearing safety helmets.",
+    "exampleMeaning": "Các công nhân xây dựng đang đội mũ bảo hộ."
+  },
+  'equipment': {
+    "pronunciation": "/ɪˈkwɪp.mənt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Thiết bị, dụng cụ",
+    "definition": "The necessary items for a particular purpose or activity.",
+    "example": "Medical equipment is set up in the lab.",
+    "exampleMeaning": "Thiết bị y tế được lắp đặt trong phòng thí nghiệm."
+  },
+  'chart': {
+    "pronunciation": "/tʃɑːt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Biểu đồ, bảng biểu",
+    "definition": "A sheet of information in the form of a table, graph, or diagram.",
+    "example": "The speaker is pointing at a chart on the board.",
+    "exampleMeaning": "Diễn giả đang chỉ vào một biểu đồ trên bảng."
+  },
+  'counter': {
+    "pronunciation": "/ˈkaʊn.tər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Quầy (thu ngân, phục vụ, tiếp tân)",
+    "definition": "A long flat surface over which goods or services are provided.",
+    "example": "A clerk is standing behind the reception counter.",
+    "exampleMeaning": "Một nhân viên đang đứng sau quầy tiếp tân."
+  },
+  'pay phone': {
+    "pronunciation": "/ˈpeɪ fəʊn/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Điện thoại công cộng",
+    "definition": "A public telephone operated by coins or a card.",
+    "example": "A man is making a call at a pay phone.",
+    "exampleMeaning": "Một người đàn ông đang gọi điện tại cây điện thoại công cộng."
+  },
+  'stadium': {
+    "pronunciation": "/ˈsteɪ.di.əm/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Sân vận động",
+    "definition": "A large sports ground surrounded by structure for spectators.",
+    "example": "Spectators are sitting in the stadium.",
+    "exampleMeaning": "Khán giả đang ngồi trong sân vận động."
+  },
+  'luggage': {
+    "pronunciation": "/ˈlʌɡ.ɪdʒ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Hành lý",
+    "definition": "Bags and suitcases that contain a traveler's personal belongings.",
+    "example": "Luggage is stacked on a luggage cart.",
+    "exampleMeaning": "Hành lý đang được xếp chồng trên xe đẩy hành lý."
+  },
+  'flight attendant': {
+    "pronunciation": "/ˈflaɪt əˌten.dənt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Tiếp viên hàng không",
+    "definition": "A person who attends to passengers on an aircraft.",
+    "example": "A flight attendant is assisting a passenger.",
+    "exampleMeaning": "Tiếp viên hàng không đang hỗ trợ một hành khách."
+  },
+  'unoccupied': {
+    "pronunciation": "/ˌʌnˈɒk.jə.paɪd/",
+    "pos": "ADJECTIVE",
+    "type": "adjective",
+    "meaning": "Trống, không có người ngồi/sử dụng",
+    "definition": "Not lived in, inhabited, or being used.",
+    "example": "All the seats in the waiting area are unoccupied.",
+    "exampleMeaning": "Tất cả các ghế trong khu vực chờ đều trống."
+  },
+  'in use': {
+    "pronunciation": "/ɪn juːs/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Đang được sử dụng",
+    "definition": "Currently being used.",
+    "example": "The computer terminal is currently in use.",
+    "exampleMeaning": "Trạm máy tính hiện đang được sử dụng."
+  },
   'spread out': {
     "pronunciation": "/spred aʊt/",
     "pos": "PHRASE",
