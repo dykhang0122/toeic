@@ -932,6 +932,456 @@ async function translateTextToVi(text) {
 
 // Smart Dictionary Override for Common TOEIC Terms & Problem Terms
 const SMART_TOEIC_TERMS = {
+  'carry': {
+    "pronunciation": "/ˈkær.i/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Mang, vác, ôm",
+    "definition": "To support and move something from one place to another.",
+    "example": "A woman is carrying a basket of flowers.",
+    "exampleMeaning": "Người phụ nữ đang mang một giỏ hoa."
+  },
+  'clean': {
+    "pronunciation": "/kliːn/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Lau chùi, vệ sinh",
+    "definition": "To remove dirt, marks, or stains from something.",
+    "example": "A worker is cleaning the glass window.",
+    "exampleMeaning": "Công nhân đang lau chùi cửa kính."
+  },
+  'cut': {
+    "pronunciation": "/kʌt/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Cắt",
+    "definition": "To divide or trim something using a sharp tool.",
+    "example": "The gardener is cutting the grass.",
+    "exampleMeaning": "Người làm vườn đang cắt cỏ."
+  },
+  'deliver': {
+    "pronunciation": "/dɪˈlɪv.ər/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Giao hàng, vận chuyển",
+    "definition": "To bring and hand over goods or mail to a recipient.",
+    "example": "A courier is delivering packages to the office.",
+    "exampleMeaning": "Nhân viên chuyển phát đang giao hàng đến văn phòng."
+  },
+  'enter': {
+    "pronunciation": "/ˈen.tər/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Đi vào, bước vào",
+    "definition": "To come or go into a place.",
+    "example": "People are entering the conference room.",
+    "exampleMeaning": "Mọi người đang bước vào phòng hội nghị."
+  },
+  'hold': {
+    "pronunciation": "/həʊld/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Cầm, nắm",
+    "definition": "To grasp or carry something with one's hands.",
+    "example": "She is holding a cup of coffee.",
+    "exampleMeaning": "Cô ấy đang cầm một cốc cà phê."
+  },
+  'hang': {
+    "pronunciation": "/hæŋ/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Treo",
+    "definition": "To attach or place something so that it is supported from above.",
+    "example": "Paintings are hanging on the wall.",
+    "exampleMeaning": "Các bức tranh đang treo trên tường."
+  },
+  'leave': {
+    "pronunciation": "/liːv/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Rời đi, rời khỏi",
+    "definition": "To go away from a place.",
+    "example": "Passengers are leaving the train station.",
+    "exampleMeaning": "Hành khách đang rời khỏi nhà ga."
+  },
+  'look at': {
+    "pronunciation": "/lʊk æt/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Nhìn vào, ngắm",
+    "definition": "To direct one's eyes toward something.",
+    "example": "They are looking at a document together.",
+    "exampleMeaning": "Họ đang cùng nhìn vào một tài liệu."
+  },
+  'organize': {
+    "pronunciation": "/ˈɔː.ɡə.naɪz/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Sắp xếp, tổ chức",
+    "definition": "To arrange items in an orderly way.",
+    "example": "She is organizing files on her desk.",
+    "exampleMeaning": "Cô ấy đang sắp xếp tài liệu trên bàn làm việc."
+  },
+  'paint': {
+    "pronunciation": "/peɪnt/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Sơn, vẽ",
+    "definition": "To apply color or paint to a surface.",
+    "example": "A worker is painting the wooden fence.",
+    "exampleMeaning": "Công nhân đang sơn hàng rào gỗ."
+  },
+  'prepare for': {
+    "pronunciation": "/prɪˈpeər fɔːr/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Chuẩn bị cho",
+    "definition": "To make something ready for an event or task.",
+    "example": "The chef is preparing for the dinner service.",
+    "exampleMeaning": "Đầu bếp đang chuẩn bị cho ca phục vụ bữa tối."
+  },
+  'rest': {
+    "pronunciation": "/rest/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Nghỉ ngơi",
+    "definition": "To relax or stop working for a period of time.",
+    "example": "Tourists are resting on benches in the park.",
+    "exampleMeaning": "Du khách đang nghỉ ngơi trên những chiếc ghế dài trong công viên."
+  },
+  'serve': {
+    "pronunciation": "/sɜːv/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Phục vụ",
+    "definition": "To provide food or drink to customers.",
+    "example": "A waiter is serving food to guests.",
+    "exampleMeaning": "Bồi bàn đang phục vụ thức ăn cho khách."
+  },
+  'show': {
+    "pronunciation": "/ʃəʊ/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Hiển thị, cho xem",
+    "definition": "To allow something to be seen or displayed.",
+    "example": "The guide is showing the group around the museum.",
+    "exampleMeaning": "Người hướng dẫn đang cho đoàn tham quan bảo tàng."
+  },
+  'sit': {
+    "pronunciation": "/sɪt/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Ngồi",
+    "definition": "To rest one's body supported by a seat.",
+    "example": "People are sitting in an outdoor café.",
+    "exampleMeaning": "Mọi người đang ngồi ở quán cà phê ngoài trời."
+  },
+  'stand': {
+    "pronunciation": "/stænd/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Đứng",
+    "definition": "To be in an upright position on one's feet.",
+    "example": "A man is standing near the doorway.",
+    "exampleMeaning": "Một người đàn ông đang đứng gần lối ra vào."
+  },
+  'swim': {
+    "pronunciation": "/swɪm/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Bơi",
+    "definition": "To propel oneself through water using limbs.",
+    "example": "People are swimming in the pool.",
+    "exampleMeaning": "Mọi người đang bơi trong hồ bơi."
+  },
+  'wear': {
+    "pronunciation": "/weər/",
+    "pos": "VERB",
+    "type": "verb",
+    "meaning": "Mặc, đeo, quàng",
+    "definition": "To have clothes or accessories on one's body.",
+    "example": "Everyone in the room is wearing a uniform.",
+    "exampleMeaning": "Mọi người trong phòng đều đang mặc đồng phục."
+  },
+  'arm': {
+    "pronunciation": "/ɑːm/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cánh tay",
+    "definition": "Either of the two upper limbs of the human body.",
+    "example": "He has a watch on his arm.",
+    "exampleMeaning": "Anh ấy có một chiếc đồng hồ trên cánh tay."
+  },
+  'bag': {
+    "pronunciation": "/bæɡ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Túi, giỏ",
+    "definition": "A container made of flexible material for carrying items.",
+    "example": "She is carrying a shopping bag.",
+    "exampleMeaning": "Cô ấy đang xách một chiếc túi mua sắm."
+  },
+  'boat': {
+    "pronunciation": "/bəʊt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Con thuyền, tàu nhỏ",
+    "definition": "A vessel for traveling on water.",
+    "example": "Several boats are floating on the water.",
+    "exampleMeaning": "Nhiều con thuyền đang trôi trên mặt nước."
+  },
+  'box': {
+    "pronunciation": "/bɒks/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cái hộp, thùng",
+    "definition": "A container with flat sides and a lid.",
+    "example": "Cardboard boxes are stacked in the hallway.",
+    "exampleMeaning": "Các thùng bìa cứng được xếp chồng ở hành lang."
+  },
+  'building': {
+    "pronunciation": "/ˈbɪl.dɪŋ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Tòa nhà",
+    "definition": "A structure with a roof and walls such as a house or office.",
+    "example": "Tall buildings line the main street.",
+    "exampleMeaning": "Các tòa nhà cao tầng nằm dọc theo con phố chính."
+  },
+  'case': {
+    "pronunciation": "/keɪs/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Tủ kính, hộp đựng",
+    "definition": "A container or display box used for holding objects.",
+    "example": "Jewelry is displayed inside a glass case.",
+    "exampleMeaning": "Trang sức được trưng bày bên trong một tủ kính."
+  },
+  'customer': {
+    "pronunciation": "/ˈkʌs.tə.mər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Khách hàng",
+    "definition": "A person buying goods or services from a shop or business.",
+    "example": "A customer is waiting at the checkout line.",
+    "exampleMeaning": "Một khách hàng đang chờ ở hàng thanh toán."
+  },
+  'fence': {
+    "pronunciation": "/fens/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Hàng rào",
+    "definition": "A barrier enclosing an area of ground.",
+    "example": "A wooden fence surrounds the garden.",
+    "exampleMeaning": "Một hàng rào gỗ bao quanh khu vườn."
+  },
+  'file': {
+    "pronunciation": "/faɪl/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Tài liệu, hồ sơ",
+    "definition": "A folder or collection of documents.",
+    "example": "Files are stored neatly in the cabinet.",
+    "exampleMeaning": "Hồ sơ được lưu trữ gọn gàng trong tủ."
+  },
+  'grass': {
+    "pronunciation": "/ɡrɑːs/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cỏ",
+    "definition": "Vegetation consisting of short green plants covering the ground.",
+    "example": "People are lying on the grass in the park.",
+    "exampleMeaning": "Mọi người đang nằm trên cỏ trong công viên."
+  },
+  'machine': {
+    "pronunciation": "/məˈʃiːn/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Máy móc, thiết bị",
+    "definition": "An apparatus using mechanical power to perform a task.",
+    "example": "The factory machine is currently operating.",
+    "exampleMeaning": "Máy móc nhà máy hiện đang vận hành."
+  },
+  'manager': {
+    "pronunciation": "/ˈmæn.ɪ.dʒər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Quản lý",
+    "definition": "A person responsible for controlling or administering an organization.",
+    "example": "The manager is speaking to the staff.",
+    "exampleMeaning": "Quản lý đang nói chuyện với nhân viên."
+  },
+  'meeting': {
+    "pronunciation": "/ˈmiː.tɪŋ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cuộc họp",
+    "definition": "An assembly of people for discussion or entertainment.",
+    "example": "They are holding a business meeting.",
+    "exampleMeaning": "Họ đang tổ chức một cuộc họp kinh doanh."
+  },
+  'monitor': {
+    "pronunciation": "/ˈmɒn.ɪ.tər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Màn hình",
+    "definition": "A display screen used to provide visual output from a computer.",
+    "example": "An employee is looking at a computer monitor.",
+    "exampleMeaning": "Một nhân viên đang nhìn vào màn hình máy tính."
+  },
+  'neck': {
+    "pronunciation": "/nek/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cổ",
+    "definition": "The part of the body connecting the head to the torso.",
+    "example": "She has a scarf wrapped around her neck.",
+    "exampleMeaning": "Cô ấy đang quàng một chiếc khăn quanh cổ."
+  },
+  'park': {
+    "pronunciation": "/pɑːk/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Công viên",
+    "definition": "A large public green area in a town used for recreation.",
+    "example": "Children are playing in the public park.",
+    "exampleMeaning": "Trẻ em đang chơi trong công viên công cộng."
+  },
+  'passenger': {
+    "pronunciation": "/ˈpæs.ən.dʒər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Hành khách",
+    "definition": "A traveler on a public or private conveyance other than the driver.",
+    "example": "Passengers are waiting for the bus to arrive.",
+    "exampleMeaning": "Hành khách đang chờ xe buýt đến."
+  },
+  'plant': {
+    "pronunciation": "/plɑːnt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cây cảnh, thực vật",
+    "definition": "A living organism growing in earth or water.",
+    "example": "Potted plants are placed near the window.",
+    "exampleMeaning": "Các chậu cây cảnh được đặt gần cửa sổ."
+  },
+  'post office': {
+    "pronunciation": "/ˈpəʊst ˌɒf.ɪs/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Bưu điện",
+    "definition": "A building where postal services are provided.",
+    "example": "People are standing in line at the post office.",
+    "exampleMeaning": "Mọi người đang xếp hàng tại bưu điện."
+  },
+  'price': {
+    "pronunciation": "/praɪs/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Giá tiền, giá cả",
+    "definition": "The amount of money expected or required in payment for something.",
+    "example": "Price tags are attached to the items.",
+    "exampleMeaning": "Thẻ giá được gắn trên các sản phẩm."
+  },
+  'product': {
+    "pronunciation": "/ˈprɒd.ʌkt/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Sản phẩm",
+    "definition": "An article or substance that is manufactured or refined for sale.",
+    "example": "Products are neatly arranged on shelves.",
+    "exampleMeaning": "Các sản phẩm được sắp xếp gọn gàng trên kệ."
+  },
+  'shelf': {
+    "pronunciation": "/ʃelf/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Kệ, giá đỡ",
+    "definition": "A flat board mounted horizontally for holding items.",
+    "example": "Books are arranged on the wooden shelf.",
+    "exampleMeaning": "Sách được sắp xếp trên kệ gỗ."
+  },
+  'ship': {
+    "pronunciation": "/ʃɪp/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Con tàu lớn",
+    "definition": "A large boat for traveling on water.",
+    "example": "A cargo ship is docked at the harbor.",
+    "exampleMeaning": "Một con tàu chở hàng đang cập cảng."
+  },
+  'store': {
+    "pronunciation": "/stɔːr/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cửa hàng",
+    "definition": "A retail establishment selling goods to the public.",
+    "example": "The department store is open for customers.",
+    "exampleMeaning": "Cửa hàng bách hóa mở cửa đón khách hàng."
+  },
+  'telephone': {
+    "pronunciation": "/ˈtel.ɪ.fəʊn/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Điện thoại",
+    "definition": "A device for voice communication over distances.",
+    "example": "She is talking on the telephone.",
+    "exampleMeaning": "Cô ấy đang nói chuyện qua điện thoại."
+  },
+  'traveler': {
+    "pronunciation": "/ˈtræv.əl.ər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Du khách, người đi lại",
+    "definition": "A person who is traveling or who often travels.",
+    "example": "Travelers are waiting at the terminal.",
+    "exampleMeaning": "Các du khách đang chờ tại nhà ga."
+  },
+  'window': {
+    "pronunciation": "/ˈwɪn.dəʊ/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Cửa sổ, cửa kính",
+    "definition": "An opening in a wall fitted with glass to admit light.",
+    "example": "Sunlight is coming through the big window.",
+    "exampleMeaning": "Ánh nắng mặt trời đang chiếu qua cửa sổ lớn."
+  },
+  'worker': {
+    "pronunciation": "/ˈwɜː.kər/",
+    "pos": "NOUN",
+    "type": "noun",
+    "meaning": "Công nhân, người lao động",
+    "definition": "A person who does a specified type of work.",
+    "example": "Construction workers are wearing safety vests.",
+    "exampleMeaning": "Các công nhân xây dựng đang mặc áo bảo hộ."
+  },
+  'behind': {
+    "pronunciation": "/bɪˈhaɪnd/",
+    "pos": "PREPOSITION",
+    "type": "preposition",
+    "meaning": "Phía sau, đằng sau",
+    "definition": "At or to the back of someone or something.",
+    "example": "Trees are planted behind the building.",
+    "exampleMeaning": "Cây cối được trồng phía sau tòa nhà."
+  },
+  'not in use': {
+    "pronunciation": "/nɒt ɪn juːs/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Không được sử dụng, đang rảnh",
+    "definition": "Currently not being operated or used.",
+    "example": "The equipment is turned off and not in use.",
+    "exampleMeaning": "Thiết bị được tắt và không được sử dụng."
+  },
+  'on top of': {
+    "pronunciation": "/ɒn tɒp əv/",
+    "pos": "PHRASE",
+    "type": "phrase",
+    "meaning": "Trên đỉnh, bên trên",
+    "definition": "On the highest surface of something.",
+    "example": "A box is placed on top of the cabinet.",
+    "exampleMeaning": "Một chiếc hộp được đặt trên đỉnh tủ."
+  },
   'carry under one\'s arm': {
     "pronunciation": "/ˈkæri ˈʌndər wʌnz ɑːm/",
     "pos": "PHRASE",
