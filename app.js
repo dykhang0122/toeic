@@ -41,47 +41,42 @@ function seedInitialData() {
   } else if (state.vocab.length > 0 && typeof toeicVocabulary !== 'undefined') {
     let updated = false;
     
-    // 1. Copy missing fields (like exampleMeaning or pronunciation or full meanings array) from words.js to local words
-    state.vocab.forEach(localWord => {
-      Object.keys(toeicVocabulary).forEach(topicKey => {
-        const match = toeicVocabulary[topicKey].words.find(w => w.word.toLowerCase() === localWord.word.toLowerCase());
-        if (match) {
-          if (match.meanings && Array.isArray(match.meanings) && match.meanings.length > 0) {
-            // Update local meanings with full list if match has multiple meanings
-            if (!localWord.meanings || localWord.meanings.length < match.meanings.length) {
-              localWord.meanings = match.meanings;
+    // 1. Sync topics, missing fields, and import new category words from words.js to local state
+    Object.keys(toeicVocabulary).forEach(topicKey => {
+      const topicData = toeicVocabulary[topicKey];
+      topicData.words.forEach(w => {
+        const localWord = state.vocab.find(l => l.word.toLowerCase() === w.word.toLowerCase());
+        if (localWord) {
+          // If word belongs to a specific Part category (like Part 2), ensure topic matches
+          if (topicKey.startsWith('part') && localWord.topic !== topicData.title) {
+            localWord.topic = topicData.title;
+            updated = true;
+          }
+          if (w.meanings && Array.isArray(w.meanings) && w.meanings.length > 0) {
+            if (!localWord.meanings || localWord.meanings.length < w.meanings.length) {
+              localWord.meanings = w.meanings;
               updated = true;
             }
           } else if (!localWord.meanings || localWord.meanings.length === 0) {
             localWord.meanings = [{
-              type: localWord.type || match.type || 'noun',
-              meaning: localWord.meaning || match.meaning || '',
-              definition: localWord.definition || match.definition || '',
-              example: localWord.example || match.example || '',
-              exampleMeaning: localWord.exampleMeaning || match.exampleMeaning || ''
+              type: localWord.type || w.type || 'noun',
+              meaning: localWord.meaning || w.meaning || '',
+              definition: localWord.definition || w.definition || '',
+              example: localWord.example || w.example || '',
+              exampleMeaning: localWord.exampleMeaning || w.exampleMeaning || ''
             }];
             updated = true;
           }
-          
           const primaryMeaning = localWord.meanings[0];
-          if (primaryMeaning && !primaryMeaning.exampleMeaning && match.exampleMeaning) {
-            primaryMeaning.exampleMeaning = match.exampleMeaning;
+          if (primaryMeaning && !primaryMeaning.exampleMeaning && w.exampleMeaning) {
+            primaryMeaning.exampleMeaning = w.exampleMeaning;
             updated = true;
           }
-          if (!localWord.pronunciation && match.pronunciation) {
-            localWord.pronunciation = match.pronunciation;
+          if (!localWord.pronunciation && w.pronunciation) {
+            localWord.pronunciation = w.pronunciation;
             updated = true;
           }
-        }
-      });
-    });
-
-    // 2. Import completely new category words that do not exist locally
-    Object.keys(toeicVocabulary).forEach(topicKey => {
-      const topicData = toeicVocabulary[topicKey];
-      topicData.words.forEach(w => {
-        const exists = state.vocab.some(localWord => localWord.word.toLowerCase() === w.word.toLowerCase());
-        if (!exists) {
+        } else {
           const meaningsList = (w.meanings && Array.isArray(w.meanings) && w.meanings.length > 0)
             ? w.meanings
             : [

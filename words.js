@@ -4017,10 +4017,10 @@ const toeicVocabulary = {
         "word": "Maintenance",
         "type": "noun",
         "pronunciation": "/ˈmeɪn.tən.əns/",
-        "meaning": "Bảo trì, bảo dưỡng",
-        "definition": "The process of preserving or keeping something in good condition.",
-        "example": "Routine maintenance of the equipment will take place on Saturday.",
-        "exampleMeaning": "Việc bảo trì định kỳ thiết bị sẽ diễn ra vào thứ Bảy."
+        "meaning": "Sự bảo trì, duy trì",
+        "definition": "The process of keeping something in good condition.",
+        "example": "Regular maintenance prevents major system failures.",
+        "exampleMeaning": "Bảo trì thường xuyên giúp ngăn ngừa hỏng hóc hệ thống lớn."
       },
       {
         "word": "Paycheck",
@@ -4228,6 +4228,222 @@ const toeicVocabulary = {
         "definition": "A general direction in which something is developing or changing.",
         "example": "There is a growing trend toward remote work.",
         "exampleMeaning": "Đang có xu hướng ngày càng tăng đối với làm việc từ xa."
+      },
+      {
+        "word": "Agriculture",
+        "type": "noun",
+        "pronunciation": "/ˈæɡ.rɪ.kʌl.tʃər/",
+        "meaning": "Nông nghiệp",
+        "definition": "The science or practice of farming, including cultivation of the soil and rearing of animals.",
+        "example": "The region relies heavily on agriculture for its economic growth.",
+        "exampleMeaning": "Khu vực này phụ thuộc nhiều vào nông nghiệp để phát triển kinh tế."
+      },
+      {
+        "word": "Organic",
+        "type": "adjective",
+        "pronunciation": "/ɔːˈɡæn.ɪk/",
+        "meaning": "Hữu cơ",
+        "definition": "Produced or involving production without the use of chemical fertilizers or pesticides.",
+        "example": "Demand for organic produce has increased significantly in recent years.",
+        "exampleMeaning": "Nhu cầu về nông sản hữu cơ đã tăng lên đáng kể trong những năm gần đây."
+      },
+      {
+        "word": "Harvest",
+        "type": "verb/noun",
+        "pronunciation": "/ˈhɑː.vɪst/",
+        "meaning": "Thu hoạch (V) / Mùa vụ (N)",
+        "definition": "The process or period of gathering in crops.",
+        "example": "Farmers are preparing to harvest the wheat crop next month.",
+        "exampleMeaning": "Nông dân đang chuẩn bị thu hoạch vụ lúa mì vào tháng tới."
+      },
+      {
+        "word": "Pesticide",
+        "type": "noun",
+        "pronunciation": "/ˈpes.tɪ.saɪd/",
+        "meaning": "Thuốc trừ sâu",
+        "definition": "A substance used for destroying insects or other organisms harmful to cultivated plants.",
+        "example": "The farm uses natural alternatives instead of chemical pesticides.",
+        "exampleMeaning": "Trang trại sử dụng các phương pháp tự nhiên thay vì thuốc trừ sâu hóa học."
+      },
+      {
+        "word": "Herbicide",
+        "type": "noun",
+        "pronunciation": "/ˈhɜː.bɪ.saɪd/",
+        "meaning": "Thuốc diệt cỏ",
+        "definition": "A substance that is toxic to plants, used to destroy unwanted vegetation.",
+        "example": "Herbicides should be applied carefully to avoid damaging nearby crops.",
+        "exampleMeaning": "Thuốc diệt cỏ nên được sử dụng cẩn thận để tránh làm hỏng các cây trồng lân cận."
+      },
+      {
+        "word": "Fertilizer",
+        "type": "noun",
+        "pronunciation": "/ˈfɜː.tɪ.laɪ.zər/",
+        "meaning": "Phân bón",
+        "definition": "A chemical or natural substance added to soil or land to increase its fertility.",
+        "example": "Organic fertilizer helps improve soil quality naturally.",
+        "exampleMeaning": "Phân bón hữu cơ giúp cải thiện chất lượng đất một cách tự nhiên."
+      },
+      {
+        "word": "Shareholder",
+        "type": "noun",
+        "pronunciation": "/ˈʃeəˌhəʊl.dər/",
+        "meaning": "Cổ đông",
+        "definition": "An owner of shares in a company.",
+        "example": "The annual shareholder meeting will be held on Thursday.",
+        "exampleMeaning": "Cuộc họp cổ đông hàng năm sẽ được tổ chức vào thứ Năm."
+      },
+      {
+        "word": "Reassignment",
+        "type": "noun",
+        "pronunciation": "/ˌriː.əˈsaɪn.mənt/",
+        "meaning": "Sự phân công lại / Điều chuyển công tác",
+        "definition": "The allocation of a new task, position, or responsibility to someone.",
+        "example": "Her reassignment to the regional office was approved yesterday.",
+        "exampleMeaning": "Việc điều chuyển công tác của cô ấy sang văn phòng khu vực đã được phê duyệt hôm qua."
+      },
+      {
+        "word": "Effective",
+        "type": "adjective",
+        "pronunciation": "/ɪˈfek.tɪv/",
+        "meaning": "Hiệu quả / Có hiệu lực",
+        "definition": "Successful in producing a desired or intended result; coming into force.",
+        "example": "The new policy will become effective from the first of next month.",
+        "exampleMeaning": "Chính sách mới sẽ có hiệu lực từ ngày đầu tiên của tháng tới."
+      },
+      {
+        "word": "Temporary",
+        "type": "adjective",
+        "pronunciation": "/ˈtem.pər.ər.i/",
+        "meaning": "Tạm thời",
+        "definition": "Lasting for only a limited period of time; not permanent.",
+        "example": "We hired temporary staff to help during the busy holiday season.",
+        "exampleMeaning": "Chúng tôi đã thuê nhân viên tạm thời để hỗ trợ trong mùa lễ bận rộn."
+      },
+      {
+        "word": "Alternative",
+        "type": "adjective/noun",
+        "pronunciation": "/ɒlˈtɜː.nə.tɪv/",
+        "meaning": "Thay thế (adj) / Sự thay thế (N)",
+        "definition": "Available as another possibility or choice.",
+        "example": "We need to find an alternative route due to road construction.",
+        "exampleMeaning": "Chúng ta cần tìm một tuyến đường thay thế do công trình làm đường."
+      },
+      {
+        "word": "Eliminate",
+        "type": "verb",
+        "pronunciation": "/ɪˈlɪm.ɪ.neɪt/",
+        "meaning": "Loại bỏ",
+        "definition": "Completely remove or get rid of something.",
+        "example": "Automating this task will eliminate human errors.",
+        "exampleMeaning": "Tự động hóa nhiệm vụ này sẽ loại bỏ các lỗi do con người."
+      },
+      {
+        "word": "Excessive",
+        "type": "adjective",
+        "pronunciation": "/ɪkˈses.ɪv/",
+        "meaning": "Thừa thãi / Quá mức",
+        "definition": "More than is necessary, normal, or desirable.",
+        "example": "The company spent excessive money on unnecessary advertising.",
+        "exampleMeaning": "Công ty đã chi tiêu quá mức vào việc quảng cáo không cần thiết."
+      },
+      {
+        "word": "Proceed",
+        "type": "verb",
+        "pronunciation": "/prəˈsiːd/",
+        "meaning": "Tiến hành / Tiếp tục",
+        "definition": "Begin or continue a course of action.",
+        "example": "We can proceed with the project once we receive approval.",
+        "exampleMeaning": "Chúng ta có thể tiến hành dự án sau khi nhận được sự phê duyệt."
+      },
+      {
+        "word": "Pedestrian",
+        "type": "noun",
+        "pronunciation": "/pəˈdes.tri.ən/",
+        "meaning": "Người đi bộ",
+        "definition": "A person walking along a road or in a developed area.",
+        "example": "Drivers must yield to pedestrians at the crosswalk.",
+        "exampleMeaning": "Lái xe phải nhường đường cho người đi bộ tại vạch sang đường."
+      },
+      {
+        "word": "Tow",
+        "type": "verb/noun",
+        "pronunciation": "/təʊ/",
+        "meaning": "Kéo, cẩu (xe) / Sự kéo",
+        "definition": "Pull a vehicle along behind another vehicle.",
+        "example": "Illegal parked vehicles will be towed away at the owner's expense.",
+        "exampleMeaning": "Các phương tiện đỗ trái phép sẽ bị cẩu đi với chi phí do chủ xe chịu."
+      },
+      {
+        "word": "Valid",
+        "type": "adjective",
+        "pronunciation": "/ˈvæl.ɪd/",
+        "meaning": "Có hiệu lực / Hợp lệ",
+        "definition": "Legally or officially acceptable.",
+        "example": "Please present a valid passport at the check-in desk.",
+        "exampleMeaning": "Vui lòng trình hộ chiếu hợp lệ tại bàn làm thủ tục."
+      },
+      {
+        "word": "Indicate",
+        "type": "verb",
+        "pronunciation": "/ˈɪn.dɪ.keɪt/",
+        "meaning": "Chỉ ra, biểu thị",
+        "definition": "Point out or show.",
+        "example": "The survey results indicate high customer satisfaction.",
+        "exampleMeaning": "Kết quả khảo sát chỉ ra sự hài lòng cao của khách hàng."
+      },
+      {
+        "word": "Courteous",
+        "type": "adjective",
+        "pronunciation": "/ˈkɜː.ti.əs/",
+        "meaning": "Lịch sự, nhã nhặn",
+        "definition": "Polite, respectful, or considerate in manner.",
+        "example": "Our staff are always courteous and helpful to clients.",
+        "exampleMeaning": "Nhân viên của chúng tôi luôn lịch sự và tận tình giúp đỡ khách hàng."
+      },
+      {
+        "word": "Attentive",
+        "type": "adjective",
+        "pronunciation": "/əˈten.tɪv/",
+        "meaning": "Chu đáo, chú ý",
+        "definition": "Paying close attention to something; listening carefully.",
+        "example": "The hotel staff were very attentive to our needs.",
+        "exampleMeaning": "Nhân viên khách sạn rất chu đáo đối với các yêu cầu của chúng tôi."
+      },
+      {
+        "word": "Dissatisfaction",
+        "type": "noun",
+        "pronunciation": "/ˌdɪs.sæt.ɪsˈfæk.ʃən/",
+        "meaning": "Sự không hài lòng",
+        "definition": "Lack of satisfaction; disappointment.",
+        "example": "Several clients expressed dissatisfaction with the delayed delivery.",
+        "exampleMeaning": "Một số khách hàng bày tỏ sự không hài lòng với việc giao hàng chậm trễ."
+      },
+      {
+        "word": "Significant",
+        "type": "adjective",
+        "pronunciation": "/sɪɡˈnɪf.ɪ.kənt/",
+        "meaning": "Đáng kể, quan trọng",
+        "definition": "Sufficiently great or important to be worthy of attention.",
+        "example": "There has been a significant increase in online sales.",
+        "exampleMeaning": "Đã có sự gia tăng đáng kể trong doanh số bán hàng trực tuyến."
+      },
+      {
+        "word": "Proportion",
+        "type": "noun",
+        "pronunciation": "/prəˈpɔː.ʃən/",
+        "meaning": "Tỷ lệ",
+        "definition": "A part, share, or number considered in comparative relation to a whole.",
+        "example": "A large proportion of the budget is spent on research and development.",
+        "exampleMeaning": "Một tỷ lệ lớn ngân sách được chi cho nghiên cứu và phát triển."
+      },
+      {
+        "word": "Voucher",
+        "type": "noun",
+        "pronunciation": "/ˈvaʊ.tʃər/",
+        "meaning": "Phiếu giảm giá / Chứng từ",
+        "definition": "A small printed piece of paper that entitles the holder to a discount or goods.",
+        "example": "You can redeem this voucher for a 15% discount on your next purchase.",
+        "exampleMeaning": "Bạn có thể đổi phiếu giảm giá này để được giảm 15% cho lần mua hàng tiếp theo."
       }
     ]
   },
