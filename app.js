@@ -15,6 +15,7 @@ function seedInitialData() {
     Object.keys(toeicVocabulary).forEach(topicKey => {
       const topicData = toeicVocabulary[topicKey];
       topicData.words.forEach(w => {
+        const localWord = state.vocab.find(l => l.word.toLowerCase() === w.word.toLowerCase());
         const meaningsList = (w.meanings && Array.isArray(w.meanings) && w.meanings.length > 0)
           ? w.meanings
           : [
@@ -26,29 +27,42 @@ function seedInitialData() {
               exampleMeaning: w.exampleMeaning || ''
             }
           ];
-        state.vocab.push({
-          word: w.word,
-          pronunciation: w.pronunciation || '',
-          topic: topicData.title,
-          status: 'new', // new, reviewing, learning, mastered
-          lastReviewed: null,
-          reviewCount: 0,
-          meanings: meaningsList
-        });
+        if (localWord) {
+          if (!localWord.topics) localWord.topics = [localWord.topic || topicData.title];
+          if (!localWord.topics.includes(topicData.title)) localWord.topics.push(topicData.title);
+        } else {
+          state.vocab.push({
+            word: w.word,
+            pronunciation: w.pronunciation || '',
+            topic: topicData.title,
+            topics: [topicData.title],
+            status: 'new',
+            lastReviewed: null,
+            reviewCount: 0,
+            meanings: meaningsList
+          });
+        }
       });
     });
     saveState();
   } else if (state.vocab.length > 0 && typeof toeicVocabulary !== 'undefined') {
     let updated = false;
     
-    // 1. Sync topics, missing fields, and import new category words from words.js to local state
+    // 1. Sync topics array, missing fields, and import new category words from words.js to local state
     Object.keys(toeicVocabulary).forEach(topicKey => {
       const topicData = toeicVocabulary[topicKey];
       topicData.words.forEach(w => {
         const localWord = state.vocab.find(l => l.word.toLowerCase() === w.word.toLowerCase());
         if (localWord) {
-          // If word belongs to a specific Part category (like Part 2), ensure topic matches
-          if (topicKey.startsWith('part') && localWord.topic !== topicData.title) {
+          if (!localWord.topics || !Array.isArray(localWord.topics)) {
+            localWord.topics = [localWord.topic || 'Cá nhân'];
+            updated = true;
+          }
+          if (!localWord.topics.includes(topicData.title)) {
+            localWord.topics.push(topicData.title);
+            updated = true;
+          }
+          if (!localWord.topic) {
             localWord.topic = topicData.title;
             updated = true;
           }
@@ -92,6 +106,7 @@ function seedInitialData() {
             word: w.word,
             pronunciation: w.pronunciation || '',
             topic: topicData.title,
+            topics: [topicData.title],
             status: 'new',
             lastReviewed: null,
             reviewCount: 0,
@@ -748,7 +763,12 @@ function renderVocabBank() {
   const filterTopic = topicFilterDropdown ? topicFilterDropdown.value : 'all';
   
   if (topicFilterDropdown) {
-    const uniqueTopics = Array.from(new Set(state.vocab.map(w => w.topic || 'Cá nhân'))).filter(Boolean);
+    const allTopics = [];
+    state.vocab.forEach(w => {
+      const ts = Array.isArray(w.topics) && w.topics.length > 0 ? w.topics : [w.topic || 'Cá nhân'];
+      allTopics.push(...ts);
+    });
+    const uniqueTopics = Array.from(new Set(allTopics)).filter(Boolean);
     let topicOptionsHtml = `<option value="all">Tất cả chủ đề / Part</option>`;
     uniqueTopics.forEach(topic => {
       topicOptionsHtml += `<option value="${topic}" ${topic === filterTopic ? 'selected' : ''}>${topic}</option>`;
@@ -768,7 +788,10 @@ function renderVocabBank() {
     const rawStatus = (rawWordData.status || 'new').toString().trim().toLowerCase();
     const normFilterStatus = (filterStatus || 'all').toString().trim().toLowerCase();
     if (normFilterStatus !== 'all' && rawStatus !== normFilterStatus) return;
-    if (filterTopic !== 'all' && (rawWordData.topic || 'Cá nhân') !== filterTopic) return;
+    const wordTopics = Array.isArray(rawWordData.topics) && rawWordData.topics.length > 0 
+      ? rawWordData.topics 
+      : [rawWordData.topic || 'Cá nhân'];
+    if (filterTopic !== 'all' && !wordTopics.includes(filterTopic)) return;
     if (filterPOS !== 'all' && !matchWordPOS(rawWordData, filterPOS)) return;
     
     let statusClass = 'new', statusText = 'Mới';
@@ -6124,7 +6147,12 @@ async function fetchThesaurusSynonyms(word) {
 
 // Helper to populate topic dropdowns dynamically across all tabs
 function populateAllTopicDropdowns() {
-  const uniqueTopics = Array.from(new Set(state.vocab.map(w => w.topic || 'Cá nhân'))).filter(Boolean);
+  const allTopics = [];
+  state.vocab.forEach(w => {
+    const ts = Array.isArray(w.topics) && w.topics.length > 0 ? w.topics : [w.topic || 'Cá nhân'];
+    allTopics.push(...ts);
+  });
+  const uniqueTopics = Array.from(new Set(allTopics)).filter(Boolean);
   
   const dropdownIds = ['vbank-topic-filter', 'match-topic-filter', 'spell-topic-filter', 'review-topic-filter'];
   dropdownIds.forEach(id => {
@@ -6185,8 +6213,10 @@ function getFilteredVocabPool(topicFilterId, statusFilterId, posFilterId, isSpac
   const selectedPOS = posSel ? posSel.value : 'all';
 
   return state.vocab.filter(rawWord => {
-    const wordTopic = rawWord.topic || 'Cá nhân';
-    const matchTopic = (selectedTopic === 'all' || wordTopic === selectedTopic);
+    const wordTopics = Array.isArray(rawWord.topics) && rawWord.topics.length > 0
+      ? rawWord.topics
+      : [rawWord.topic || 'Cá nhân'];
+    const matchTopic = (selectedTopic === 'all' || wordTopics.includes(selectedTopic));
 
     const wordStatus = (rawWord.status || 'new').toString().trim().toLowerCase();
     const targetStatus = selectedStatus.toString().trim().toLowerCase();

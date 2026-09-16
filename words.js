@@ -2735,6 +2735,285 @@ const toeicVocabulary = {
         "definition": "Alter or move something slightly in order to achieve the desired fit or appearance.",
         "example": "He is adjusting the computer monitor.",
         "exampleMeaning": "Anh ấy đang điều chỉnh màn hình máy tính."
+      },
+      {
+        "word": "Transaction",
+        "type": "noun",
+        "pronunciation": "/trænˈzæk.ʃən/",
+        "meaning": "Giao dịch",
+        "definition": "An instance of buying or selling something; a business deal.",
+        "example": "Please keep your receipt as proof of transaction.",
+        "exampleMeaning": "Vui lòng giữ lại hóa đơn làm bằng chứng giao dịch."
+      },
+      {
+        "word": "Receipt",
+        "type": "noun",
+        "pronunciation": "/rɪˈsiːt/",
+        "meaning": "Hóa đơn, biên lai",
+        "definition": "A written statement showing that money or goods have been received.",
+        "example": "Attach your receipt to the expense report for reimbursement.",
+        "exampleMeaning": "Đính kèm biên lai của bạn vào báo cáo chi phí để được hoàn tiền."
+      },
+      {
+        "word": "Reimburse",
+        "type": "verb",
+        "pronunciation": "/ˌriː.ɪmˈbɜːs/",
+        "meaning": "Hoàn tiền, hoàn trả chi phí",
+        "definition": "To pay back money to someone who has spent it for a work purpose.",
+        "example": "The company will reimburse your travel expenses next week.",
+        "exampleMeaning": "Công ty sẽ hoàn trả chi phí đi lại của bạn vào tuần tới."
+      },
+      {
+        "word": "Expense",
+        "type": "noun",
+        "pronunciation": "/ɪkˈspens/",
+        "meaning": "Chi phí, phí tổn",
+        "definition": "The money spent on something.",
+        "example": "We need to cut down on office expenses this month.",
+        "exampleMeaning": "Chúng ta cần cắt giảm chi phí văn phòng trong tháng này."
+      },
+      {
+        "word": "Urgent",
+        "type": "adjective",
+        "pronunciation": "/ˈɜː.dʒənt/",
+        "meaning": "Khẩn cấp, cấp bách",
+        "definition": "Requiring immediate action or attention.",
+        "example": "The manager left an urgent message on my desk.",
+        "exampleMeaning": "Quản lý đã để lại một tin nhắn khẩn cấp trên bàn làm việc của tôi."
+      },
+      {
+        "word": "Transfer",
+        "type": "verb/noun",
+        "pronunciation": "/trænsˈfɜːr/",
+        "meaning": "Điều chuyển (công tác), chuyển khoản",
+        "definition": "To move from one place, person, or position to another.",
+        "example": "Mr. Kim was transferred to the London branch last month.",
+        "exampleMeaning": "Ông Kim đã được điều chuyển sang chi nhánh London vào tháng trước."
+      },
+      {
+        "word": "Maintenance",
+        "type": "noun",
+        "pronunciation": "/ˈmeɪn.tən.əns/",
+        "meaning": "Bảo trì, bảo dưỡng",
+        "definition": "The process of preserving or keeping something in good condition.",
+        "example": "Routine maintenance of the equipment will take place on Saturday.",
+        "exampleMeaning": "Việc bảo trì định kỳ thiết bị sẽ diễn ra vào thứ Bảy."
+      },
+      {
+        "word": "Paycheck",
+        "type": "noun",
+        "pronunciation": "/ˈpeɪ.tʃek/",
+        "meaning": "Phiếu lương, tiền lương",
+        "definition": "A check issued in payment of wages or salary.",
+        "example": "Employees receive their monthly paycheck on the last Friday.",
+        "exampleMeaning": "Nhân viên nhận phiếu lương hàng tháng vào thứ Sáu cuối cùng."
+      },
+      {
+        "word": "Vacation",
+        "type": "noun",
+        "pronunciation": "/veɪˈkeɪ.ʃən/",
+        "meaning": "Kỳ nghỉ, nghỉ phép",
+        "definition": "A period of time spent away from home or work in order to relax or travel.",
+        "example": "She submitted a vacation request for two weeks in August.",
+        "exampleMeaning": "Cô ấy đã nộp đơn xin nghỉ phép 2 tuần vào tháng Tám."
+      },
+      {
+        "word": "Director",
+        "type": "noun",
+        "pronunciation": "/daɪˈrek.tər/",
+        "meaning": "Giám đốc",
+        "definition": "A person who is in charge of an activity, department, or organization.",
+        "example": "The board of directors approved the new annual budget.",
+        "exampleMeaning": "Hội đồng quản trị đã phê duyệt ngân sách hàng năm mới."
+      },
+      {
+        "word": "Budget",
+        "type": "noun",
+        "pronunciation": "/ˈbʌdʒ.ɪt/",
+        "meaning": "Ngân sách",
+        "definition": "An estimate of income and expenditure for a set period of time.",
+        "example": "Our department must stay within the allocated budget.",
+        "exampleMeaning": "Phòng phòng của chúng ta phải nằm trong ngân sách được cấp."
+      },
+      {
+        "word": "Over budget",
+        "type": "expression",
+        "pronunciation": "/ˈoʊ.vɚ ˈbʌdʒ.ɪt/",
+        "meaning": "Vượt ngân sách",
+        "definition": "Costing more money than was originally planned.",
+        "example": "The renovation project went over budget due to unexpected repairs.",
+        "exampleMeaning": "Dự án cải tạo đã vượt ngân sách do các khoản sửa chữa ngoài dự kiến."
+      },
+      {
+        "word": "Fund",
+        "type": "noun",
+        "pronunciation": "/fʌnd/",
+        "meaning": "Tiền quỹ, nguồn tiền",
+        "definition": "A sum of money saved or provided for a particular purpose.",
+        "example": "We are raising funds for the new community center.",
+        "exampleMeaning": "Chúng tôi đang huy động nguồn tiền cho trung tâm cộng đồng mới."
+      },
+      {
+        "word": "Finance",
+        "type": "noun",
+        "pronunciation": "/ˈfaɪ.næns/",
+        "meaning": "Tài chính",
+        "definition": "The management of large amounts of money, especially by companies.",
+        "example": "She works as a consultant in the corporate finance division.",
+        "exampleMeaning": "Cô ấy làm cố vấn trong bộ phận tài chính doanh nghiệp."
+      },
+      {
+        "word": "Accounting",
+        "type": "noun",
+        "pronunciation": "/əˈkaʊn.tɪŋ/",
+        "meaning": "Ngân sách, kế toán",
+        "definition": "The process or work of keeping financial accounts.",
+        "example": "Please send all invoice inquiries directly to the accounting department.",
+        "exampleMeaning": "Vui lòng gửi tất cả thắc mắc về hóa đơn trực tiếp cho bộ phận kế toán."
+      },
+      {
+        "word": "Insurance",
+        "type": "noun",
+        "pronunciation": "/ɪnˈʃɔː.rəns/",
+        "meaning": "Bảo hiểm",
+        "definition": "An arrangement providing a guarantee of compensation for specified loss.",
+        "example": "The company provides comprehensive health insurance for all staff.",
+        "exampleMeaning": "Công ty cung cấp bảo hiểm y tế toàn diện cho toàn bộ nhân viên."
+      },
+      {
+        "word": "Guarantee",
+        "type": "verb/noun",
+        "pronunciation": "/ˌɡær.ənˈtiː/",
+        "meaning": "Cam kết, bảo hành, đảm bảo",
+        "definition": "A formal promise or assurance that certain conditions will be fulfilled.",
+        "example": "All products come with a two-year money-back guarantee.",
+        "exampleMeaning": "Tất cả sản phẩm đều đi kèm với bảo hành hoàn tiền trong 2 năm."
+      },
+      {
+        "word": "Satisfy",
+        "type": "verb",
+        "pronunciation": "/ˈsæt.ɪs.faɪ/",
+        "meaning": "Làm hài lòng, đáp ứng",
+        "definition": "To meet the expectations, needs, or desires of someone.",
+        "example": "Our primary goal is to satisfy customer requirements.",
+        "exampleMeaning": "Mục tiêu hàng đầu của chúng tôi là đáp ứng yêu cầu của khách hàng."
+      },
+      {
+        "word": "Satisfaction",
+        "type": "noun",
+        "pronunciation": "/ˌsæt.ɪsˈfæk.ʃən/",
+        "meaning": "Sự hài lòng",
+        "definition": "Fulfillment of one's wishes, expectations, or needs.",
+        "example": "We strive to achieve 100% customer satisfaction.",
+        "exampleMeaning": "Chúng tôi phấn đấu đạt được 100% sự hài lòng của khách hàng."
+      },
+      {
+        "word": "Deliver",
+        "type": "verb",
+        "pronunciation": "/dɪˈlɪv.ər/",
+        "meaning": "Giao hàng",
+        "definition": "To bring and hand over letters, parcels, or goods to the addressee.",
+        "example": "The package will be delivered by tomorrow afternoon.",
+        "exampleMeaning": "Bưu kiện sẽ được giao trước chiều mai."
+      },
+      {
+        "word": "Schedule",
+        "type": "noun/verb",
+        "pronunciation": "/ˈʃed.juːl/",
+        "meaning": "Tiến độ, lịch trình / Lên lịch",
+        "definition": "A plan that lists all the work that needs to be done and when.",
+        "example": "The flight is operating on schedule.",
+        "exampleMeaning": "Chuyến bay đang hoạt động đúng lịch trình."
+      },
+      {
+        "word": "Reschedule",
+        "type": "verb",
+        "pronunciation": "/ˌriːˈʃed.juːl/",
+        "meaning": "Đổi lịch trình",
+        "definition": "To arrange a new time for an event.",
+        "example": "We need to reschedule the meeting due to a conflict.",
+        "exampleMeaning": "Chúng tôi cần đổi lịch họp do bị trùng lịch."
+      },
+      {
+        "word": "Renovation",
+        "type": "noun",
+        "pronunciation": "/ˌren.əˈveɪ.ʃən/",
+        "meaning": "Sự cải tạo, sửa chữa",
+        "definition": "The process of restoring or building something up again.",
+        "example": "The office will be closed for renovation during the weekend.",
+        "exampleMeaning": "Văn phòng sẽ đóng cửa để cải tạo trong dịp cuối tuần."
+      },
+      {
+        "word": "Replace",
+        "type": "verb",
+        "pronunciation": "/rɪˈpleɪs/",
+        "meaning": "Thay thế",
+        "definition": "To take the place of something or someone else.",
+        "example": "We need to replace the old copier with a modern printer.",
+        "exampleMeaning": "Chúng tôi cần thay thế máy photo cũ bằng một máy in hiện đại."
+      },
+      {
+        "word": "Air conditioner",
+        "type": "noun",
+        "pronunciation": "/ˈeə kənˌdɪʃ.ən.ər/",
+        "meaning": "Máy điều hòa",
+        "definition": "A machine that cools and dries the air inside a room or building.",
+        "example": "Technicians are fixing the air conditioner in room 302.",
+        "exampleMeaning": "Kỹ thuật viên đang sửa máy điều hòa ở phòng 302."
+      },
+      {
+        "word": "Complaint",
+        "type": "noun",
+        "pronunciation": "/kəmˈpleɪnt/",
+        "meaning": "Lời khiếu nại, than phiền",
+        "definition": "A statement that something is unsatisfactory or unacceptable.",
+        "example": "Customer service handled the complaint promptly.",
+        "exampleMeaning": "Bộ phận chăm sóc khách hàng đã xử lý lời khiếu nại một cách nhanh chóng."
+      },
+      {
+        "word": "Handle",
+        "type": "verb",
+        "pronunciation": "/ˈhæn.dəl/",
+        "meaning": "Xử lý, giải quyết",
+        "definition": "To deal with or take charge of a situation or problem.",
+        "example": "Who will handle the client calls while you are away?",
+        "exampleMeaning": "Ai sẽ giải quyết các cuộc gọi của khách hàng khi bạn đi vắng?"
+      },
+      {
+        "word": "Policy",
+        "type": "noun",
+        "pronunciation": "/ˈpɒl.ə.si/",
+        "meaning": "Chính sách, hợp đồng (bảo hiểm)",
+        "definition": "A course or principle of action adopted or proposed by an organization.",
+        "example": "Please read the new company travel policy carefully.",
+        "exampleMeaning": "Vui lòng đọc kỹ chính sách đi lại mới của công ty."
+      },
+      {
+        "word": "Approve",
+        "type": "verb",
+        "pronunciation": "/əˈpruːv/",
+        "meaning": "Phê duyệt, chấp thuận",
+        "definition": "To officially agree to or accept something.",
+        "example": "The manager will approve your leave application today.",
+        "exampleMeaning": "Quản lý sẽ phê duyệt đơn xin nghỉ phép của bạn hôm nay."
+      },
+      {
+        "word": "Graph",
+        "type": "noun",
+        "pronunciation": "/ɡræf/",
+        "meaning": "Biểu đồ",
+        "definition": "A diagram showing the relation between variable quantities.",
+        "example": "The sales graph shows a steady increase over the last quarter.",
+        "exampleMeaning": "Biểu đồ doanh số cho thấy sự tăng trưởng ổn định trong quý qua."
+      },
+      {
+        "word": "Trend",
+        "type": "noun",
+        "pronunciation": "/trend/",
+        "meaning": "Xu hướng",
+        "definition": "A general direction in which something is developing or changing.",
+        "example": "There is a growing trend toward remote work.",
+        "exampleMeaning": "Đang có xu hướng ngày càng tăng đối với làm việc từ xa."
       }
     ]
   },
@@ -3443,10 +3722,10 @@ const toeicVocabulary = {
         "word": "Deliver",
         "type": "verb",
         "pronunciation": "/dɪˈlɪv.ər/",
-        "meaning": "Giao hàng, vận chuyển",
-        "definition": "To bring and hand over goods or mail to a recipient.",
-        "example": "A courier is delivering packages to the office.",
-        "exampleMeaning": "Nhân viên chuyển phát đang giao hàng đến văn phòng."
+        "meaning": "Giao hàng",
+        "definition": "To bring and hand over letters, parcels, or goods to the addressee.",
+        "example": "The package will be delivered by tomorrow afternoon.",
+        "exampleMeaning": "Bưu kiện sẽ được giao trước chiều mai."
       },
       {
         "word": "Enter",
@@ -3861,6 +4140,276 @@ const toeicVocabulary = {
         "definition": "On the highest surface of something.",
         "example": "A box is placed on top of the cabinet.",
         "exampleMeaning": "Một chiếc hộp được đặt trên đỉnh tủ."
+      },
+      {
+        "word": "Transaction",
+        "type": "noun",
+        "pronunciation": "/trænˈzæk.ʃən/",
+        "meaning": "Giao dịch",
+        "definition": "An instance of buying or selling something; a business deal.",
+        "example": "Please keep your receipt as proof of transaction.",
+        "exampleMeaning": "Vui lòng giữ lại hóa đơn làm bằng chứng giao dịch."
+      },
+      {
+        "word": "Receipt",
+        "type": "noun",
+        "pronunciation": "/rɪˈsiːt/",
+        "meaning": "Hóa đơn, biên lai",
+        "definition": "A written statement showing that money or goods have been received.",
+        "example": "Attach your receipt to the expense report for reimbursement.",
+        "exampleMeaning": "Đính kèm biên lai của bạn vào báo cáo chi phí để được hoàn tiền."
+      },
+      {
+        "word": "Reimburse",
+        "type": "verb",
+        "pronunciation": "/ˌriː.ɪmˈbɜːs/",
+        "meaning": "Hoàn tiền, hoàn trả chi phí",
+        "definition": "To pay back money to someone who has spent it for a work purpose.",
+        "example": "The company will reimburse your travel expenses next week.",
+        "exampleMeaning": "Công ty sẽ hoàn trả chi phí đi lại của bạn vào tuần tới."
+      },
+      {
+        "word": "Expense",
+        "type": "noun",
+        "pronunciation": "/ɪkˈspens/",
+        "meaning": "Chi phí, phí tổn",
+        "definition": "The money spent on something.",
+        "example": "We need to cut down on office expenses this month.",
+        "exampleMeaning": "Chúng ta cần cắt giảm chi phí văn phòng trong tháng này."
+      },
+      {
+        "word": "Urgent",
+        "type": "adjective",
+        "pronunciation": "/ˈɜː.dʒənt/",
+        "meaning": "Khẩn cấp, cấp bách",
+        "definition": "Requiring immediate action or attention.",
+        "example": "The manager left an urgent message on my desk.",
+        "exampleMeaning": "Quản lý đã để lại một tin nhắn khẩn cấp trên bàn làm việc của tôi."
+      },
+      {
+        "word": "Transfer",
+        "type": "verb/noun",
+        "pronunciation": "/trænsˈfɜːr/",
+        "meaning": "Điều chuyển (công tác), chuyển khoản",
+        "definition": "To move from one place, person, or position to another.",
+        "example": "Mr. Kim was transferred to the London branch last month.",
+        "exampleMeaning": "Ông Kim đã được điều chuyển sang chi nhánh London vào tháng trước."
+      },
+      {
+        "word": "Maintenance",
+        "type": "noun",
+        "pronunciation": "/ˈmeɪn.tən.əns/",
+        "meaning": "Bảo trì, bảo dưỡng",
+        "definition": "The process of preserving or keeping something in good condition.",
+        "example": "Routine maintenance of the equipment will take place on Saturday.",
+        "exampleMeaning": "Việc bảo trì định kỳ thiết bị sẽ diễn ra vào thứ Bảy."
+      },
+      {
+        "word": "Paycheck",
+        "type": "noun",
+        "pronunciation": "/ˈpeɪ.tʃek/",
+        "meaning": "Phiếu lương, tiền lương",
+        "definition": "A check issued in payment of wages or salary.",
+        "example": "Employees receive their monthly paycheck on the last Friday.",
+        "exampleMeaning": "Nhân viên nhận phiếu lương hàng tháng vào thứ Sáu cuối cùng."
+      },
+      {
+        "word": "Vacation",
+        "type": "noun",
+        "pronunciation": "/veɪˈkeɪ.ʃən/",
+        "meaning": "Kỳ nghỉ, nghỉ phép",
+        "definition": "A period of time spent away from home or work in order to relax or travel.",
+        "example": "She submitted a vacation request for two weeks in August.",
+        "exampleMeaning": "Cô ấy đã nộp đơn xin nghỉ phép 2 tuần vào tháng Tám."
+      },
+      {
+        "word": "Director",
+        "type": "noun",
+        "pronunciation": "/daɪˈrek.tər/",
+        "meaning": "Giám đốc",
+        "definition": "A person who is in charge of an activity, department, or organization.",
+        "example": "The board of directors approved the new annual budget.",
+        "exampleMeaning": "Hội đồng quản trị đã phê duyệt ngân sách hàng năm mới."
+      },
+      {
+        "word": "Budget",
+        "type": "noun",
+        "pronunciation": "/ˈbʌdʒ.ɪt/",
+        "meaning": "Ngân sách",
+        "definition": "An estimate of income and expenditure for a set period of time.",
+        "example": "Our department must stay within the allocated budget.",
+        "exampleMeaning": "Phòng phòng của chúng ta phải nằm trong ngân sách được cấp."
+      },
+      {
+        "word": "Over budget",
+        "type": "expression",
+        "pronunciation": "/ˈoʊ.vɚ ˈbʌdʒ.ɪt/",
+        "meaning": "Vượt ngân sách",
+        "definition": "Costing more money than was originally planned.",
+        "example": "The renovation project went over budget due to unexpected repairs.",
+        "exampleMeaning": "Dự án cải tạo đã vượt ngân sách do các khoản sửa chữa ngoài dự kiến."
+      },
+      {
+        "word": "Fund",
+        "type": "noun",
+        "pronunciation": "/fʌnd/",
+        "meaning": "Tiền quỹ, nguồn tiền",
+        "definition": "A sum of money saved or provided for a particular purpose.",
+        "example": "We are raising funds for the new community center.",
+        "exampleMeaning": "Chúng tôi đang huy động nguồn tiền cho trung tâm cộng đồng mới."
+      },
+      {
+        "word": "Finance",
+        "type": "noun",
+        "pronunciation": "/ˈfaɪ.næns/",
+        "meaning": "Tài chính",
+        "definition": "The management of large amounts of money, especially by companies.",
+        "example": "She works as a consultant in the corporate finance division.",
+        "exampleMeaning": "Cô ấy làm cố vấn trong bộ phận tài chính doanh nghiệp."
+      },
+      {
+        "word": "Accounting",
+        "type": "noun",
+        "pronunciation": "/əˈkaʊn.tɪŋ/",
+        "meaning": "Ngân sách, kế toán",
+        "definition": "The process or work of keeping financial accounts.",
+        "example": "Please send all invoice inquiries directly to the accounting department.",
+        "exampleMeaning": "Vui lòng gửi tất cả thắc mắc về hóa đơn trực tiếp cho bộ phận kế toán."
+      },
+      {
+        "word": "Insurance",
+        "type": "noun",
+        "pronunciation": "/ɪnˈʃɔː.rəns/",
+        "meaning": "Bảo hiểm",
+        "definition": "An arrangement providing a guarantee of compensation for specified loss.",
+        "example": "The company provides comprehensive health insurance for all staff.",
+        "exampleMeaning": "Công ty cung cấp bảo hiểm y tế toàn diện cho toàn bộ nhân viên."
+      },
+      {
+        "word": "Guarantee",
+        "type": "verb/noun",
+        "pronunciation": "/ˌɡær.ənˈtiː/",
+        "meaning": "Cam kết, bảo hành, đảm bảo",
+        "definition": "A formal promise or assurance that certain conditions will be fulfilled.",
+        "example": "All products come with a two-year money-back guarantee.",
+        "exampleMeaning": "Tất cả sản phẩm đều đi kèm với bảo hành hoàn tiền trong 2 năm."
+      },
+      {
+        "word": "Satisfy",
+        "type": "verb",
+        "pronunciation": "/ˈsæt.ɪs.faɪ/",
+        "meaning": "Làm hài lòng, đáp ứng",
+        "definition": "To meet the expectations, needs, or desires of someone.",
+        "example": "Our primary goal is to satisfy customer requirements.",
+        "exampleMeaning": "Mục tiêu hàng đầu của chúng tôi là đáp ứng yêu cầu của khách hàng."
+      },
+      {
+        "word": "Satisfaction",
+        "type": "noun",
+        "pronunciation": "/ˌsæt.ɪsˈfæk.ʃən/",
+        "meaning": "Sự hài lòng",
+        "definition": "Fulfillment of one's wishes, expectations, or needs.",
+        "example": "We strive to achieve 100% customer satisfaction.",
+        "exampleMeaning": "Chúng tôi phấn đấu đạt được 100% sự hài lòng của khách hàng."
+      },
+      {
+        "word": "Schedule",
+        "type": "noun/verb",
+        "pronunciation": "/ˈʃed.juːl/",
+        "meaning": "Tiến độ, lịch trình / Lên lịch",
+        "definition": "A plan that lists all the work that needs to be done and when.",
+        "example": "The flight is operating on schedule.",
+        "exampleMeaning": "Chuyến bay đang hoạt động đúng lịch trình."
+      },
+      {
+        "word": "Reschedule",
+        "type": "verb",
+        "pronunciation": "/ˌriːˈʃed.juːl/",
+        "meaning": "Đổi lịch trình",
+        "definition": "To arrange a new time for an event.",
+        "example": "We need to reschedule the meeting due to a conflict.",
+        "exampleMeaning": "Chúng tôi cần đổi lịch họp do bị trùng lịch."
+      },
+      {
+        "word": "Renovation",
+        "type": "noun",
+        "pronunciation": "/ˌren.əˈveɪ.ʃən/",
+        "meaning": "Sự cải tạo, sửa chữa",
+        "definition": "The process of restoring or building something up again.",
+        "example": "The office will be closed for renovation during the weekend.",
+        "exampleMeaning": "Văn phòng sẽ đóng cửa để cải tạo trong dịp cuối tuần."
+      },
+      {
+        "word": "Replace",
+        "type": "verb",
+        "pronunciation": "/rɪˈpleɪs/",
+        "meaning": "Thay thế",
+        "definition": "To take the place of something or someone else.",
+        "example": "We need to replace the old copier with a modern printer.",
+        "exampleMeaning": "Chúng tôi cần thay thế máy photo cũ bằng một máy in hiện đại."
+      },
+      {
+        "word": "Air conditioner",
+        "type": "noun",
+        "pronunciation": "/ˈeə kənˌdɪʃ.ən.ər/",
+        "meaning": "Máy điều hòa",
+        "definition": "A machine that cools and dries the air inside a room or building.",
+        "example": "Technicians are fixing the air conditioner in room 302.",
+        "exampleMeaning": "Kỹ thuật viên đang sửa máy điều hòa ở phòng 302."
+      },
+      {
+        "word": "Complaint",
+        "type": "noun",
+        "pronunciation": "/kəmˈpleɪnt/",
+        "meaning": "Lời khiếu nại, than phiền",
+        "definition": "A statement that something is unsatisfactory or unacceptable.",
+        "example": "Customer service handled the complaint promptly.",
+        "exampleMeaning": "Bộ phận chăm sóc khách hàng đã xử lý lời khiếu nại một cách nhanh chóng."
+      },
+      {
+        "word": "Handle",
+        "type": "verb",
+        "pronunciation": "/ˈhæn.dəl/",
+        "meaning": "Xử lý, giải quyết",
+        "definition": "To deal with or take charge of a situation or problem.",
+        "example": "Who will handle the client calls while you are away?",
+        "exampleMeaning": "Ai sẽ giải quyết các cuộc gọi của khách hàng khi bạn đi vắng?"
+      },
+      {
+        "word": "Policy",
+        "type": "noun",
+        "pronunciation": "/ˈpɒl.ə.si/",
+        "meaning": "Chính sách, hợp đồng (bảo hiểm)",
+        "definition": "A course or principle of action adopted or proposed by an organization.",
+        "example": "Please read the new company travel policy carefully.",
+        "exampleMeaning": "Vui lòng đọc kỹ chính sách đi lại mới của công ty."
+      },
+      {
+        "word": "Approve",
+        "type": "verb",
+        "pronunciation": "/əˈpruːv/",
+        "meaning": "Phê duyệt, chấp thuận",
+        "definition": "To officially agree to or accept something.",
+        "example": "The manager will approve your leave application today.",
+        "exampleMeaning": "Quản lý sẽ phê duyệt đơn xin nghỉ phép của bạn hôm nay."
+      },
+      {
+        "word": "Graph",
+        "type": "noun",
+        "pronunciation": "/ɡræf/",
+        "meaning": "Biểu đồ",
+        "definition": "A diagram showing the relation between variable quantities.",
+        "example": "The sales graph shows a steady increase over the last quarter.",
+        "exampleMeaning": "Biểu đồ doanh số cho thấy sự tăng trưởng ổn định trong quý qua."
+      },
+      {
+        "word": "Trend",
+        "type": "noun",
+        "pronunciation": "/trend/",
+        "meaning": "Xu hướng",
+        "definition": "A general direction in which something is developing or changing.",
+        "example": "There is a growing trend toward remote work.",
+        "exampleMeaning": "Đang có xu hướng ngày càng tăng đối với làm việc từ xa."
       }
     ]
   },
@@ -4017,10 +4566,10 @@ const toeicVocabulary = {
         "word": "Maintenance",
         "type": "noun",
         "pronunciation": "/ˈmeɪn.tən.əns/",
-        "meaning": "Sự bảo trì, duy trì",
-        "definition": "The process of keeping something in good condition.",
-        "example": "Regular maintenance prevents major system failures.",
-        "exampleMeaning": "Bảo trì thường xuyên giúp ngăn ngừa hỏng hóc hệ thống lớn."
+        "meaning": "Bảo trì, bảo dưỡng",
+        "definition": "The process of preserving or keeping something in good condition.",
+        "example": "Routine maintenance of the equipment will take place on Saturday.",
+        "exampleMeaning": "Việc bảo trì định kỳ thiết bị sẽ diễn ra vào thứ Bảy."
       },
       {
         "word": "Paycheck",
