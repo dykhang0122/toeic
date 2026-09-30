@@ -343,6 +343,150 @@ const toeicVocabulary = {
         "definition": "To make official files, records, or documents available to authorized parties.",
         "example": "The medical center will release your records upon receiving a written request.",
         "exampleMeaning": "Trung tâm y tế sẽ bàn giao hồ sơ của bạn khi nhận được yêu cầu bằng văn bản."
+      },
+      {
+        "word": "Have a meeting with [someone]",
+        "type": "verb phrase",
+        "pronunciation": "/hæv ə ˈmiː.tɪŋ wɪð/",
+        "meaning": "Có cuộc họp với ai đó",
+        "definition": "To hold or attend a formal discussion with a person or group.",
+        "example": "The director will have a meeting with the overseas clients at 10 AM.",
+        "exampleMeaning": "Giám đốc sẽ có cuộc họp với các khách hàng nước ngoài lúc 10 giờ sáng."
+      },
+      {
+        "word": "Go ahead with [something]",
+        "type": "phrasal verb",
+        "pronunciation": "/ɡəʊ əˈhed wɪð/",
+        "meaning": "Tiếp tục / Tiến hành làm điều gì đó (sau khi cân nhắc hoặc xin phép)",
+        "definition": "To proceed with a planned task or project after receiving approval.",
+        "example": "Management decided to go ahead with the expansion plan.",
+        "exampleMeaning": "Ban quản lý đã quyết định tiến hành dự án mở rộng."
+      },
+      {
+        "word": "Contract negotiations",
+        "type": "noun phrase",
+        "pronunciation": "/ˈkɒn.trækt nɪˌɡəʊ.ʃiˈeɪ.ʃənz/",
+        "meaning": "Các cuộc đàm phán hợp đồng",
+        "definition": "Discussions aimed at reaching an agreement on contract terms.",
+        "example": "Contract negotiations between the two companies took three weeks.",
+        "exampleMeaning": "Các cuộc đàm phán hợp đồng giữa hai công ty kéo dài ba tuần."
+      },
+      {
+        "word": "Set a work schedule",
+        "type": "verb phrase",
+        "pronunciation": "/set ə wɜːk ˈʃed.juːl/",
+        "meaning": "Lập / Ấn định lịch trình làm việc",
+        "definition": "To fix or plan working hours and timetables for employees.",
+        "example": "The supervisor will set a work schedule for the next quarter.",
+        "exampleMeaning": "Người giám sát sẽ lập lịch trình làm việc cho quý tới."
+      },
+      {
+        "word": "Property ownership documents",
+        "type": "noun phrase",
+        "pronunciation": "/ˈprɒp.ə.ti ˈəʊ.nə.ʃɪp ˈdɒk.jə.mənts/",
+        "meaning": "Giấy tờ / Hồ sơ sở hữu tài sản (nhà đất)",
+        "definition": "Legal paperwork proving legal title or ownership of real estate.",
+        "example": "Please bring your property ownership documents to the lawyer office.",
+        "exampleMeaning": "Vui lòng mang giấy tờ sở hữu tài sản của bạn đến văn phòng luật sư."
+      },
+      {
+        "word": "Forward [something] to [someone]",
+        "type": "verb phrase",
+        "pronunciation": "/ˈfɔː.wəd ... tuː/",
+        "meaning": "Chuyển tiếp (email, tài liệu) cho ai đó",
+        "definition": "To re-send or pass on an email, document, or mail to another person.",
+        "example": "I will forward the invoice to the accounting department.",
+        "exampleMeaning": "Tôi sẽ chuyển tiếp hóa đơn cho bộ phận kế toán."
+      },
+      {
+        "word": "Classified matter",
+        "type": "noun phrase",
+        "pronunciation": "/ˈklæs.ɪ.faɪd ˈmæt.ər/",
+        "meaning": "Vấn đề bí mật / Bảo mật nội bộ",
+        "definition": "Information or subject matter restricted to authorized personnel.",
+        "example": "Employees must not discuss classified matter outside the office.",
+        "exampleMeaning": "Nhân viên không được thảo luận về các vấn đề bí mật bên ngoài văn phòng."
+      },
+      {
+        "word": "Officially announce",
+        "type": "verb phrase",
+        "pronunciation": "/əˈfɪʃ.əl.i əˈnaʊns/",
+        "meaning": "Thông báo một cách chính thức",
+        "definition": "To make a public or formal declaration.",
+        "example": "The CEO will officially announce the merger tomorrow morning.",
+        "exampleMeaning": "Tổng giám đốc sẽ thông báo chính thức về việc sáp nhập vào sáng mai."
+      },
+      {
+        "word": "Affect company's reputation",
+        "type": "verb phrase",
+        "pronunciation": "/əˈfekt ˈkʌm.pə.niz ˌrep.jəˈteɪ.ʃən/",
+        "meaning": "Ảnh hưởng đến uy tín của công ty",
+        "definition": "To influence or impact the public standing or prestige of a firm.",
+        "example": "Product recalls can severely affect the company's reputation.",
+        "exampleMeaning": "Thu hồi sản phẩm có thể ảnh hưởng nghiêm trọng đến uy tín của công ty."
+      },
+      {
+        "word": "Place an ad (on the Internet)",
+        "type": "verb phrase",
+        "pronunciation": "/pleɪs æn æd/",
+        "meaning": "Đăng một bản quảng cáo / rao vặt (trên Internet)",
+        "definition": "To publish or display an advertisement online or in print.",
+        "example": "The firm decided to place an ad on social media platforms.",
+        "exampleMeaning": "Công ty đã quyết định đăng quảng cáo trên các nền tảng mạng xã hội."
+      },
+      {
+        "word": "Give [something] away",
+        "type": "phrasal verb",
+        "pronunciation": "/ɡɪv ... əˈweɪ/",
+        "meaning": "Cho đi, tặng miễn phí cái gì đó",
+        "definition": "To hand over something for free as a gift or promotion.",
+        "example": "The store will give away free promotional samples to the first 50 customers.",
+        "exampleMeaning": "Cửa hàng sẽ tặng mẫu dùng thử miễn phí cho 50 khách hàng đầu tiên."
+      },
+      {
+        "word": "Get transferred to [a place]",
+        "type": "verb phrase",
+        "pronunciation": "/ɡet trænˈsfɜːd tuː/",
+        "meaning": "Được điều chuyển / chuyển công tác đến [một nơi khác]",
+        "definition": "To be relocated or assigned to another branch or office location.",
+        "example": "She got transferred to the Tokyo branch last month.",
+        "exampleMeaning": "Cô ấy đã được điều chuyển công tác sang chi nhánh Tokyo vào tháng trước."
+      },
+      {
+        "word": "Claim an item",
+        "type": "verb phrase",
+        "pronunciation": "/kleɪm æn ˈaɪ.təm/",
+        "meaning": "Đến nhận / Đăng ký lấy một món đồ",
+        "definition": "To assert right or ownership to receive a lost or stored item.",
+        "example": "Passengers can claim their lost items at the customer service desk.",
+        "exampleMeaning": "Hành khách có thể đến nhận lại đồ thất lạc tại quầy dịch vụ khách hàng."
+      },
+      {
+        "word": "In particular",
+        "type": "prepositional phrase",
+        "pronunciation": "/ɪn pəˈtɪk.jə.lər/",
+        "meaning": "Nói riêng, cụ thể là",
+        "definition": "Especially or specifically when focusing on a particular item.",
+        "example": "The board praised the sales team, and John in particular.",
+        "exampleMeaning": "Hội đồng quản trị đã khen ngợi đội bán hàng, và cụ thể là John."
+      },
+      {
+        "word": "Post a photo of [something]",
+        "type": "verb phrase",
+        "pronunciation": "/pəʊst ə ˈfəʊ.təʊ əv/",
+        "meaning": "Đăng tải hình ảnh của cái gì đó",
+        "definition": "To publish or upload a photograph online or on a bulletin board.",
+        "example": "The marketing department posted a photo of the new office.",
+        "exampleMeaning": "Bộ phận tiếp thị đã đăng tải hình ảnh của văn phòng mới."
+      },
+      {
+        "word": "Drop by",
+        "type": "phrasal verb",
+        "pronunciation": "/drɒp baɪ/",
+        "meaning": "Ghé qua / Tạt qua",
+        "definition": "To make an informal or unannounced short visit.",
+        "example": "Please drop by my office whenever you are free.",
+        "exampleMeaning": "Vui lòng ghé qua văn phòng của tôi bất cứ khi nào bạn rảnh."
       }
     ]
   },
