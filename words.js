@@ -145,6 +145,204 @@ const toeicVocabulary = {
         "definition": "To shut down or cease operations at a particular hour.",
         "example": "The customer service center closes at 5:00 PM.",
         "exampleMeaning": "Trung tâm dịch vụ khách hàng đóng cửa vào lúc 5:00 chiều."
+      },
+      {
+        "word": "How may I help you?",
+        "type": "phrase",
+        "pronunciation": "/haʊ meɪ aɪ help juː/",
+        "meaning": "Tôi có thể giúp gì cho bạn? (Câu chào lịch sự chuẩn trong dịch vụ khách hàng)",
+        "definition": "A standard polite expression used by service personnel to offer assistance to a customer.",
+        "example": "Good morning, welcome to Customer Support. How may I help you?",
+        "exampleMeaning": "Xin chào, chào mừng đến với Bộ phận hỗ trợ khách hàng. Tôi có thể giúp gì cho bạn?"
+      },
+      {
+        "word": "Be interested in + V-ing / N",
+        "type": "phrase",
+        "pronunciation": "/biː ˈɪn.trəs.tɪd ɪn/",
+        "meaning": "Quan tâm / hứng thú với việc gì",
+        "definition": "To give attention to something because you enjoy it or want to know more about it.",
+        "example": "Many clients are interested in signing up for the premium subscription.",
+        "exampleMeaning": "Nhiều khách hàng hứng thú với việc đăng ký gói thành viên cao cấp."
+      },
+      {
+        "word": "Work out",
+        "type": "phrasal verb",
+        "pronunciation": "/wɜːk aʊt/",
+        "meaning": "Tập thể dục, tập gym",
+        "definition": "To engage in physical exercise or gym training.",
+        "example": "He usually works out at the fitness center after work.",
+        "exampleMeaning": "Anh ấy thường tập thể dục tại trung tâm thể hình sau giờ làm."
+      },
+      {
+        "word": "Make an appointment",
+        "type": "phrase",
+        "pronunciation": "/meɪk æn əˈpɔɪnt.mənt/",
+        "meaning": "Đặt lịch hẹn",
+        "definition": "To arrange a formal agreement to meet someone at a specific time.",
+        "example": "Please call the clinic to make an appointment with the doctor.",
+        "exampleMeaning": "Vui lòng gọi điện cho phòng khám để đặt lịch hẹn với bác sĩ."
+      },
+      {
+        "word": "Have an opening",
+        "type": "phrase",
+        "pronunciation": "/hæv æn ˈəʊ.pən.ɪŋ/",
+        "meaning": "Có lịch trống / có chỗ trống",
+        "definition": "To have an available slot, vacancy, or appointment time.",
+        "example": "The dentist has an opening this Thursday afternoon.",
+        "exampleMeaning": "Nha sĩ có lịch trống vào chiều thứ Năm tuần này."
+      },
+      {
+        "word": "Sign [someone] up (for [something])",
+        "type": "phrasal verb",
+        "pronunciation": "/saɪn ... ʌp fɔːr .../",
+        "meaning": "Đăng ký cho ai đó (vào một chương trình/buổi học/dịch vụ)",
+        "definition": "To register or enroll someone in an activity, course, or service.",
+        "example": "She signed her team up for the corporate training workshop.",
+        "exampleMeaning": "Cô ấy đã đăng ký cho đội của mình tham gia buổi thảo luận đào tạo doanh nghiệp."
+      },
+      {
+        "word": "That works for me",
+        "type": "phrase",
+        "pronunciation": "/ðæt wɜːks fɔːr miː/",
+        "meaning": "Giờ đó / điều đó phù hợp với tôi",
+        "definition": "An informal phrase used to agree to a proposed time or arrangement.",
+        "example": "Meeting at 3:00 PM tomorrow? Yes, that works for me.",
+        "exampleMeaning": "Gặp nhau lúc 3:00 chiều mai nhé? Vâng, giờ đó phù hợp với tôi."
+      },
+      {
+        "word": "Extra charge",
+        "type": "noun phrase",
+        "pronunciation": "/ˈek.strə tʃɑːdʒ/",
+        "meaning": "Khoản phí phụ thu / phí trả thêm",
+        "definition": "An additional cost added to the regular price of a product or service.",
+        "example": "Delivery on weekends incurs an extra charge of $10.",
+        "exampleMeaning": "Giao hàng vào cuối tuần sẽ chịu một khoản phí phụ thu là 10 USD."
+      },
+      {
+        "word": "Monthly fee",
+        "type": "noun phrase",
+        "pronunciation": "/ˈmʌnθ.li fiː/",
+        "meaning": "Phí hằng tháng",
+        "definition": "A recurring payment required every month for a membership or service.",
+        "example": "The monthly fee for the gym membership is due on the 1st of each month.",
+        "exampleMeaning": "Phí hằng tháng cho thẻ tập gym đến hạn thanh toán vào ngày 1 mỗi tháng."
+      },
+      {
+        "word": "Emigrate to [a country]",
+        "type": "verb phrase",
+        "pronunciation": "/ˈem.ɪ.ɡreɪt tuː .../",
+        "meaning": "Di cư đến [một quốc gia] (VD: emigrate to Australia)",
+        "definition": "To permanently leave one's own country to settle in another.",
+        "example": "His family decided to emigrate to Australia for better employment opportunities.",
+        "exampleMeaning": "Gia đình anh ấy đã quyết định di cư đến Úc để có cơ hội việc làm tốt hơn."
+      },
+      {
+        "word": "Medical records",
+        "type": "noun phrase",
+        "pronunciation": "/ˈmed.ɪ.kəl rɪˈkɔːdz/",
+        "meaning": "Hồ sơ bệnh án",
+        "definition": "Confidential documents containing a patient's health history and treatments.",
+        "example": "The hospital keeps all medical records strictly confidential.",
+        "exampleMeaning": "Bệnh viện giữ tất cả hồ sơ bệnh án bảo mật tuyệt đối."
+      },
+      {
+        "word": "In case...",
+        "type": "prepositional phrase",
+        "pronunciation": "/ɪn keɪs/",
+        "meaning": "Trong trường hợp / Phòng khi...",
+        "definition": "As a precaution against the possibility that something might happen.",
+        "example": "Please take an umbrella in case it rains later today.",
+        "exampleMeaning": "Vui lòng mang theo ô phòng khi trời mưa vào muộn hôm nay."
+      },
+      {
+        "word": "Print [something] out",
+        "type": "phrasal verb",
+        "pronunciation": "/prɪnt ... aʊt/",
+        "meaning": "In cái gì đó ra",
+        "definition": "To produce a hard copy of a digital document or image.",
+        "example": "Could you please print out the boarding pass for me?",
+        "exampleMeaning": "Bạn có thể làm ơn in thẻ lên máy bay ra cho tôi được không?"
+      },
+      {
+        "word": "In person",
+        "type": "prepositional phrase",
+        "pronunciation": "/ɪn ˈpɜː.sən/",
+        "meaning": "Trực tiếp (đến tận nơi, gặp trực tiếp)",
+        "definition": "Physically present rather than contacting via phone or internet.",
+        "example": "Applicants must apply in person at the local branch office.",
+        "exampleMeaning": "Ứng viên phải nộp đơn trực tiếp tại văn phòng chi nhánh địa phương."
+      },
+      {
+        "word": "Pick [something/someone] up",
+        "type": "phrasal verb",
+        "pronunciation": "/pɪk ... ʌp/",
+        "meaning": "Đến lấy (đồ) / Đón (ai đó)",
+        "definition": "To collect a package or pick up a person in a vehicle.",
+        "example": "I will pick up the package from the post office tomorrow.",
+        "exampleMeaning": "Tôi sẽ đến lấy bưu kiện từ bưu điện vào ngày mai."
+      },
+      {
+        "word": "On the other hand",
+        "type": "phrase",
+        "pronunciation": "/ɒn ðə ˈʌð.ər hænd/",
+        "meaning": "Mặt khác, ngược lại (dùng để chuyển ý sang một lựa chọn/khía cạnh khác)",
+        "definition": "Used to introduce a contrasting aspect, argument, or point of view.",
+        "example": "The new machine is expensive; on the other hand, it increases efficiency significantly.",
+        "exampleMeaning": "Máy mới rất đắt; mặt khác, nó làm tăng hiệu suất đáng kể."
+      },
+      {
+        "word": "Charge a fee",
+        "type": "verb phrase",
+        "pronunciation": "/tʃɑːdʒ ə fiː/",
+        "meaning": "Tính phí, thu phí",
+        "definition": "To demand payment for a product, service, or transaction.",
+        "example": "The bank does not charge a fee for online transfers.",
+        "exampleMeaning": "Ngân hàng không tính phí đối với các giao dịch chuyển tiền trực tuyến."
+      },
+      {
+        "word": "Stop by [a place]",
+        "type": "phrasal verb",
+        "pronunciation": "/stɒp baɪ .../",
+        "meaning": "Ghé qua / Tạt qua [một địa điểm]",
+        "definition": "To pay a short, brief visit to a place.",
+        "example": "Feel free to stop by our booth at the trade exhibition.",
+        "exampleMeaning": "Hãy ghé qua gian hàng của chúng tôi tại triển lãm thương mại."
+      },
+      {
+        "word": "In the neighborhood",
+        "type": "prepositional phrase",
+        "pronunciation": "/ɪn ðə ˈneɪ.bə.hʊd/",
+        "meaning": "Ở gần đây / Ở khu vực xung quanh đó",
+        "definition": "In the nearby local area or surrounding district.",
+        "example": "There are several good restaurants in the neighborhood.",
+        "exampleMeaning": "Có một số nhà hàng tốt ở khu vực xung quanh đó."
+      },
+      {
+        "word": "Government-issued photo ID",
+        "type": "noun phrase",
+        "pronunciation": "/ˈɡʌv.ən.mənt ˈɪʃ.uːd ˈfəʊ.təʊ aɪ-diː/",
+        "meaning": "Giấy tờ tùy thân có ảnh do chính phủ cấp (như CCCD, Hộ chiếu, Bằng lái xe)",
+        "definition": "Official identification document containing a photograph issued by a government authority.",
+        "example": "All visitors must present a valid government-issued photo ID at security.",
+        "exampleMeaning": "Tất cả khách tham quan phải trình giấy tờ tùy thân có ảnh do chính phủ cấp hợp lệ tại bảo vệ."
+      },
+      {
+        "word": "Verify identity",
+        "type": "verb phrase",
+        "pronunciation": "/ˈver.ɪ.faɪ aɪˈden.tə.ti/",
+        "meaning": "Xác minh danh tính",
+        "definition": "To confirm that a person is who they claim to be using official documents.",
+        "example": "The bank officer needs to verify your identity before opening the account.",
+        "exampleMeaning": "Nhân viên ngân hàng cần xác minh danh tính của bạn trước khi mở tài khoản."
+      },
+      {
+        "word": "Release records / documents",
+        "type": "verb phrase",
+        "pronunciation": "/rɪˈliːs rɪˈkɔːdz / ˈdɒk.jə.mənts/",
+        "meaning": "Bàn giao / Phát hành hồ sơ, tài liệu",
+        "definition": "To make official files, records, or documents available to authorized parties.",
+        "example": "The medical center will release your records upon receiving a written request.",
+        "exampleMeaning": "Trung tâm y tế sẽ bàn giao hồ sơ của bạn khi nhận được yêu cầu bằng văn bản."
       }
     ]
   },
