@@ -6007,5 +6007,199 @@ const toeicVocabulary = {
         "exampleMeaning": "Tất cả các cuộc họp tiếp theo sẽ được tổ chức vào thứ Ba thứ hai."
       }
     ]
+  },
+  "user_21_key_terms": {
+    "title": "⭐ 21 Từ vựng & Thuật ngữ TOEIC quan trọng",
+    "words": [
+      {
+        "word": "Baggage claim desk",
+        "type": "noun phrase",
+        "pronunciation": "/ˈbæɡ.ɪdʒ kleɪm desk/",
+        "meaning": "Bàn/Quầy nhận lại hành lý (ở sân bay)",
+        "definition": "The counter or area at an airport where passengers collect their checked luggage.",
+        "example": "Please report your lost luggage at the baggage claim desk.",
+        "exampleMeaning": "Vui lòng báo cáo hành lý thất lạc của bạn tại bàn nhận lại hành lý."
+      },
+      {
+        "word": "Comply (with)",
+        "type": "verb",
+        "pronunciation": "/kəmˈplaɪ/",
+        "meaning": "Tuân thủ, chấp hành (quy định, tiêu chuẩn)",
+        "definition": "To act in accordance with a wish, command, rule, or standard.",
+        "example": "All companies must comply with safety regulations.",
+        "exampleMeaning": "Tất cả các công ty phải tuân thủ các quy định an toàn."
+      },
+      {
+        "word": "Standard",
+        "type": "noun",
+        "pronunciation": "/ˈstæn.dɚd/",
+        "meaning": "Tiêu chuẩn, chuẩn mực",
+        "definition": "A level of quality or attainment required or accepted.",
+        "example": "The product maintains a high standard of quality control.",
+        "exampleMeaning": "Sản phẩm duy trì một tiêu chuẩn kiểm soát chất lượng cao."
+      },
+      {
+        "word": "Inspection",
+        "type": "noun",
+        "pronunciation": "/ɪnˈspek.ʃən/",
+        "meaning": "Sự thanh tra, sự kiểm tra",
+        "definition": "A careful examination or official scrutiny.",
+        "example": "The building passed the annual safety inspection.",
+        "exampleMeaning": "Tòa nhà đã vượt qua cuộc thanh tra an toàn hàng năm."
+      },
+      {
+        "word": "Violation",
+        "type": "noun",
+        "pronunciation": "/ˌvaɪ.əˈleɪ.ʃən/",
+        "meaning": "Sự vi phạm",
+        "definition": "An action that breaks a law, rule, agreement, or code of conduct.",
+        "example": "Speeding is a serious violation of traffic laws.",
+        "exampleMeaning": "Chạy quá tốc độ là một sự vi phạm nghiêm trọng luật giao thông."
+      },
+      {
+        "word": "Rating",
+        "type": "noun",
+        "pronunciation": "/ˈreɪ.t̬ɪŋ/",
+        "meaning": "Mức xếp hạng, điểm đánh giá",
+        "definition": "A classification of something based on comparative assessment.",
+        "example": "The hotel received a five-star rating from guests.",
+        "exampleMeaning": "Khách sạn đã nhận được mức xếp hạng 5 sao từ du khách."
+      },
+      {
+        "word": "Federal",
+        "type": "adjective",
+        "pronunciation": "/ˈfed.ɚ.əl/",
+        "meaning": "(Thuộc) liên bang",
+        "definition": "Relating to a system of government in which several states form a unity.",
+        "example": "Federal regulations require clear labeling on exported goods.",
+        "exampleMeaning": "Các quy định liên bang yêu cầu dán nhãn rõ ràng trên hàng hóa xuất khẩu."
+      },
+      {
+        "word": "Serious",
+        "type": "adjective",
+        "pronunciation": "/ˈsɪr.i.əs/",
+        "meaning": "Nghiêm trọng",
+        "definition": "Demanding careful consideration or action; solemn.",
+        "example": "The manager addressed a serious safety concern.",
+        "exampleMeaning": "Quản lý đã giải quyết một mối quan ngại an toàn nghiêm trọng."
+      },
+      {
+        "word": "Separately",
+        "type": "adverb",
+        "pronunciation": "/ˈsep.ər.ət.li/",
+        "meaning": "Riêng biệt, tách biệt",
+        "definition": "Independently; not together with others.",
+        "example": "Please package fragile items separately.",
+        "exampleMeaning": "Vui lòng đóng gói các mặt hàng dễ vỡ riêng biệt."
+      },
+      {
+        "word": "Emigrate",
+        "type": "verb",
+        "pronunciation": "/ˈem.ə.ɡreɪt/",
+        "meaning": "Di cư (rời khỏi đất nước của mình để sang nước khác sinh sống)",
+        "definition": "To leave one's own country in order to settle permanently in another.",
+        "example": "Many skilled workers emigrate to seek better employment opportunities.",
+        "exampleMeaning": "Nhiều lao động lành nghề di cư để tìm kiếm cơ hội việc làm tốt hơn."
+      },
+      {
+        "word": "Abroad",
+        "type": "adverb",
+        "pronunciation": "/əˈbrɑːd/",
+        "meaning": "Ở nước ngoài",
+        "definition": "In or to a foreign country or countries.",
+        "example": "She studied abroad for two years to improve her language skills.",
+        "exampleMeaning": "Cô ấy đã du học ở nước ngoài hai năm để cải thiện kỹ năng ngôn ngữ."
+      },
+      {
+        "word": "Courier",
+        "type": "noun",
+        "pronunciation": "/ˈkʊr.i.ɚ/",
+        "meaning": "Dịch vụ chuyển phát nhanh / Người đưa thư",
+        "definition": "A company or person that transports packages or urgent documents.",
+        "example": "The document was delivered by an express courier.",
+        "exampleMeaning": "Tài liệu đã được giao bởi một dịch vụ chuyển phát nhanh."
+      },
+      {
+        "word": "Government-issued",
+        "type": "adjective",
+        "pronunciation": "/ˈɡʌv.ɚn.mənt ˈɪʃ.uːd/",
+        "meaning": "Do chính phủ cấp",
+        "definition": "Provided or authorized by a government authority.",
+        "example": "Applicants must present a government-issued identification card.",
+        "exampleMeaning": "Ứng viên phải xuất trình thẻ định danh do chính phủ cấp."
+      },
+      {
+        "word": "Embassy",
+        "type": "noun",
+        "pronunciation": "/ˈem.bə.si/",
+        "meaning": "Đại sứ quán",
+        "definition": "The official residence or offices of an ambassador.",
+        "example": "You can apply for a travel visa at the foreign embassy.",
+        "exampleMeaning": "Bạn có thể nộp đơn xin thị thực du lịch tại đại sứ quán nước ngoài."
+      },
+      {
+        "word": "Grant",
+        "type": "verb",
+        "pronunciation": "/ɡrænt/",
+        "meaning": "Cấp, cấp phép, chấp thuận",
+        "definition": "To agree to give or allow something requested to someone.",
+        "example": "The committee decided to grant approval for the new building project.",
+        "exampleMeaning": "Ủy ban đã quyết định chấp thuận cấp phép cho dự án xây dựng mới."
+      },
+      {
+        "word": "Particular",
+        "type": "adjective",
+        "pronunciation": "/pɚˈtɪk.jə.lɚ/",
+        "meaning": "Cụ thể, đặc biệt",
+        "definition": "Specific; relating to a single person, thing, or instance.",
+        "example": "Is there a particular model you are looking for?",
+        "exampleMeaning": "Có mẫu cụ thể nào bạn đang tìm kiếm không?"
+      },
+      {
+        "word": "Dresser",
+        "type": "noun",
+        "pronunciation": "/ˈdres.ɚ/",
+        "meaning": "Tủ có ngăn kéo (thường để quần áo)",
+        "definition": "A piece of furniture with drawers, used especially for storing clothes.",
+        "example": "The bedroom set includes a large wooden dresser.",
+        "exampleMeaning": "Bộ đồ dùng phòng ngủ bao gồm một chiếc tủ quần áo gỗ lớn có ngăn kéo."
+      },
+      {
+        "word": "City council",
+        "type": "noun phrase",
+        "pronunciation": "/ˈsɪt.i ˈkaʊn.səl/",
+        "meaning": "Hội đồng thành phố",
+        "definition": "The governing body of a municipality.",
+        "example": "The city council approved the new public transport budget.",
+        "exampleMeaning": "Hội đồng thành phố đã phê duyệt ngân sách giao thông công cộng mới."
+      },
+      {
+        "word": "Classified",
+        "type": "adjective",
+        "pronunciation": "/ˈklæs.ə.faɪd/",
+        "meaning": "Bảo mật, bí mật",
+        "definition": "Officially designated as secret and restricted to authorized personnel.",
+        "example": "Do not share classified information with external parties.",
+        "exampleMeaning": "Không chia sẻ thông tin bảo mật với các bên bên ngoài."
+      },
+      {
+        "word": "Reputation",
+        "type": "noun",
+        "pronunciation": "/ˌrep.jəˈteɪ.ʃən/",
+        "meaning": "Uy tín, danh tiếng",
+        "definition": "The beliefs or opinions that are generally held about someone or something.",
+        "example": "The company has a strong reputation for excellent customer support.",
+        "exampleMeaning": "Công ty có uy tín mạnh mẽ về dịch vụ hỗ trợ khách hàng xuất sắc."
+      },
+      {
+        "word": "Professionalism",
+        "type": "noun",
+        "pronunciation": "/prəˈfeʃ.ən.əl.ɪ.zəm/",
+        "meaning": "Sự chuyên nghiệp",
+        "definition": "The competence, skill, and professional character expected of a professional.",
+        "example": "Staff members demonstrated high professionalism during the audit.",
+        "exampleMeaning": "Các nhân viên đã thể hiện sự chuyên nghiệp cao trong suốt buổi kiểm toán."
+      }
+    ]
   }
 };
