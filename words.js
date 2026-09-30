@@ -1,4 +1,153 @@
 const toeicVocabulary = {
+  "user_common_phrases": {
+    "title": "⭐ Cụm từ & Cụm động từ phổ biến",
+    "words": [
+      {
+        "word": "Comply with standards / rules",
+        "type": "phrase",
+        "pronunciation": "/kəmˈplaɪ wɪð ˈstæn.dədz / ruːlz/",
+        "meaning": "Tuân thủ tiêu chuẩn / quy định",
+        "definition": "To obey or adhere to formal rules, regulations, or standards.",
+        "example": "All manufacturers must comply with environmental standards.",
+        "exampleMeaning": "Tất cả các nhà sản xuất phải tuân thủ các tiêu chuẩn môi trường."
+      },
+      {
+        "word": "Health and safety standards",
+        "type": "noun phrase",
+        "pronunciation": "/helθ ænd ˈseɪf.ti ˈstæn.dədz/",
+        "meaning": "Các tiêu chuẩn vệ sinh / sức khỏe và an toàn",
+        "definition": "Regulations intended to maintain safe and healthy working conditions.",
+        "example": "Our office strictly follows local health and safety standards.",
+        "exampleMeaning": "Văn phòng chúng tôi tuân thủ nghiêm ngặt các tiêu chuẩn vệ sinh và an toàn địa phương."
+      },
+      {
+        "word": "Be glad to say / hear",
+        "type": "phrase",
+        "pronunciation": "/biː ɡlæd tuː seɪ / hɪər/",
+        "meaning": "Rất vui khi nói rằng / nghe được rằng",
+        "definition": "An expression used to express pleasure when giving or receiving news.",
+        "example": "I am glad to hear that your team passed the audit successfully.",
+        "exampleMeaning": "Tôi rất vui khi nghe được rằng đội của bạn đã vượt qua buổi kiểm toán thành công."
+      },
+      {
+        "word": "Please sign here",
+        "type": "phrase",
+        "pronunciation": "/pliːz saɪn hɪər/",
+        "meaning": "Vui lòng ký tên ở đây",
+        "definition": "A courteous phrase used when requesting a signature on a document.",
+        "example": "Please sign here at the bottom of the contract.",
+        "exampleMeaning": "Vui lòng ký tên ở đây tại phần cuối của hợp đồng."
+      },
+      {
+        "word": "Have an idea (about/when...)",
+        "type": "phrase",
+        "pronunciation": "/hæv æn aɪˈdɪə/",
+        "meaning": "Biết / hình dung được (khi nào...)",
+        "definition": "To have knowledge, awareness, or an estimate regarding something.",
+        "example": "Do you have an idea about when the meeting will start?",
+        "exampleMeaning": "Bạn có biết/hình dung được khi nào cuộc họp sẽ bắt đầu không?"
+      },
+      {
+        "word": "Revisit",
+        "type": "verb",
+        "pronunciation": "/ˌriːˈvɪz.ɪt/",
+        "meaning": "Ghé thăm lại, đến kiểm tra lại",
+        "definition": "To return to a place, or re-examine a decision or topic.",
+        "example": "The inspector will revisit the construction site next week.",
+        "exampleMeaning": "Thanh tra viên sẽ đến kiểm tra lại công trường vào tuần tới."
+      },
+      {
+        "word": "Within [a time period]",
+        "type": "prepositional phrase",
+        "pronunciation": "/wɪˈðɪn .../",
+        "meaning": "Trong vòng [khoảng thời gian] (VD: within two weeks)",
+        "definition": "Inside the limits of a specified period of time.",
+        "example": "Your order will be delivered within two weeks.",
+        "exampleMeaning": "Đơn hàng của bạn sẽ được giao trong vòng hai tuần."
+      },
+      {
+        "word": "Receive a top rating",
+        "type": "phrase",
+        "pronunciation": "/rɪˈsiːv ə tɒp ˈreɪ.tɪŋ/",
+        "meaning": "Nhận được mức đánh giá / xếp hạng cao nhất",
+        "definition": "To obtain the highest score or evaluation in a ranking or review.",
+        "example": "Our product received a top rating from industry experts.",
+        "exampleMeaning": "Sản phẩm của chúng tôi đã nhận được mức đánh giá cao nhất từ các chuyên gia trong ngành."
+      },
+      {
+        "word": "Leave [a place]",
+        "type": "verb phrase",
+        "pronunciation": "/liːv .../",
+        "meaning": "Rời khỏi [một địa điểm] (VD: leave San Francisco)",
+        "definition": "To go away from a specific location or place.",
+        "example": "The train will leave San Francisco at 9:00 AM tomorrow.",
+        "exampleMeaning": "Chuyến tàu sẽ rời khỏi San Francisco vào lúc 9:00 sáng mai."
+      },
+      {
+        "word": "Arrive at [a time / a place]",
+        "type": "verb phrase",
+        "pronunciation": "/əˈraɪv æt .../",
+        "meaning": "Đến nơi vào lúc [mấy giờ] / tại [địa điểm nhỏ] (VD: arrive at 8:00 PM)",
+        "definition": "To reach a location or designated time.",
+        "example": "We should arrive at the station before 8:00 PM.",
+        "exampleMeaning": "Chúng ta nên đến ga trước 8:00 tối."
+      },
+      {
+        "word": "Take + [khoảng thời gian]",
+        "type": "verb phrase",
+        "pronunciation": "/teɪk .../",
+        "meaning": "Mất khoảng bao nhiêu thời gian (VD: take about an hour)",
+        "definition": "To require a specified amount of time to complete.",
+        "example": "The commute to the office usually takes about an hour.",
+        "exampleMeaning": "Việc đi lại đến văn phòng thường mất khoảng một giờ."
+      },
+      {
+        "word": "Call back",
+        "type": "phrasal verb",
+        "pronunciation": "/kɔːl bæk/",
+        "meaning": "Gọi lại (sau một khoảng thời gian hoặc sau khi ai đó gọi cho mình)",
+        "definition": "To return a phone call to someone.",
+        "example": "I will call back as soon as the manager returns.",
+        "exampleMeaning": "Tôi sẽ gọi lại ngay khi quản lý quay về."
+      },
+      {
+        "word": "Be able to + V",
+        "type": "phrase",
+        "pronunciation": "/biː ˈeɪ.bəl tuː/",
+        "meaning": "Có thể / có khả năng làm gì",
+        "definition": "To have the capability or possibility of doing something.",
+        "example": "With proper training, staff will be able to handle complex inquiries.",
+        "exampleMeaning": "Với đào tạo phù hợp, nhân viên sẽ có khả năng xử lý các thắc mắc phức tạp."
+      },
+      {
+        "word": "Confirm whether or not...",
+        "type": "phrase",
+        "pronunciation": "/kənˈfɜːm ˈweð.ər ɔːr nɒt/",
+        "meaning": "Xác nhận liệu điều gì có xảy ra hay không",
+        "definition": "To verify if something is true or will take place.",
+        "example": "Please confirm whether or not you received the invoice.",
+        "exampleMeaning": "Vui lòng xác nhận liệu bạn đã nhận được hóa đơn hay chưa."
+      },
+      {
+        "word": "Please note that...",
+        "type": "phrase",
+        "pronunciation": "/pliːz nəʊt ðæt/",
+        "meaning": "Xin vui lòng lưu ý rằng... (dùng trong giao tiếp công việc, thông báo chính thức)",
+        "definition": "Used to highlight crucial details in formal communications.",
+        "example": "Please note that our office will be closed on public holidays.",
+        "exampleMeaning": "Xin vui lòng lưu ý rằng văn phòng chúng tôi sẽ đóng cửa vào các ngày lễ công cộng."
+      },
+      {
+        "word": "Close at [a time]",
+        "type": "verb phrase",
+        "pronunciation": "/kləʊz æt .../",
+        "meaning": "Đóng cửa vào lúc [mấy giờ]",
+        "definition": "To shut down or cease operations at a particular hour.",
+        "example": "The customer service center closes at 5:00 PM.",
+        "exampleMeaning": "Trung tâm dịch vụ khách hàng đóng cửa vào lúc 5:00 chiều."
+      }
+    ]
+  },
   "user_60_terms": {
     "title": "⭐ 60 Từ vựng TOEIC bổ sung",
     "words": [
