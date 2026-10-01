@@ -15,7 +15,8 @@ function seedInitialData() {
     Object.keys(toeicVocabulary).forEach(topicKey => {
       const topicData = toeicVocabulary[topicKey];
       topicData.words.forEach(w => {
-        const localWord = state.vocab.find(l => l.word.toLowerCase() === w.word.toLowerCase());
+        const targetClean = (w.word || '').trim().toLowerCase();
+        const localWord = state.vocab.find(l => (l.word || '').trim().toLowerCase() === targetClean);
         const meaningsList = (w.meanings && Array.isArray(w.meanings) && w.meanings.length > 0)
           ? w.meanings
           : [
@@ -52,7 +53,8 @@ function seedInitialData() {
     Object.keys(toeicVocabulary).forEach(topicKey => {
       const topicData = toeicVocabulary[topicKey];
       topicData.words.forEach(w => {
-        const localWord = state.vocab.find(l => l.word.toLowerCase() === w.word.toLowerCase());
+        const targetClean = (w.word || '').trim().toLowerCase();
+        const localWord = state.vocab.find(l => (l.word || '').trim().toLowerCase() === targetClean);
         if (localWord) {
           if (!localWord.topics || !Array.isArray(localWord.topics)) {
             localWord.topics = [localWord.topic || 'Cá nhân'];
