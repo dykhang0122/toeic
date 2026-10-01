@@ -3661,6 +3661,744 @@ const toeicVocabulary = {
         "definition": "Bring to an end.",
         "example": "The landlord decided to terminate the lease early.",
         "exampleMeaning": "Chủ nhà quyết định chấm dứt hợp đồng thuê sớm."
+      },
+      {
+        "word": "Undergo",
+        "type": "verb",
+        "pronunciation": "/ˌʌn.dəˈɡəʊ/",
+        "meaning": "Trải qua, chịu đựng (sự thay đổi, kiểm tra, phẫu thuật...)",
+        "definition": "To experience or submit to something, such as a process, change, or test.",
+        "example": "The building will undergo extensive renovation next month.",
+        "exampleMeaning": "Tòa nhà sẽ trải qua quá trình cải tạo quy mô lớn vào tháng tới."
+      },
+      {
+        "word": "Refurbishment",
+        "type": "noun",
+        "pronunciation": "/ˌriːˈfɜː.bɪʃ.mənt/",
+        "meaning": "Sự tân trang, nâng cấp, cải tạo",
+        "definition": "The process of renovating, redecorating, or restoring a building or item.",
+        "example": "The hotel is closed for complete refurbishment.",
+        "exampleMeaning": "Khách sạn đóng cửa để tân trang hoàn toàn."
+      },
+      {
+        "word": "Site houses",
+        "type": "verb phrase",
+        "pronunciation": "/saɪt haʊzɪz/",
+        "meaning": "Địa điểm chứa / lưu trữ / làm nơi đặt (thiết bị, tài liệu, hiện vật...)",
+        "definition": "A location provides space for or contains specific items or operations.",
+        "example": "The historic site houses thousands of rare ancient artifacts.",
+        "exampleMeaning": "Địa điểm lịch sử này làm nơi lưu trữ hàng ngàn cổ vật quý hiếm."
+      },
+      {
+        "word": "Put on hold",
+        "type": "phrase",
+        "pronunciation": "/pʊt ɒn həʊld/",
+        "meaning": "Tạm hoãn, hoãn lại",
+        "definition": "To delay or postpone an activity, project, or task.",
+        "example": "The construction project was put on hold due to budget constraints.",
+        "exampleMeaning": "Dự án xây dựng đã bị tạm hoãn do hạn chế ngân sách."
+      },
+      {
+        "word": "Decade",
+        "type": "noun",
+        "pronunciation": "/ˈdek.eɪd/",
+        "meaning": "Thập kỷ (10 năm)",
+        "definition": "A period of ten years.",
+        "example": "The company has been a market leader for over a decade.",
+        "exampleMeaning": "Công ty đã là đơn vị dẫn đầu thị trường trong hơn một thập kỷ."
+      },
+      {
+        "word": "Preservation",
+        "type": "noun",
+        "pronunciation": "/ˌprez.əˈveɪ.ʃən/",
+        "meaning": "Sự bảo tồn, giữ gìn",
+        "definition": "The act of keeping something in its original state or in good condition.",
+        "example": "The historical society is dedicated to the preservation of old landmarks.",
+        "exampleMeaning": "Hội lịch sử tận tụy với sự bảo tồn các danh lam thắng cảnh cổ."
+      },
+      {
+        "word": "Architect",
+        "type": "noun",
+        "pronunciation": "/ˈɑː.kɪ.tekt/",
+        "meaning": "Kiến trúc sư",
+        "definition": "A person who designs buildings and advises in their construction.",
+        "example": "The renowned architect unveiled the blueprints for the new headquarters.",
+        "exampleMeaning": "Kiến trúc sư nổi tiếng đã công bố bản thiết kế cho trụ sở mới."
+      },
+      {
+        "word": "Be based in",
+        "type": "phrase",
+        "pronunciation": "/biː beɪst ɪn/",
+        "meaning": "Làm việc tại / Đặt trụ sở tại",
+        "definition": "To have the main office, location, or home in a specific place.",
+        "example": "Our chief legal counsel is based in London.",
+        "exampleMeaning": "Cố vấn pháp lý trưởng của chúng tôi làm việc tại London."
+      },
+      {
+        "word": "Initial stage",
+        "type": "noun phrase",
+        "pronunciation": "/ɪˈnɪʃ.əl steɪdʒ/",
+        "meaning": "Giai đoạn đầu, bước đầu",
+        "definition": "The beginning phase or starting point of a process or project.",
+        "example": "The project is still in its initial stage of development.",
+        "exampleMeaning": "Dự án vẫn đang ở giai đoạn đầu phát triển."
+      },
+      {
+        "word": "Restoration",
+        "type": "noun",
+        "pronunciation": "/ˌres.təˈreɪ.ʃən/",
+        "meaning": "Sự khôi phục, sự phục hồi",
+        "definition": "The action of returning something to a former owner, place, or condition.",
+        "example": "The restoration of the old theater took nearly two years.",
+        "exampleMeaning": "Sự khôi phục nhà hát cũ đã mất gần hai năm."
+      },
+      {
+        "word": "Enterprise",
+        "type": "noun",
+        "pronunciation": "/ˈen.tə.praɪz/",
+        "meaning": "Doanh nghiệp, tổ chức kinh doanh",
+        "definition": "A business or company, especially a large organization.",
+        "example": "The joint enterprise will launch several commercial products this year.",
+        "exampleMeaning": "Doanh nghiệp liên doanh sẽ ra mắt một số sản phẩm thương mại vào năm nay."
+      },
+      {
+        "word": "Be pleased to",
+        "type": "phrase",
+        "pronunciation": "/biː pliːzd tuː/",
+        "meaning": "Rất hài lòng, rất vui khi (làm gì)",
+        "definition": "Feeling happy, satisfied, or glad to do something.",
+        "example": "We are pleased to announce the opening of our new branch.",
+        "exampleMeaning": "Chúng tôi rất vui mừng được thông báo việc mở chi nhánh mới."
+      },
+      {
+        "word": "Keep informed",
+        "type": "verb phrase",
+        "pronunciation": "/kiːp ɪnˈfɔːmd/",
+        "meaning": "Nắm bắt thông tin, được cập nhật thông tin liên tục",
+        "definition": "To stay updated or ensure someone receives the latest news and information.",
+        "example": "Please subscribe to our newsletter to keep informed about policy changes.",
+        "exampleMeaning": "Vui lòng đăng ký nhận bản tin để cập nhật thông tin về các thay đổi chính sách."
+      },
+      {
+        "word": "Editor in chief",
+        "type": "noun phrase",
+        "pronunciation": "/ˈed.ɪ.tər ɪn tʃiːf/",
+        "meaning": "Tổng biên tập",
+        "definition": "The publication's editorial leader having final responsibility for operations.",
+        "example": "The editor in chief approved the front-page story for tomorrow's edition.",
+        "exampleMeaning": "Tổng biên tập đã phê duyệt bài viết trang nhất cho ấn bản ngày mai."
+      },
+      {
+        "word": "National",
+        "type": "adjective",
+        "pronunciation": "/ˈnæʃ.ən.əl/",
+        "meaning": "Thuộc quốc gia, toàn quốc",
+        "definition": "Relating to a nation or country as a whole.",
+        "example": "The company won a national award for environmental innovation.",
+        "exampleMeaning": "Công ty đã giành được giải thưởng quốc gia về đổi mới môi trường."
+      },
+      {
+        "word": "International",
+        "type": "adjective",
+        "pronunciation": "/ˌɪn.təˈnæʃ.ən.əl/",
+        "meaning": "Thuộc quốc tế, toàn cầu",
+        "definition": "Existing, occurring, or carried on between two or more nations.",
+        "example": "They hosted an international conference on renewable energy.",
+        "exampleMeaning": "Họ đã tổ chức một hội nghị quốc tế về năng lượng tái tạo."
+      },
+      {
+        "word": "Gear toward",
+        "type": "phrasal verb",
+        "pronunciation": "/ɡɪər tə-wɔːd/",
+        "meaning": "Hướng vào, nhắm vào, thiết kế phù hợp với",
+        "definition": "To design or adapt something for a specific group, purpose, or goal.",
+        "example": "Our new training module is geared toward entry-level employees.",
+        "exampleMeaning": "Mô-đun đào tạo mới của chúng tôi được hướng vào nhân viên mới vào nghề."
+      },
+      {
+        "word": "Throughout",
+        "type": "preposition",
+        "pronunciation": "/θruːˈaʊt/",
+        "meaning": "Xuyên suốt (thời gian), khắp (không gian)",
+        "definition": "In every part of a place or during the entire period of time.",
+        "example": "The office remains open throughout the summer months.",
+        "exampleMeaning": "Văn phòng vẫn mở cửa xuyên suốt các tháng mùa hè."
+      },
+      {
+        "word": "Although",
+        "type": "conjunction",
+        "pronunciation": "/ɔːlˈðəʊ/",
+        "meaning": "Mặc dù, dẫu cho",
+        "definition": "In spite of the fact that; even though.",
+        "example": "Although sales dipped in Q2, annual revenue exceeded targets.",
+        "exampleMeaning": "Mặc dù doanh số giảm nhẹ vào Quý 2, doanh thu hàng năm vẫn vượt mục tiêu."
+      },
+      {
+        "word": "Publish",
+        "type": "verb",
+        "pronunciation": "/ˈpʌb.lɪʃ/",
+        "meaning": "Phát hành, xuất bản",
+        "definition": "To prepare and issue a book, journal, or piece of music for public sale.",
+        "example": "The research institute will publish its quarterly report tomorrow.",
+        "exampleMeaning": "Viện nghiên cứu sẽ phát hành báo cáo hàng quý vào ngày mai."
+      },
+      {
+        "word": "Stay up-to-date",
+        "type": "phrase",
+        "pronunciation": "/steɪ ʌp.tə.deɪt/",
+        "meaning": "Cập nhật thông tin, duy trì sự đổi mới",
+        "definition": "To remain informed about the newest facts, trends, or developments.",
+        "example": "Professionals must stay up-to-date with current industry regulations.",
+        "exampleMeaning": "Các chuyên gia phải duy trì cập nhật thông tin về các quy định ngành hiện hành."
+      },
+      {
+        "word": "Comprehensive",
+        "type": "adjective",
+        "pronunciation": "/ˌkɒm.prɪˈhen.sɪv/",
+        "meaning": "Toàn diện, bao quát",
+        "definition": "Including or dealing with all or nearly all elements or aspects of something.",
+        "example": "The manual provides a comprehensive guide to software installation.",
+        "exampleMeaning": "Tập sách hướng dẫn cung cấp một chỉ dẫn toàn diện về cài đặt phần mềm."
+      },
+      {
+        "word": "Reporting",
+        "type": "noun",
+        "pronunciation": "/rɪˈpɔː.tɪŋ/",
+        "meaning": "Sự đưa tin, công tác báo cáo",
+        "definition": "The activity or process of gathering and broadcasting news or compiling records.",
+        "example": "The journal earned praise for its accurate investigative reporting.",
+        "exampleMeaning": "Tạp chí đã nhận được lời khen ngợi nhờ sự đưa tin điều tra chính xác."
+      },
+      {
+        "word": "In-depth",
+        "type": "adjective",
+        "pronunciation": "/ˌɪn.depθ/",
+        "meaning": "Chuyên sâu, chi tiết, tỉ mỉ",
+        "definition": "Comprehensive, thorough, and detailed in analysis or coverage.",
+        "example": "The magazine features an in-depth interview with the CEO.",
+        "exampleMeaning": "Tạp chí đăng tải một bài phỏng vấn chuyên sâu với Tổng Giám Đốc."
+      },
+      {
+        "word": "A hub",
+        "type": "noun phrase",
+        "pronunciation": "/ə hʌb/",
+        "meaning": "Một trung tâm, điểm kết nối chính (= center)",
+        "definition": "The effective center of an activity, region, or network.",
+        "example": "The city has become a major technology hub in Southeast Asia.",
+        "exampleMeaning": "Thành phố đã trở thành một trung tâm công nghệ lớn ở Đông Nam Á."
+      },
+      {
+        "word": "Interaction",
+        "type": "noun",
+        "pronunciation": "/ˌɪn.tərˈæk.ʃən/",
+        "meaning": "Sự tương tác, sự giao lưu",
+        "definition": "Reciprocal action, effect, or influence between people or systems.",
+        "example": "Social media enhances direct interaction between companies and customers.",
+        "exampleMeaning": "Mạng xã hội tăng cường sự tương tác trực tiếp giữa công ty và khách hàng."
+      },
+      {
+        "word": "Business professional",
+        "type": "noun phrase",
+        "pronunciation": "/ˈbɪz.nɪs prəˈfeʃ.ən.əl/",
+        "meaning": "Chuyên gia kinh doanh, người làm việc trong lĩnh vực kinh doanh",
+        "definition": "An individual working qualified in a corporate or commercial environment.",
+        "example": "The networking seminar attracted hundreds of business professionals.",
+        "exampleMeaning": "Buổi thảo luận kết nối đã thu hút hàng trăm chuyên gia kinh doanh."
+      },
+      {
+        "word": "Celebrate",
+        "type": "verb",
+        "pronunciation": "/ˈsel.ə.breɪt/",
+        "meaning": "Kỷ niệm, ăn mừng, tôn vinh",
+        "definition": "Acknowledge a significant event with a social gathering or enjoyable activity.",
+        "example": "The staff gathered to celebrate the firm 20th anniversary.",
+        "exampleMeaning": "Tập thể nhân viên đã tập hợp để kỷ niệm 20 năm thành lập công ty."
+      },
+      {
+        "word": "Publication",
+        "type": "noun",
+        "pronunciation": "/ˌpʌb.lɪˈkeɪ.ʃən/",
+        "meaning": "Ấn phẩm, sự xuất bản, tạp chí/báo",
+        "definition": "The preparation and issuing of a book, journal, or piece of material.",
+        "example": "This monthly publication reaches over 50,000 readers worldwide.",
+        "exampleMeaning": "Ấn phẩm hàng tháng này tiếp cận hơn 50.000 độc giả trên toàn thế giới."
+      },
+      {
+        "word": "Contain",
+        "type": "verb",
+        "pronunciation": "/kənˈteɪn/",
+        "meaning": "Chứa đựng, bao gồm",
+        "definition": "Have or hold someone or something within.",
+        "example": "The report contains detailed statistical figures for last quarter.",
+        "exampleMeaning": "Báo cáo chứa đựng các số liệu thống kê chi tiết cho quý trước."
+      },
+      {
+        "word": "Commemorative",
+        "type": "adjective",
+        "pronunciation": "/kəˈmem.ər.ə.tɪv/",
+        "meaning": "Tưởng nhớ, kỷ niệm, ghi nhớ",
+        "definition": "Acting as a memorial or mark of an event or person.",
+        "example": "The company issued a commemorative booklet for its centennial.",
+        "exampleMeaning": "Công ty đã phát hành một cuốn sách nhỏ kỷ niệm dịp bách niên."
+      },
+      {
+        "word": "Insert",
+        "type": "noun",
+        "pronunciation": "/ˈɪn.sɜːt/",
+        "meaning": "Tờ đính kèm, trang chèn thêm vào báo/tạp chí",
+        "definition": "An loose page or promotional document placed inside a magazine or book.",
+        "example": "Check the promotional insert inside the newspaper for discount coupons.",
+        "exampleMeaning": "Kiểm tra tờ rơi chèn bên trong tờ báo để lấy phiếu giảm giá."
+      },
+      {
+        "word": "Accompanying",
+        "type": "adjective",
+        "pronunciation": "/əˈkʌm.pə.ni.ɪŋ/",
+        "meaning": "Đính kèm, đi cùng, phụ thuộc",
+        "definition": "Provided or existing in association with something else.",
+        "example": "Please read the instructions in the accompanying user guide.",
+        "exampleMeaning": "Vui lòng đọc hướng dẫn trong sách hướng dẫn người dùng đính kèm."
+      },
+      {
+        "word": "Through the years",
+        "type": "phrase",
+        "pronunciation": "/θruː ðə jɪəz/",
+        "meaning": "Qua các năm, theo thời gian",
+        "definition": "Over a long period of time as years pass.",
+        "example": "Our client relationship has grown stronger through the years.",
+        "exampleMeaning": "Mối quan hệ khách hàng của chúng tôi đã phát triển mạnh mẽ hơn qua các năm."
+      },
+      {
+        "word": "Archives",
+        "type": "noun",
+        "pronunciation": "/ˈɑː.kaɪvz/",
+        "meaning": "Kho lưu trữ, hồ sơ lưu trữ",
+        "definition": "A collection of historical documents or records providing information about a place or institution.",
+        "example": "Researchers searched the company archives for early historical photographs.",
+        "exampleMeaning": "Các nhà nghiên cứu đã tìm kiếm trong kho lưu trữ của công ty để lấy các bức ảnh lịch sử thời kỳ đầu."
+      },
+      {
+        "word": "Inception",
+        "type": "noun",
+        "pronunciation": "/ɪnˈsep.ʃən/",
+        "meaning": "Sự thành lập, lúc khởi đầu",
+        "definition": "The starting point or establishment of an institution or activity.",
+        "example": "Since its inception in 2010, the startup has grown exponentially.",
+        "exampleMeaning": "Kể từ khi thành lập vào năm 2010, công ty khởi nghiệp đã tăng trưởng theo cấp số nhân."
+      },
+      {
+        "word": "Anniversary",
+        "type": "noun",
+        "pronunciation": "/ˌæn.ɪˈvɜː.sər.i/",
+        "meaning": "Lễ kỷ niệm, ngày kỷ niệm hàng năm",
+        "definition": "The date on which an event took place in a previous year.",
+        "example": "They celebrated the 10th anniversary of their merger.",
+        "exampleMeaning": "Họ đã tổ chức lễ kỷ niệm 10 năm sáp nhập."
+      },
+      {
+        "word": "Publicize",
+        "type": "verb",
+        "pronunciation": "/ˈpʌb.lɪ.saɪz/",
+        "meaning": "Quảng bá, công khai thông tin",
+        "definition": "Make information about something known to the public.",
+        "example": "The marketing team launched a campaign to publicize the new app.",
+        "exampleMeaning": "Đội tiếp thị đã khởi động chiến dịch quảng bá ứng dụng mới."
+      },
+      {
+        "word": "Indicate",
+        "type": "verb",
+        "pronunciation": "/ˈɪn.dɪ.keɪt/",
+        "meaning": "Chỉ ra, cho thấy, biểu thị",
+        "definition": "Point out, show, or suggest the presence or existence of.",
+        "example": "Survey results indicate high levels of customer satisfaction.",
+        "exampleMeaning": "Kết quả khảo sát chỉ ra mức độ hài lòng cao của khách hàng."
+      },
+      {
+        "word": "Regular",
+        "type": "adjective",
+        "pronunciation": "/ˈreɡ.jə.lər/",
+        "meaning": "Thường xuyên, đều đặn, định kỳ",
+        "definition": "Done or happening frequently or at uniform intervals.",
+        "example": "We conduct regular maintenance checks on all factory machinery.",
+        "exampleMeaning": "Chúng tôi thực hiện kiểm tra bảo trì thường xuyên trên tất cả máy móc nhà máy."
+      },
+      {
+        "word": "Cover",
+        "type": "verb",
+        "pronunciation": "/ˈkʌv.ər/",
+        "meaning": "Đưa tin, bao quát, đài thọ/chi trả",
+        "definition": "Report on an event, deal with a subject, or pay for an expense.",
+        "example": "Journalists arrived early to cover the international trade summit.",
+        "exampleMeaning": "Các nhà báo đã đến sớm để đưa tin về hội nghị thượng đỉnh thương mại quốc tế."
+      },
+      {
+        "word": "Acknowledge",
+        "type": "verb",
+        "pronunciation": "/əkˈnɒl.ɪdʒ/",
+        "meaning": "Công nhận, thừa nhận, xác nhận đã nhận",
+        "definition": "Accept or admit the existence or truth of; confirm receipt of.",
+        "example": "Please acknowledge receipt of this email.",
+        "exampleMeaning": "Vui lòng xác nhận đã nhận email này."
+      },
+      {
+        "word": "Grant",
+        "type": "verb",
+        "pronunciation": "/ɡrɑːnt/",
+        "meaning": "Cấp, cho phép, ban cho",
+        "definition": "Agree to give or allow something requested to someone.",
+        "example": "The city council granted approval for the building extension.",
+        "exampleMeaning": "Hội đồng thành phố đã cấp phép phê duyệt việc mở rộng tòa nhà."
+      },
+      {
+        "word": "Land",
+        "type": "verb",
+        "pronunciation": "/lænd/",
+        "meaning": "Giành được, đón nhận (hợp đồng, dự án, công việc thành công)",
+        "definition": "Succeed in obtaining or winning a position, contract, or prize.",
+        "example": "The agency managed to land a million-dollar advertising contract.",
+        "exampleMeaning": "Đại lý đã thành công giành được hợp đồng quảng cáo trị giá triệu đô."
+      },
+      {
+        "word": "Print works / plant",
+        "type": "noun phrase",
+        "pronunciation": "/prɪnt wɜːks / plɑːnt/",
+        "meaning": "Nhà máy in, xưởng in ấn",
+        "definition": "A factory or facility where printing operations are conducted.",
+        "example": "The new print plant is equipped with high-speed digital presses.",
+        "exampleMeaning": "Nhà máy in mới được trang bị máy in kỹ thuật số tốc độ cao."
+      },
+      {
+        "word": "Worth",
+        "type": "adjective",
+        "pronunciation": "/wɜːθ/",
+        "meaning": "Trị giá, đáng giá",
+        "definition": "Equivalent in value to the sum or item specified.",
+        "example": "The contract is worth over five million dollars.",
+        "exampleMeaning": "Hợp đồng trị giá hơn năm triệu đô la."
+      },
+      {
+        "word": "Former",
+        "type": "adjective",
+        "pronunciation": "/ˈfɔː.mər/",
+        "meaning": "Cựu, nguyên, trước đây",
+        "definition": "Having previously filled a particular role or status.",
+        "example": "The former CEO will join the advisory board next month.",
+        "exampleMeaning": "Cựu Tổng Giám Đốc sẽ gia nhập hội đồng tư vấn vào tháng tới."
+      },
+      {
+        "word": "Steelworks",
+        "type": "noun",
+        "pronunciation": "/ˈstiːl.wɜːks/",
+        "meaning": "Nhà máy thép, xưởng luyện thép",
+        "definition": "An industrial plant where steel is manufactured.",
+        "example": "The abandoned steelworks will be redeveloped into a commercial complex.",
+        "exampleMeaning": "Nhà máy thép bỏ hoang sẽ được tái phát triển thành một khu phức hợp thương mại."
+      },
+      {
+        "word": "Be delighted at / with",
+        "type": "phrase",
+        "pronunciation": "/biː dɪˈlaɪ.tɪd æt / wɪð/",
+        "meaning": "Rất vui mừng, vô cùng hài lòng về / với",
+        "definition": "Feeling or showing great pleasure and satisfaction with something.",
+        "example": "The board was delighted with the impressive quarterly earnings.",
+        "exampleMeaning": "Hội đồng quản trị rất hài lòng với lợi nhuận hàng quý ấn tượng."
+      },
+      {
+        "word": "Chief executive",
+        "type": "noun phrase",
+        "pronunciation": "/tʃiːf ɪɡˈzek.jə.tɪv/",
+        "meaning": "Giám đốc điều hành (CEO)",
+        "definition": "The highest-ranking executive officer in a corporation or company.",
+        "example": "The chief executive delivered an inspiring keynote address.",
+        "exampleMeaning": "Giám đốc điều hành đã trình bày bài phát biểu chủ đề đầy cảm hứng."
+      },
+      {
+        "word": "Scale",
+        "type": "noun",
+        "pronunciation": "/skeɪl/",
+        "meaning": "Quy mô, mức độ, phạm vi",
+        "definition": "The relative size or extent of something.",
+        "example": "They expanded production on a massive scale.",
+        "exampleMeaning": "Họ đã mở rộng sản xuất trên một quy mô khổng lồ."
+      },
+      {
+        "word": "Huge boost",
+        "type": "noun phrase",
+        "pronunciation": "/hjuːdʒ buːst/",
+        "meaning": "Đòn bẩy thúc đẩy mạnh mẽ, sự gia tăng đáng kể",
+        "definition": "A significant push, encouragement, or increase in growth.",
+        "example": "The new tax incentive provided a huge boost to local tourism.",
+        "exampleMeaning": "Chính sách ưu đãi thuế mới đã tạo đòn bẩy thúc đẩy mạnh mẽ cho du lịch địa phương."
+      },
+      {
+        "word": "Catalog",
+        "type": "noun",
+        "pronunciation": "/ˈkæt.əl.ɒɡ/",
+        "meaning": "Danh mục sản phẩm, catalogue",
+        "definition": "A complete list of items, systematically arranged, especially goods for sale.",
+        "example": "Customers can order directly from our online product catalog.",
+        "exampleMeaning": "Khách hàng có thể đặt hàng trực tiếp từ danh mục sản phẩm trực tuyến của chúng tôi."
+      },
+      {
+        "word": "Be owned by",
+        "type": "verb phrase",
+        "pronunciation": "/biː əʊnd baɪ/",
+        "meaning": "Được sở hữu bởi, thuộc quyền sở hữu của",
+        "definition": "Belonging legally to a person or business entity.",
+        "example": "The subsidiary is fully owned by a parent corporation in Germany.",
+        "exampleMeaning": "Công ty con này được sở hữu hoàn toàn bởi tập đoàn mẹ tại Đức."
+      },
+      {
+        "word": "Development partner",
+        "type": "noun phrase",
+        "pronunciation": "/dɪˈvel.əp.mənt ˈpɑːt.nər/",
+        "meaning": "Đối tác phát triển",
+        "definition": "An entity collaborating to achieve mutual growth or project goals.",
+        "example": "Our development partner contributed essential technical expertise.",
+        "exampleMeaning": "Đối tác phát triển của chúng tôi đã đóng góp chuyên môn kỹ thuật thiết yếu."
+      },
+      {
+        "word": "Draw up plans",
+        "type": "verb phrase",
+        "pronunciation": "/drɔː ʌp plænz/",
+        "meaning": "Phác thảo kế hoạch, lập bản thảo kế hoạch",
+        "definition": "To prepare a detailed plan, draft, or document.",
+        "example": "Engineers drew up plans for the new transport hub.",
+        "exampleMeaning": "Các kỹ sư đã phác thảo kế hoạch cho trung tâm vận tải mới."
+      },
+      {
+        "word": "On the basis of",
+        "type": "prepositional phrase",
+        "pronunciation": "/ɒn ðə ˈbeɪ.sɪs əv/",
+        "meaning": "Dựa trên cơ sở, căn cứ vào",
+        "definition": "Because of or according to facts or conditions established.",
+        "example": "Candidates are selected on the basis of merit and experience.",
+        "exampleMeaning": "Các ứng viên được lựa chọn trên cơ sở năng lực và kinh nghiệm."
+      },
+      {
+        "word": "Central government",
+        "type": "noun phrase",
+        "pronunciation": "/ˈsen.trəl ˈɡʌv.ən.mənt/",
+        "meaning": "Chính phủ trung ương",
+        "definition": "The political authority that governs an entire nation.",
+        "example": "The central government allocated funds for infrastructure improvements.",
+        "exampleMeaning": "Chính phủ trung ương đã phân bổ ngân sách cho việc cải thiện hạ tầng."
+      },
+      {
+        "word": "Local labor market",
+        "type": "noun phrase",
+        "pronunciation": "/ˈləʊ.kəl ˈleɪ.bər ˈmɑː.kɪt/",
+        "meaning": "Thị trường lao động địa phương",
+        "definition": "The supply of and demand for labor within a specific geographical area.",
+        "example": "The opening of the factory created hundreds of jobs in the local labor market.",
+        "exampleMeaning": "Việc mở nhà máy đã tạo ra hàng trăm việc làm trên thị trường lao động địa phương."
+      },
+      {
+        "word": "Road network",
+        "type": "noun phrase",
+        "pronunciation": "/rəʊd ˈnet.wɜːk/",
+        "meaning": "Mạng lưới đường bộ",
+        "definition": "An interconnected system of roads for vehicular transport.",
+        "example": "The country expanded its road network to improve logistics efficiency.",
+        "exampleMeaning": "Quốc gia đã mở rộng mạng lưới đường bộ để cải thiện hiệu quả logistics."
+      },
+      {
+        "word": "Rail freight link",
+        "type": "noun phrase",
+        "pronunciation": "/reɪl freɪt lɪŋk/",
+        "meaning": "Kết nối / tuyến vận tải hàng hóa bằng đường sắt",
+        "definition": "A railway connection used for transporting cargo and goods.",
+        "example": "The new rail freight link connects the port directly to industrial zones.",
+        "exampleMeaning": "Tuyến kết nối vận tải hàng hóa bằng đường sắt mới kết nối trực tiếp cảng biển với các khu công nghiệp."
+      },
+      {
+        "word": "Workforce",
+        "type": "noun",
+        "pronunciation": "/ˈwɜːk.fɔːs/",
+        "meaning": "Lực lượng lao động, tập thể nhân viên",
+        "definition": "The total number of people employed or available to work.",
+        "example": "The company aims to diversify its workforce in the coming year.",
+        "exampleMeaning": "Công ty hướng tới đa dạng hóa lực lượng lao động trong năm tới."
+      },
+      {
+        "word": "Region",
+        "type": "noun",
+        "pronunciation": "/ˈriː.dʒən/",
+        "meaning": "Khu vực, vùng miền",
+        "definition": "An area or division, especially part of a country or the world.",
+        "example": "Economic growth has been rapid throughout the northern region.",
+        "exampleMeaning": "Tăng trưởng kinh tế đã diễn ra nhanh chóng trên khắp khu vực phía bắc."
+      },
+      {
+        "word": "Have an impact on",
+        "type": "verb phrase",
+        "pronunciation": "/hæv æn ˈɪm.pækt ɒn/",
+        "meaning": "Có tác động, có ảnh hưởng đến",
+        "definition": "To produce a marked effect or influence on something.",
+        "example": "New environmental laws will have a direct impact on chemical manufacturing.",
+        "exampleMeaning": "Các luật môi trường mới sẽ có tác động trực tiếp đến ngành sản xuất hóa chất."
+      },
+      {
+        "word": "Decision-making process",
+        "type": "noun phrase",
+        "pronunciation": "/dɪˈsɪʒ.ən ˌmeɪ.kɪŋ ˈprəʊ.ses/",
+        "meaning": "Quy trình đưa ra quyết định",
+        "definition": "The series of steps taken to choose a course of action.",
+        "example": "Key stakeholders were involved in every step of the decision-making process.",
+        "exampleMeaning": "Các bên liên quan chính đã tham gia vào từng bước của quy trình đưa ra quyết định."
+      },
+      {
+        "word": "Local authority",
+        "type": "noun phrase",
+        "pronunciation": "/ˈləʊ.kəl ɔːˈθɒr.ə.ti/",
+        "meaning": "Chính quyền địa phương, cơ quan chức năng địa phương",
+        "definition": "An administrative body in control of local government services.",
+        "example": "The local authority granted a permit for the outdoor festival.",
+        "exampleMeaning": "Chính quyền địa phương đã cấp giấy phép cho lễ hội ngoài trời."
+      },
+      {
+        "word": "Positive example",
+        "type": "noun phrase",
+        "pronunciation": "/ˈpɒz.ə.tɪv ɪɡˈzɑːm.pəl/",
+        "meaning": "Ví dụ tích cực, tấm gương sáng",
+        "definition": "A constructive model or role instance worth emulating.",
+        "example": "The sustainable business model sets a positive example for other firms.",
+        "exampleMeaning": "Mô hình kinh doanh bền vững tạo ra một tấm gương tích cực cho các công ty khác."
+      },
+      {
+        "word": "The rest of",
+        "type": "phrase",
+        "pronunciation": "/ðə rest əv/",
+        "meaning": "Phần còn lại, số còn lại",
+        "definition": "The remaining part of something.",
+        "example": "The rest of the shipment will arrive tomorrow morning.",
+        "exampleMeaning": "Phần còn lại của lô hàng sẽ tới vào sáng mai."
+      },
+      {
+        "word": "Attract",
+        "type": "verb",
+        "pronunciation": "/əˈtrækt/",
+        "meaning": "Thu hút, lôi kéo",
+        "definition": "Cause to come to a place or participate in something.",
+        "example": "The trade fair attracted foreign investors from around the world.",
+        "exampleMeaning": "Hội chợ thương mại đã thu hút các nhà đầu tư nước ngoài từ khắp thế giới."
+      },
+      {
+        "word": "Job opening",
+        "type": "noun phrase",
+        "pronunciation": "/dʒɒb ˈəʊ.pən.ɪŋ/",
+        "meaning": "Vị trí tuyển dụng, chỗ làm trống",
+        "definition": "An available position of employment.",
+        "example": "There are currently several job openings in our IT department.",
+        "exampleMeaning": "Hiện tại có một số vị trí tuyển dụng trong bộ phận IT của chúng tôi."
+      },
+      {
+        "word": "Enact a law",
+        "type": "verb phrase",
+        "pronunciation": "/ɪˈnækt ə lɔː/",
+        "meaning": "Ban hành một đạo luật",
+        "definition": "To pass or make a bill into official law.",
+        "example": "Parliament voted to enact a law protecting consumer data privacy.",
+        "exampleMeaning": "Nghị viện đã bỏ phiếu ban hành đạo luật bảo vệ quyền riêng tư dữ liệu người tiêu dùng."
+      },
+      {
+        "word": "City council",
+        "type": "noun phrase",
+        "pronunciation": "/ˈsɪt.i ˈkaʊn.səl/",
+        "meaning": "Hội đồng thành phố",
+        "definition": "The local governing body of a municipality.",
+        "example": "The city council approved plans for a new public park.",
+        "exampleMeaning": "Hội đồng thành phố đã phê duyệt kế hoạch cho một công viên công cộng mới."
+      },
+      {
+        "word": "Enlarge",
+        "type": "verb",
+        "pronunciation": "/ɪnˈlɑːdʒ/",
+        "meaning": "Mở rộng, phóng to, làm lớn hơn",
+        "definition": "Make or become larger or more extensive.",
+        "example": "The store plans to enlarge its showroom to display more products.",
+        "exampleMeaning": "Cửa hàng có kế hoạch mở rộng phòng trưng bày để trưng bày nhiều sản phẩm hơn."
+      },
+      {
+        "word": "Plenty of",
+        "type": "phrase",
+        "pronunciation": "/ˈplen.ti əv/",
+        "meaning": "Dồi dào, có nhiều",
+        "definition": "A large or sufficient amount or quantity.",
+        "example": "There is plenty of parking space behind the shopping center.",
+        "exampleMeaning": "Có dồi dào chỗ đậu xe đằng sau trung tâm thương mại."
+      },
+      {
+        "word": "Praise",
+        "type": "verb",
+        "pronunciation": "/preɪz/",
+        "meaning": "Khen ngợi, sự tán dương",
+        "definition": "Express warm approval or admiration of.",
+        "example": "The supervisor praised the team for completing the project early.",
+        "exampleMeaning": "Người giám sát đã khen ngợi nhóm vì đã hoàn thành dự án sớm."
+      },
+      {
+        "word": "Establish strong ties",
+        "type": "verb phrase",
+        "pronunciation": "/ɪˈstæb.lɪʃ strɒŋ taɪz/",
+        "meaning": "Thiết lập mối quan hệ chặt chẽ / bền vững",
+        "definition": "To build solid connections or relations with a group or organization.",
+        "example": "The firm seeks to establish strong ties with local universities.",
+        "exampleMeaning": "Công ty tìm cách thiết lập mối quan hệ chặt chẽ với các trường đại học địa phương."
+      },
+      {
+        "word": "Financial aid",
+        "type": "noun phrase",
+        "pronunciation": "/faɪˈnæn.ʃəl eɪd/",
+        "meaning": "Hỗ trợ tài chính, viện trợ kinh tế",
+        "definition": "Money given to assist individuals or businesses in need.",
+        "example": "Small businesses affected by the storm received government financial aid.",
+        "exampleMeaning": "Các doanh nghiệp nhỏ bị ảnh hưởng bởi bão đã nhận được hỗ trợ tài chính từ chính phủ."
+      },
+      {
+        "word": "Due to",
+        "type": "prepositional phrase",
+        "pronunciation": "/dʒuː tuː/",
+        "meaning": "Bởi vì, do, vì nguyên nhân",
+        "definition": "Caused by or resulting from.",
+        "example": "The outdoor event was canceled due to heavy rainfall.",
+        "exampleMeaning": "Sự kiện ngoài trời đã bị hủy do mưa lớn."
+      },
+      {
+        "word": "Rising fuel costs",
+        "type": "noun phrase",
+        "pronunciation": "/ˈraɪ.zɪŋ fjuːəl kɒsts/",
+        "meaning": "Chi phí nhiên liệu gia tăng",
+        "definition": "Increasing expenses associated with petrol, gas, or energy supplies.",
+        "example": "Airlines adjusted ticket prices to offset rising fuel costs.",
+        "exampleMeaning": "Các hãng hàng không đã điều chỉnh giá vé để bù đắp chi phí nhiên liệu gia tăng."
+      },
+      {
+        "word": "Checked luggage",
+        "type": "noun phrase",
+        "pronunciation": "/tʃekt ˈlʌɡ.ɪdʒ/",
+        "meaning": "Hành lý ký gửi",
+        "definition": "Bags stored in the cargo hold of an airplane or train.",
+        "example": "Passengers must tag their checked luggage before going to the gate.",
+        "exampleMeaning": "Hành khách phải gắn thẻ cho hành lý ký gửi trước khi đến cửa khởi hành."
+      },
+      {
+        "word": "Overweight bag",
+        "type": "noun phrase",
+        "pronunciation": "/ˌəʊ.vəˈweɪt bæɡ/",
+        "meaning": "Hành lý quá cước, vượt trọng lượng quy định",
+        "definition": "Luggage exceeding the airline standard weight limit.",
+        "example": "An additional fee will be charged for any overweight bag.",
+        "exampleMeaning": "Một khoản phí phụ thu sẽ được tính cho bất kỳ hành lý quá cước nào."
+      },
+      {
+        "word": "Lightweight material",
+        "type": "noun phrase",
+        "pronunciation": "/ˈlaɪt.weɪt məˈtɪə.ri.əl/",
+        "meaning": "Vật liệu nhẹ",
+        "definition": "Substance or fabric having relatively little weight.",
+        "example": "The new suitcases are manufactured using durable, lightweight material.",
+        "exampleMeaning": "Các chiếc vali mới được sản xuất bằng vật liệu nhẹ và bền."
       }
     ]
   },
